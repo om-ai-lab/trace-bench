@@ -14,6 +14,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any
 
 DEFAULT_SEMANTIC_TASK_TYPES = frozenset({"SSR", "CRR"})
+SCORER_VERSION = "osb-scoring-v6"
 VLM_JUDGE_PROMPT_VERSION = "osb-vlm-judge-v1"
 VLM_JUDGE_PROMPT = """\
 You are an expert evaluator for a video question answering task.
@@ -296,8 +297,8 @@ class JudgeRouter:
     @property
     def metadata(self) -> dict[str, Any]:
         return {
-            "scorer_version": "osb-scoring-v5",
-            "response_assembly": "response-episode-v1",
+            "scorer_version": SCORER_VERSION,
+            "response_assembly": "response-episode-v2",
             "window_boundary": "half_open",
             "judge_mode": self.mode,
             "semantic_task_types": sorted(self.semantic_task_types),
@@ -502,7 +503,6 @@ def assemble_response_episodes(events: list[dict[str, Any]]) -> list[dict[str, A
 
     episodes: list[ResponseEpisode] = []
     active: dict[str, ResponseEpisode] = {}
-    closed_counts: Counter[str] = Counter()
 
     def close(response_key: str) -> None:
         episode = active.pop(response_key, None)
@@ -515,13 +515,28 @@ def assemble_response_episodes(events: list[dict[str, Any]]) -> list[dict[str, A
 
     ordered_events = sorted(enumerate(events), key=_event_sequence_key)
     for index, event in ordered_events:
-        if not _event_score_eligible(event):
-            continue
         kind = _event_kind(event)
         decision = str(_event_value(event, "response_decision") or "").lower()
         if kind in {"wait", "failure"} or decision == "silent":
             close_all()
             continue
+        if not _event_score_eligible(event):
+            # A time cutoff forbids starting an episode, not completing a
+            # timely, still-open one. Never revive prefill, a new model call
+            # during shutdown, a complete answer, or an already closed ID.
+            telemetry = event.get("telemetry", {})
+            response_id = str(_event_value(event, "response_id") or "")
+            reason = telemetry.get("suppression_reason")
+            continuation = (
+                kind == "answer"
+                and response_id in active
+                and _event_value(event, "text_mode") in {"delta", "snapshot"}
+                and reason in {"after_evaluation_end", "unobservable_close_time"}
+                and telemetry.get("provider_output_suppressed") is not True
+                and telemetry.get("shutdown_drain") is not True
+            )
+            if not continuation:
+                continue
         if kind != "answer" or not _event_answer_text(event):
             continue
 
@@ -567,11 +582,7 @@ def assemble_response_episodes(events: list[dict[str, Any]]) -> list[dict[str, A
             )
             continue
 
-        if response_id in active:
-            response_key = response_id
-        else:
-            generation = closed_counts[response_id]
-            response_key = response_id if generation == 0 else f"{response_id}#{generation}"
+        response_key = response_id
         episode = active.get(response_key)
         if episode is None:
             first_token = _event_value(event, "first_token_perf_ns")
@@ -632,7 +643,6 @@ def assemble_response_episodes(events: list[dict[str, Any]]) -> list[dict[str, A
                 episode.completion_perf_ns = completion
         if _event_value(event, "is_final") is True:
             close(response_key)
-            closed_counts[response_id] += 1
 
     close_all()
     episodes.sort(key=lambda episode: (episode.start_video_time_s, episode.source_event_indices[0]))
@@ -1204,16 +1214,17 @@ def normalize_text(value: Any) -> str:
 
 
 def extract_choice(value: Any, option_labels: set[str] | None = None) -> str | None:
+    # Preserve existing single-label formatting normalization. Do not mine
+    # prose or option-plus-text for incidental letters. Raw text is immutable.
     text = normalize_text(value).upper()
-    labels = option_labels or {"A", "B", "C", "D"}
+    labels = {"A", "B", "C", "D"} if option_labels is None else option_labels
     if not labels:
         return None
     label_class = "".join(sorted(re.escape(label) for label in labels))
     exact = re.fullmatch(rf"\s*[\[(]?([{label_class}])[\])]?[.)]?\s*", text)
     if exact:
         return exact.group(1)
-    matches = set(re.findall(rf"\b([{label_class}])\b", text))
-    return next(iter(matches)) if len(matches) == 1 else None
+    return None
 
 
 def prediction_from_query_events(events: list[dict[str, Any]]) -> str | None:

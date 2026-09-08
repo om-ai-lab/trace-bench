@@ -48,7 +48,7 @@ def test_preflight_freezes_protocol_data_visual_and_adapter_identity(synthetic_r
     assert len(snapshot["config_hash"]) == 64
     assert snapshot["protocol"]["qa_user_content_policy"] == "byte_identical_core_prompt"
     assert snapshot["telemetry_contract"]["schema"] == "osb-evaluation-telemetry-v2"
-    assert snapshot["scoring"]["scorer_version"] == "osb-scoring-v5"
+    assert snapshot["scoring"]["scorer_version"] == "osb-scoring-v6"
     assert len(snapshot["code_identities"]["core"]["sha256"]) == 64
     assert snapshot["execution_track"]["proactive_track"] == "not_applicable"
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import time
+from functools import wraps
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -42,11 +43,60 @@ from .scoring import (
 
 def _video_path(record_path: str, video_root: str | None) -> Path:
     candidate = Path(record_path)
-    if candidate.is_absolute() or candidate.is_file():
+    if candidate.is_absolute():
         return candidate
     if video_root:
         return Path(video_root) / record_path
     return candidate
+
+
+class _SessionGuard:
+    def __init__(self, session: AdapterSession):
+        self.session = session
+        self.close_attempted = False
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.session, name)
+
+    def close(self) -> list[ModelEvent]:
+        self.close_attempted = True
+        return self.session.close()
+
+
+def _preserve_record_failure(function: Callable) -> Callable:
+    """Close a partially executed session and retain its observed work."""
+    @wraps(function)
+    def execute(record, video_path, config, adapter, *args):
+        events: list[ModelEvent] = []
+        sessions: list[_SessionGuard] = []
+        try:
+            return function(record, video_path, config, adapter, *args,
+                            _events=events, _sessions=sessions)
+        except BaseException as exc:
+            for session in sessions:
+                if session.close_attempted:
+                    continue
+                try:
+                    closing = session.close()
+                    for event in closing:
+                        event.telemetry["eligible_for_scoring"] = False
+                        event.telemetry["suppression_reason"] = "failed_record_cleanup"
+                    events.extend(closing)
+                except Exception as close_error:
+                    events.append(ModelEvent(
+                        kind=EventKind.FAILURE, logical_time_s=0, status="failed",
+                        failed_reason=str(close_error),
+                        telemetry={"failure_stage": "session_cleanup"},
+                    ))
+            if isinstance(exc, FatalEvaluationError) or not isinstance(
+                exc, (MediaError, ValueError, OSError, RuntimeError)
+            ):
+                raise
+            result, failure_events = _failure_result(record, config.task, exc)
+            preserved = [_event_payload(record.record_id, event) for event in events]
+            result["events"] = preserved + failure_events
+            return result, preserved + failure_events
+    return execute
 
 
 def _sha256_text(value: str) -> str:
@@ -393,19 +443,24 @@ def _iterate_observations(
     return clock
 
 
+@_preserve_record_failure
 def _qa_record(
     record: QARecord,
     video_path: Path,
     config: RunConfig,
     adapter: Adapter,
+    *,
+    _events: list[ModelEvent],
+    _sessions: list[_SessionGuard],
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     start_s = max(0.0, record.evidence_anchor_s - config.qa_window_s)
     end_s = record.question_time_s
     timestamps = timestamp_plan(start_s, end_s, config.stream_fps)
     sampled = sample_video(video_path, timestamps, max_width=config.max_width)
-    session = adapter.open(_context(record, TaskName.QA, video_path, start_s, end_s, config))
+    session = _SessionGuard(adapter.open(_context(record, TaskName.QA, video_path, start_s, end_s, config)))
+    _sessions.append(session)
     qa_user_content = build_qa_prompt(record.question, record.options)
-    events: list[ModelEvent] = []
+    events = _events
     observation_events: dict[str, ModelEvent] = {}
     query_injected = False
     query_dispatch_count = 0
@@ -430,7 +485,7 @@ def _qa_record(
             semantic_query_arrival_ns is None
             and observation.timestamp_s >= record.question_time_s - 1e-9
         ):
-            semantic_query_arrival_ns = time.perf_counter_ns()
+            semantic_query_arrival_ns = scheduled if scheduled is not None else time.perf_counter_ns()
         if (
             qa_query_timing == "before_observation_deferred"
             and not query_injected
@@ -563,12 +618,16 @@ def _qa_record(
     return output, [_event_payload(record.record_id, event) for event in events]
 
 
+@_preserve_record_failure
 def _proactive_record(
     record: ProactiveRecord,
     video_path: Path,
     config: RunConfig,
     adapter: Adapter,
     capabilities: AdapterCapabilities,
+    *,
+    _events: list[ModelEvent],
+    _sessions: list[_SessionGuard],
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     start_s = max(0.0, record.instruction_time_s - config.proactive_history_window_s)
     try:
@@ -596,8 +655,9 @@ def _proactive_record(
     )
     timestamps = timestamp_plan(start_s, end_s, config.stream_fps)
     sampled = sample_video(video_path, timestamps, max_width=config.max_width)
-    session = adapter.open(_context(record, TaskName.PROACTIVE, video_path, start_s, end_s, config))
-    events: list[ModelEvent] = []
+    session = _SessionGuard(adapter.open(_context(record, TaskName.PROACTIVE, video_path, start_s, end_s, config)))
+    _sessions.append(session)
+    events = _events
     observation_events: dict[str, ModelEvent] = {}
     # Autonomous adapters receive the instruction through RecordContext and
     # decide when to emit responses from observations.  Injecting the
@@ -1032,6 +1092,11 @@ def run(config: RunConfig) -> Path:
     raw_records = [
         record_by_id[record.record_id] for record in records if record.record_id in record_by_id
     ]
+    # Inference is finished and checkpointed. Release model resources before
+    # scoring, which may fail independently (for example a judge/parser error).
+    close_adapter = getattr(adapter, "close", None)
+    if callable(close_adapter):
+        close_adapter()
     metrics = score_records(
         config.task.value,
         list(raw_records),
@@ -1050,19 +1115,14 @@ def run(config: RunConfig) -> Path:
         provisional=release.manifest.status != "public",
     )
     metrics["official_eligibility"] = official_eligibility
-    try:
-        bundle.write(
-            resolved_config=resolved,
-            records=scored_records,
-            events=raw_events,
-            metrics=metrics,
-            synthetic=config.synthetic,
-            provisional=release.manifest.status != "public",
-            official_eligibility=official_eligibility,
-        )
-        bundle.discard_checkpoints()
-    finally:
-        close_adapter = getattr(adapter, "close", None)
-        if callable(close_adapter):
-            close_adapter()
+    bundle.write(
+        resolved_config=resolved,
+        records=scored_records,
+        events=raw_events,
+        metrics=metrics,
+        synthetic=config.synthetic,
+        provisional=release.manifest.status != "public",
+        official_eligibility=official_eligibility,
+    )
+    bundle.discard_checkpoints()
     return output_dir

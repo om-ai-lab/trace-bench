@@ -166,7 +166,7 @@ class ThinkStreamAdapter:
             "protocol": {
                 "contract": "osb-contract-v4",
                 "telemetry": "osb-evaluation-telemetry-v2",
-                "scorer": "osb-scoring-v5",
+                "scorer": "osb-scoring-v6",
                 "proactive_track": "native_streaming_autonomous_wall_clock",
             },
             "model": {"identity": self.model_id, "model_type": self.model_type},
@@ -1013,10 +1013,9 @@ class ThinkStreamSession:
         self.active_query_telemetry = self.pending_query
         return []
 
-    def close(self) -> list[ModelEvent]:
+    def flush(self) -> list[ModelEvent]:
         if self.closed:
             return []
-        self.closed = True
         events: list[ModelEvent] = []
         if not self.pending:
             return self._flush_pending_response(is_final=True)
@@ -1033,3 +1032,11 @@ class ThinkStreamSession:
         events.extend(self._normalize_proactive_event(event))
         events.extend(self._flush_pending_response(is_final=True))
         return events
+
+    def close(self) -> list[ModelEvent]:
+        if self.closed:
+            return []
+        try:
+            return self.flush()
+        finally:
+            self.closed = True

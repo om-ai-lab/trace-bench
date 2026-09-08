@@ -73,7 +73,7 @@ def test_response_assembly_excludes_suppressed_prefill_and_shutdown_drain():
 
 
 def test_choice_normalization_preserves_raw_contract():
-    assert extract_choice("<think>reason</think>\nThe answer is B") == "B"
+    assert extract_choice("<think>reason</think>\nThe answer is B") is None
     result = score_qa([{"record_id": "1", "answer": "B", "prediction": "B"}])
     assert result["accuracy"] == 1.0
     assert result["scored_records"][0]["prediction"] == "B"

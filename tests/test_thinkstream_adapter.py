@@ -136,6 +136,19 @@ def test_parse_thinkstream_control_tokens():
     assert parse_thinkstream_output("<think>x</think><response>A<|im_end|>") == ("response", "A", "x")
 
 
+def test_flush_runs_pending_chunk_before_close():
+    engine = _Engine()
+    session = _adapter(engine).open(_context())
+    session.observe(Observation(timestamp_s=0.0, frame_index=0,
+                                rgb=np.zeros((2, 3, 3), dtype=np.uint8)))
+    assert engine.generate_count == 0
+    session.flush()
+    assert engine.generate_count == 1
+    assert not session.closed
+    session.close()
+    assert engine.generate_count == 1
+
+
 def test_adapter_is_lazy_and_declares_native_capability():
     adapter = ThinkStreamAdapter(model_id="/checkpoint")
     assert adapter._runtime is None
@@ -143,7 +156,7 @@ def test_adapter_is_lazy_and_declares_native_capability():
     assert adapter.metadata["generation"]["max_len"] == 24576
     assert adapter.metadata["upstream"]["osb_alignment"]["max_len_matches_official_default"] is True
     assert adapter.metadata["protocol"]["contract"] == "osb-contract-v4"
-    assert adapter.metadata["protocol"]["scorer"] == "osb-scoring-v5"
+    assert adapter.metadata["protocol"]["scorer"] == "osb-scoring-v6"
     assert adapter.capabilities.state_lifetime == "persistent"
     assert adapter.capabilities.response_mode == "autonomous"
 

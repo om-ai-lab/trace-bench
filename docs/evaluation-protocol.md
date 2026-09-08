@@ -108,12 +108,20 @@ not alter any character in the content itself.
 
 ### Output and scoring
 
-The preferred output is one label from the record's actual option set. Native
-punctuation or wrappers such as `B.` or `: C` may be normalized by the adapter
-or scorer. The raw text remains in the Run Bundle. An output that cannot be
-reliably and uniquely mapped to one option is invalid and scores zero under the
-versioned QA policy. Ambiguous text such as `A or B` is never resolved by taking
-the first label.
+Scorer v6 requires one label from the record's actual option set after the
+existing formatting normalization (for example `B.` or `: C`). Option-plus-text,
+answer phrases and incidental letters in prose are invalid; the scorer never
+searches a sentence for an option. This fix preserves prior single-label wrapper
+and reasoning-block normalization rather than introducing a stricter format
+policy. Adapters must not extract a label from noncompliant answer text. Raw
+provider output and answer text remain unchanged in the Run Bundle. A literal
+letter-only sensitivity analysis must be named separately from this score.
+
+Proactive response assembly v2 permits a still-open delta/snapshot episode that
+started in time to finish during the adapter's bounded drain. A late new answer,
+a closed/reused response ID, suppressed prefill, or a model call newly started
+during shutdown cannot receive this exception. Complete events always represent
+independent answers; streaming adapters close a delta/snapshot with `is_final`.
 
 QA primary quality is exact choice accuracy. Formatting compliance and failure
 rate are reported separately when available.

@@ -573,7 +573,7 @@ class LiveCCAdapter:
             "protocol": {
                 "contract": "osb-contract-v4",
                 "telemetry": "osb-evaluation-telemetry-v2",
-                "scorer": "osb-scoring-v5",
+                "scorer": "osb-scoring-v6",
                 "preflight": "osb-preflight-v4",
                 "proactive_track": (
                     "native_streaming_autonomous_wall_clock"

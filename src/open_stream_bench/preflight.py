@@ -53,6 +53,11 @@ def _code_identities() -> dict[str, Any]:
         "preflight": package_root / "preflight.py",
         "prompts": package_root / "prompts.py",
         "scoring": package_root / "scoring.py",
+        "sampling": package_root / "sampling.py",
+        "data": package_root / "data.py",
+        "config": package_root / "config.py",
+        "adapters": package_root / "adapters.py",
+        "bundle": package_root / "bundle.py",
         "evaluation_protocol": repository_root / "docs" / "evaluation-protocol.md",
     }
     return {

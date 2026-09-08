@@ -149,7 +149,7 @@ class RunConfig(BaseModel):
     judge_timeout_s: float = Field(default=60.0, gt=0)
     judge_temperature: float = Field(default=0.0, ge=0)
     semantic_task_types: list[str] = Field(default_factory=lambda: ["SSR", "CRR"])
-    scorer_version: str = "osb-scoring-v5"
+    scorer_version: str = "osb-scoring-v6"
 
 
 class QueryRequest(BaseModel):

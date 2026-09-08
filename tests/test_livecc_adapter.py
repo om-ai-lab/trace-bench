@@ -167,7 +167,7 @@ def test_adapter_is_lazy_and_declares_rgb_native_capability():
     assert adapter.metadata["protocol"] == {
         "contract": "osb-contract-v4",
         "telemetry": "osb-evaluation-telemetry-v2",
-        "scorer": "osb-scoring-v5",
+        "scorer": "osb-scoring-v6",
         "preflight": "osb-preflight-v4",
         "proactive_track": "native_streaming_autonomous_logical_diagnostic",
     }

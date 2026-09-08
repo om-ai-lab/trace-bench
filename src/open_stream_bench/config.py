@@ -36,7 +36,7 @@ DEFAULT_PRESET = {
     "judge_timeout_s": 60.0,
     "judge_temperature": 0.0,
     "semantic_task_types": ["SSR", "CRR"],
-    "scorer_version": "osb-scoring-v5",
+    "scorer_version": "osb-scoring-v6",
 }
 
 

@@ -10,6 +10,8 @@ dist/
 build/
 runs/
 /runs
+# Historical local annotations are retained for reproduction, not publication.
+/data/releases/v1.0.0/
 tmp/
 data/videos/
 data/source_videos/
