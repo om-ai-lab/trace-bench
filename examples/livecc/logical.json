@@ -1,0 +1,5 @@
+{
+  "pacing": "logical",
+  "qa_max_new_tokens": 16,
+  "gpu_monitor_interval_ms": 100.0
+}

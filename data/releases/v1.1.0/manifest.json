@@ -1,0 +1,69 @@
+{
+  "counts": {
+    "proactive": 415,
+    "qa": 833
+  },
+  "files": {
+    "changes.jsonl": "5be34f49762eeb23f433eb19f821c842f20427cb1402f4da60de56c223d17568",
+    "exclusions.jsonl": "f5bfed76422c7b6bd925e07451bca9f0a7dbabd3b7be322fbaeab668fa40b316",
+    "high_frequency_proactive_ids.json": "29332f98e5dc14442e23aa5c242d910cd7d6bd0f47fbf5631ada5bcbddd4e4b5",
+    "proactive.jsonl": "d06328d7e506594eca3fdb30248338751284f059eed9c75bdfc1c522c53e2837",
+    "proactive_high_frequency.jsonl": "4de942e70cc8d58ec6af1f1a142de40b36bb271f32bbf9a3e1e064e021659598",
+    "proactive_standard.jsonl": "cbfa22508dfbdb252f8f44bd4fa2b2f5993f541e05f953187a60a0aad277a3e0",
+    "proactive_subsets.json": "f555d3a8e471b8a94b845c81a64b87b55584d946aa08fecc22b5f54c2ceb9437",
+    "qa.jsonl": "fa9c0c10b73904164efe73964e6bf3fcc017a81b837086be22651641acea3bcc",
+    "review_summary.json": "b713eb5504817e747ce93458dec3ec423c174c31e082dab8ea1ead36b36b4e20",
+    "standard_proactive_ids.json": "ec8c01b16fad6f179733a040803bd15702050dc639859f205236ee8cc42ddf85",
+    "tiny_proactive_ids.json": "134fa54ed72d0c8c022a36243502a027bfed738022d083ea1b4ecdefb0c6c9e7",
+    "tiny_qa_ids.json": "718bb54d0106451294c4cc2e48e7590e8046649d6f8312f122463ad68b234092",
+    "validation_report.json": "ea000cb0618f31540d0c8ac3136a85dd8e5b607be1f2aa4fb5f078fe98c7e5a7"
+  },
+  "limitations": [
+    "723 records passed model-assisted no-issue screening but were not individually human-reviewed.",
+    "Source videos are not redistributed and remain subject to their original licenses.",
+    "Results produced with v0.0.0 annotations are not comparable release results and must be rerun.",
+    "Proactive records are additionally split in proactive_subsets.json by whether any response window is at or below one second; the full proactive.jsonl remains canonical."
+  ],
+  "proactive_file": "proactive.jsonl",
+  "qa_file": "qa.jsonl",
+  "release_id": "v1.1.0",
+  "schema_version": "osb-canonical-v0",
+  "source_files": [
+    {
+      "path": "vlx_eval/data/streambench_qa.json",
+      "sha256": "44ea02bb367a2258f943b838b9d7dc16dc115fd11ad5b3a03867c2d408d6f8cd"
+    },
+    {
+      "path": "vlx_eval/data/ovo_bench_qa.json",
+      "sha256": "bd86230e14355dcde42f2426458ecda782788bedd72840b8e66a5dc60185676c"
+    },
+    {
+      "path": "vlx_eval/data/streambench_proactive.json",
+      "sha256": "945e14157651d7669e0d05525ea854c5c569116f2db77f3160bed68d99bec037"
+    },
+    {
+      "path": "vlx_eval/data/ovo_bench_proactive.json",
+      "sha256": "bef52e18eae5246167736ffeda6815786dd051500f9257f6c53b826d505c608b"
+    },
+    {
+      "path": "vlx_eval/review/benchmark_audit/review_queue.jsonl",
+      "sha256": "81b818c3cbd23956d8e0829cd9f9673d1791176ccb7d055ffe761af6083e3cb4"
+    },
+    {
+      "path": "vlx_eval/review/benchmark_human_review/human_reviews.jsonl",
+      "sha256": "a78f38261b7e4fa3721263ed9fccc462ee3a75da1c0959891d5ec60eb6a26554"
+    },
+    {
+      "path": "vlx_eval/review/benchmark_audit/manifest.json",
+      "sha256": "455942a831132fac6364ed737ece5e385a30341c4570895d00cee23cccae0c1f"
+    },
+    {
+      "path": "StreamingBench/src/data/questions_proactive.json",
+      "sha256": "e17db411762c643afa70c17895871bf3e9d20b2119890889034ee31fb96a590d"
+    }
+  ],
+  "status": "public",
+  "tiny_proactive_ids_file": "tiny_proactive_ids.json",
+  "tiny_qa_ids_file": "tiny_qa_ids.json",
+  "video_root_notes": "Map recorded relative paths against user-prepared StreamingBench and OVO-Bench video roots; source videos are not bundled."
+}

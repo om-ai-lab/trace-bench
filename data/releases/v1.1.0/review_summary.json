@@ -1,0 +1,38 @@
+{
+  "duplicate_policy": "keep_smaller_stable_id_remove_larger_stable_id",
+  "duplicate_upper_id_removals": 25,
+  "excluded_record_count": 52,
+  "included_by_dataset_mode": {
+    "ovo_bench:proactive": 171,
+    "ovo_bench:qa": 304,
+    "streambench:proactive": 244,
+    "streambench:qa": 529
+  },
+  "included_by_task_type": {
+    "ASI": 100,
+    "Anomaly Context Understanding": 186,
+    "CRR": 48,
+    "Causal Reasoning": 99,
+    "Clips Summarize": 244,
+    "EPM": 144,
+    "HLD": 60,
+    "REC": 82,
+    "SSR": 41,
+    "stream bench proactive": 244
+  },
+  "included_record_count": 1248,
+  "pending_machine_screened_count": 723,
+  "release_id": "v1.1.0",
+  "review_dispositions": {
+    "edit": 328,
+    "remove": 52,
+    "valid": 197
+  },
+  "saved_review_count": 577,
+  "source_record_count": 1300,
+  "unresolved_saved_reviews": 0,
+  "validation_tiers": {
+    "human_reviewed": 525,
+    "machine_screened": 723
+  }
+}

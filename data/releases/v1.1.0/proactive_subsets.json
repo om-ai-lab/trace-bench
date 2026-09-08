@@ -1,0 +1,45 @@
+{
+  "checks": {
+    "full_records_preserved": true,
+    "record_ids_disjoint": true,
+    "record_ids_union_equals_source": true,
+    "record_order_sorted_by_record_id": true
+  },
+  "criterion": {
+    "inclusive": true,
+    "name": "any_response_window_duration_le_1s",
+    "reason": "Short windows can be invisible to the official 1 FPS sampler; keep the full record together for cumulative-answer semantics.",
+    "scope": "record",
+    "threshold_s": 1.0,
+    "window_duration": "end_s - start_s"
+  },
+  "hashes": {
+    "high_frequency_ids_file": "29332f98e5dc14442e23aa5c242d910cd7d6bd0f47fbf5631ada5bcbddd4e4b5",
+    "high_frequency_record_file": "4de942e70cc8d58ec6af1f1a142de40b36bb271f32bbf9a3e1e064e021659598",
+    "source_file": "d06328d7e506594eca3fdb30248338751284f059eed9c75bdfc1c522c53e2837",
+    "standard_ids_file": "ec8c01b16fad6f179733a040803bd15702050dc639859f205236ee8cc42ddf85",
+    "standard_record_file": "cbfa22508dfbdb252f8f44bd4fa2b2f5993f541e05f953187a60a0aad277a3e0"
+  },
+  "schema_version": "osb-proactive-subsets-v1",
+  "source": {
+    "record_count": 415,
+    "window_count": 1338
+  },
+  "source_file": "proactive.jsonl",
+  "subsets": {
+    "high_frequency": {
+      "ids_file": "high_frequency_proactive_ids.json",
+      "qualifying_window_count": 25,
+      "record_count": 8,
+      "record_file": "proactive_high_frequency.jsonl",
+      "window_count": 68
+    },
+    "standard": {
+      "ids_file": "standard_proactive_ids.json",
+      "qualifying_window_count": 0,
+      "record_count": 407,
+      "record_file": "proactive_standard.jsonl",
+      "window_count": 1270
+    }
+  }
+}

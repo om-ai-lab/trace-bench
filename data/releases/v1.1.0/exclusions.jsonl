@@ -1,0 +1,52 @@
+{"dataset":"ovo_bench","mode":"proactive","reason_codes":["TEXT_FORMAT_ERROR"],"record_id":"ovo_bench_proactive:1523","stable_id":"ovo_bench:proactive:1523","task_type":"SSR"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:141","stable_id":"ovo_bench:qa:141","task_type":"EPM"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:160","stable_id":"ovo_bench:qa:160","task_type":"EPM"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["OTHER","TIME_ANNOTATION_ERROR"],"record_id":"ovo_bench_qa:161","stable_id":"ovo_bench:qa:161","task_type":"EPM"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:23","stable_id":"ovo_bench:qa:23","task_type":"EPM"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:300","stable_id":"ovo_bench:qa:300","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:309","stable_id":"ovo_bench:qa:309","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:310","stable_id":"ovo_bench:qa:310","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["AMBIGUOUS_TEMPORAL_REFERENCE","MULTIPLE_OR_NO_VALID_ANSWER","MULTIPLE_VALID_ANSWERS","UPSTREAM_GT_MISMATCH"],"record_id":"ovo_bench_qa:312","stable_id":"ovo_bench:qa:312","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:356","stable_id":"ovo_bench:qa:356","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:379","stable_id":"ovo_bench:qa:379","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:382","stable_id":"ovo_bench:qa:382","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:409","stable_id":"ovo_bench:qa:409","task_type":"HLD"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:44","stable_id":"ovo_bench:qa:44","task_type":"EPM"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:521","stable_id":"ovo_bench:qa:521","task_type":"ASI"}
+{"dataset":"ovo_bench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"ovo_bench_qa:74","stable_id":"ovo_bench:qa:74","task_type":"EPM"}
+{"dataset":"streambench","mode":"proactive","reason_codes":["TEXT_FORMAT_ERROR"],"record_id":"streambench_proactive:219","stable_id":"streambench:proactive:219","task_type":"stream bench proactive"}
+{"dataset":"streambench","mode":"proactive","reason_codes":["TEXT_FORMAT_ERROR"],"record_id":"streambench_proactive:56","stable_id":"streambench:proactive:56","task_type":"stream bench proactive"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:115","stable_id":"streambench:qa:115","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:116","stable_id":"streambench:qa:116","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:117","stable_id":"streambench:qa:117","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:118","stable_id":"streambench:qa:118","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD","OTHER","TIME_ANNOTATION_ERROR"],"record_id":"streambench_qa:119","stable_id":"streambench:qa:119","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:120","stable_id":"streambench:qa:120","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD","MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"streambench_qa:121","stable_id":"streambench:qa:121","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD","NON_VISUAL_DEPENDENCY"],"record_id":"streambench_qa:122","stable_id":"streambench:qa:122","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:123","stable_id":"streambench:qa:123","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:124","stable_id":"streambench:qa:124","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:125","stable_id":"streambench:qa:125","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:126","stable_id":"streambench:qa:126","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:127","stable_id":"streambench:qa:127","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:128","stable_id":"streambench:qa:128","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:129","stable_id":"streambench:qa:129","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:130","stable_id":"streambench:qa:130","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:131","stable_id":"streambench:qa:131","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:132","stable_id":"streambench:qa:132","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:133","stable_id":"streambench:qa:133","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:134","stable_id":"streambench:qa:134","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:135","stable_id":"streambench:qa:135","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD","OTHER","TIME_ANNOTATION_ERROR"],"record_id":"streambench_qa:136","stable_id":"streambench:qa:136","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:137","stable_id":"streambench:qa:137","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:138","stable_id":"streambench:qa:138","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["DUPLICATE_RECORD"],"record_id":"streambench_qa:139","stable_id":"streambench:qa:139","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"streambench_qa:169","stable_id":"streambench:qa:169","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"streambench_qa:21","stable_id":"streambench:qa:21","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"streambench_qa:24","stable_id":"streambench:qa:24","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"streambench_qa:25","stable_id":"streambench:qa:25","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["FUTURE_LEAKAGE"],"record_id":"streambench_qa:351","stable_id":"streambench:qa:351","task_type":"Clips Summarize"}
+{"dataset":"streambench","mode":"qa","reason_codes":["FUTURE_LEAKAGE"],"record_id":"streambench_qa:361","stable_id":"streambench:qa:361","task_type":"Causal Reasoning"}
+{"dataset":"streambench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"streambench_qa:399","stable_id":"streambench:qa:399","task_type":"Clips Summarize"}
+{"dataset":"streambench","mode":"qa","reason_codes":["MULTIPLE_OR_NO_VALID_ANSWER"],"record_id":"streambench_qa:96","stable_id":"streambench:qa:96","task_type":"Anomaly Context Understanding"}
+{"dataset":"streambench","mode":"qa","reason_codes":["NON_VISUAL_DEPENDENCY"],"record_id":"streambench_qa:97","stable_id":"streambench:qa:97","task_type":"Anomaly Context Understanding"}

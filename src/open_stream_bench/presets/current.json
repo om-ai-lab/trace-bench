@@ -1,0 +1,21 @@
+{
+  "stream_fps": 1.0,
+  "qa_window_s": 10.0,
+  "proactive_history_window_s": 5.0,
+  "proactive_window_s": 5.0,
+  "proactive_step_s": 5.0,
+  "max_width": 960,
+  "jpeg_quality": 90,
+  "temperature": 0.2,
+  "pacing": "logical",
+  "checkpoint_every_records": 10,
+  "config_version": "v4",
+  "judge_mode": "auto",
+  "judge_base_url": null,
+  "judge_model": "Qwen3.5-35B-A3B",
+  "judge_api_key_env": "OSB_VLM_JUDGE_API_KEY",
+  "judge_timeout_s": 60.0,
+  "judge_temperature": 0.0,
+  "semantic_task_types": ["SSR", "CRR"],
+  "scorer_version": "osb-scoring-v5"
+}

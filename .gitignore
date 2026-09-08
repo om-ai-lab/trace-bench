@@ -1,0 +1,31 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+runs/
+/runs
+tmp/
+data/videos/
+data/source_videos/
+presets/local*.json
+examples/**/local*.json
+.env
+.env.*
+!.env.example
+# Private migration helper for the retired v0 snapshot; not part of the public
+# repository. Public releases are consumed from data/releases/v1.1.0.
+scripts/build_v0_data.py
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.mp4
+*.mov
+*.mkv
+# Model-specific local adapters and evaluation outputs stay outside releases.

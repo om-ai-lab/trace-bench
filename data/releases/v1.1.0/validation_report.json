@@ -1,0 +1,27 @@
+{
+  "checks": {
+    "all_saved_reviews_completed": true,
+    "all_unreviewed_records_machine_completed_no_issue": true,
+    "answers_match_options": true,
+    "canonical_content_unique": true,
+    "canonical_record_ids_unique": true,
+    "duplicate_upper_ids_removed": true,
+    "media_boundaries_within_last_readable_frame": true,
+    "proactive_instruction_before_trigger": true,
+    "proactive_positive_windows": true,
+    "proactive_windows_non_overlapping": true,
+    "qa_evidence_not_after_question": true,
+    "reviewed_memory_intervals_derived": true,
+    "source_lineage_matches_audit_manifest": true,
+    "streambench_proactive_128_matches_upstream": true
+  },
+  "counts": {
+    "changes": 380,
+    "excluded": 52,
+    "included": 1248,
+    "proactive": 415,
+    "qa": 833
+  },
+  "release_id": "v1.1.0",
+  "status": "passed"
+}
