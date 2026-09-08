@@ -11,6 +11,38 @@ loaded once per adapter process.
 
 ## Environment
 
+Use a separate model environment and follow the
+[upstream installation](https://github.com/showlab/livecc) and
+[inference guide](https://github.com/showlab/livecc/blob/main/inference.md).
+Download [LiveCC-7B-Instruct](https://huggingface.co/chenjoya/LiveCC-7B-Instruct).
+The adapter imports `demo.infer` from that source checkout; weights alone are
+insufficient. Its upstream runtime uses FlashAttention 2 and needs an NVIDIA
+CUDA environment with a compatible compiled FlashAttention installation.
+
+The tested runtime uses Python 3.12, PyTorch 2.8.0+cu126, Transformers 4.57.3,
+FlashAttention 2.8.3, liger-kernel 0.7.0, accelerate 1.12.0, livecc-utils 0.0.2,
+qwen-vl-utils 0.0.11, NumPy 1.26.4 and OpenCV 4.11.0.86. In particular, retain
+`qwen-vl-utils==0.0.11`: newer versions removed a symbol used by livecc-utils.
+FlashAttention wheels must match your PyTorch/CUDA/GLIBC versions; install the
+upstream prerequisites first instead of upgrading a working model environment.
+
+In the prepared model environment, set these paths and install OSB:
+
+```bash
+export LIVECC_ROOT=/path/to/livecc
+export LIVECC_MODEL_PATH=/path/to/LiveCC-7B-Instruct
+export CUDA_VISIBLE_DEVICES=0
+export TOKENIZERS_PARALLELISM=false
+cd /path/to/open_stream_bench
+python -m pip install 'qwen-vl-utils==0.0.11' 'livecc-utils==0.0.2'
+python -m pip install -e .
+python -c "import torch; from livecc_utils import prepare_multiturn_multimodal_inputs_for_generation; assert torch.cuda.is_available()"
+```
+
+Use a free GPU. If this command fails, fix the upstream runtime before running
+OSB. Run the README's logical QA/Proactive tiny commands first. Their exact-only
+scores test execution, not semantic quality or wall-clock timing eligibility.
+
 The maintainer's local handoff used private machine paths that are not part of
 the public contract. Configure equivalent paths for your own environment:
 

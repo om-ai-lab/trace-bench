@@ -22,7 +22,10 @@ QA uses the frozen single-label parser. Proactive supports exact matching and a
 user-operated semantic judge. Configure `OSB_VLM_JUDGE_BASE_URL`,
 `OSB_VLM_JUDGE_MODEL`, and `OSB_VLM_JUDGE_API_KEY` in the environment and run
 `osb score /path/to/results/my-run --judge-mode auto`. Auto routes SSR and CRR
-to the judge when configured; exact fallback is diagnostic. `--judge-mode vlm`
+to the judge when configured; exact fallback is diagnostic. When changing the
+judge used by an existing bundle, explicitly pass
+`--judge-base-url "$OSB_VLM_JUDGE_BASE_URL" --judge-model "$OSB_VLM_JUDGE_MODEL"`:
+saved bundle settings otherwise take precedence during rescoring. `--judge-mode vlm`
 requests semantic judging for all Proactive task types. Freeze the judge route,
 model, prompt and window when comparing models; raw text alone does not measure
 judge correctness. See the [protocol](evaluation-protocol.md) for score populations.

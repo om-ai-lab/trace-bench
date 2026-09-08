@@ -313,6 +313,11 @@ telemetry, incomplete GPU attribution, judge failure, synthetic/provisional
 data, or a non-primary Proactive execution track prevents official publication
 without erasing the diagnostic result.
 
+Eligibility policy `osb-official-eligibility-v2` also rejects explicitly logical
+pacing (`logical_pacing_diagnostic`). Execution-track categories come from
+adapter declarations and must be checked against the actual task-specific model
+implementation; an automated eligibility pass is not conformance certification.
+
 Use `video_time_s` for causal/ground-truth semantics and a monotonic runtime
 clock for measured intervals. Do not subtract values from these clock domains.
 
@@ -337,8 +342,9 @@ for comparison.
 
 Visual-state reporting has two categories:
 
-- `Native Streaming`: persistent per-record state and incremental Core
-  observations;
+- `Native Streaming`: persistent per-record model state, incremental Core
+  observations and actual state reuse; retaining a Python list of frames alone
+  is insufficient;
 - `Non-native Streaming`: prefix/window replay or other reconstruction at each
   query.
 

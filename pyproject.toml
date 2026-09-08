@@ -39,3 +39,7 @@ addopts = "-ra"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint]
+# Freeze the original Ruff baseline instead of inheriting future default rules.
+select = ["E4", "E7", "E9", "F"]

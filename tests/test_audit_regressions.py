@@ -8,6 +8,37 @@ from open_stream_bench.models import ModelEvent, QARecord, RunConfig
 from open_stream_bench.scoring import assemble_response_episodes, extract_choice
 
 
+def test_logical_timing_run_is_diagnostic():
+    from open_stream_bench.scoring import assess_official_eligibility
+
+    result = assess_official_eligibility(
+        "qa", {"execution_track": {"pacing": "logical"}},
+        synthetic=False, provisional=False,
+    )
+    assert result["official_eligible"] is False
+    assert "logical_pacing_diagnostic" in result["reasons"]
+
+
+def test_fatal_run_keeps_original_error_when_cleanup_fails(synthetic_release, monkeypatch):
+    from open_stream_bench.adapters import TestDoubleAdapter as FakeAdapter
+    from open_stream_bench.models import FatalEvaluationError
+
+    class BrokenAdapter(FakeAdapter):
+        def open(self, context):
+            raise FatalEvaluationError("original model initialization failure")
+
+        def close(self):
+            raise RuntimeError("secondary cleanup failure")
+
+    release, root = synthetic_release
+    monkeypatch.setattr(core, "load_adapter", lambda *args: BrokenAdapter())
+    config = RunConfig(release_dir=str(release), task="qa", adapter="test:adapter",
+                       output_dir=str(root / "failed-run"), video_root=str(root),
+                       synthetic=True)
+    with pytest.raises(FatalEvaluationError, match="original model initialization failure"):
+        core.run(config)
+
+
 @pytest.mark.parametrize("text", ["The answer is B", "B. on the desk", "I saw a cat",
                                   "A or B"])
 def test_qa_requires_only_actual_label(text):

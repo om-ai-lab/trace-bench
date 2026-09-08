@@ -5,6 +5,12 @@ derived from StreamingBench and OVO-Bench with reviewed temporal corrections.
 The release contains 833 QA records and 415 Proactive records (1,338 windows).
 Tiny contains 9 QA and 9 Proactive records and is a setup check, not a ranking.
 
+The standard Proactive subset contains 407 records / 1,270 windows; the
+high-frequency sampling-stress subset contains 8 records / 68 windows.
+`--subset full` loads all 415 Proactive records. It does not automatically apply
+the report's standard-subset filter. Data version v1.1.0 is independent of
+Core package 0.0.0 and scorer osb-scoring-v6.
+
 525 included records were human-reviewed; 723 passed model-assisted no-issue
 screening without individual human review. Do not describe all records as
 human-validated. Source-video dependencies and public GT limit claims about

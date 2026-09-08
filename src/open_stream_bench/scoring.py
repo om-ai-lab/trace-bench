@@ -1142,6 +1142,8 @@ def assess_official_eligibility(
     execution = metrics.get("execution_track", {})
     if not isinstance(execution, Mapping):
         execution = {}
+    if execution.get("pacing") == "logical":
+        reasons.append("logical_pacing_diagnostic")
     if task == "proactive" and execution.get("proactive_primary_eligible") is not True:
         reasons.append("proactive_not_native_autonomous_wall_clock")
     if task == "proactive":
@@ -1195,7 +1197,7 @@ def assess_official_eligibility(
     return {
         "official_eligible": not reasons,
         "reasons": sorted(set(reasons)),
-        "policy": "osb-official-eligibility-v1",
+        "policy": "osb-official-eligibility-v2",
     }
 
 

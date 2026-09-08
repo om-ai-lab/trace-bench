@@ -26,6 +26,19 @@ jobs:
         run: python -m open_stream_bench.cli data validate --release data/releases/v1.1.0
       - name: Build wheel
         run: python -m build
+      - name: README end-to-end software flow
+        shell: bash
+        run: |
+          python scripts/make_smoke_fixture.py --output /tmp/osb-smoke
+          osb data validate --release /tmp/osb-smoke/release
+          for task in qa proactive; do
+            osb run --task "$task" --release /tmp/osb-smoke/release --subset tiny \
+              --adapter open_stream_bench.adapters:TestDoubleAdapter \
+              --video-root /tmp/osb-smoke --output "/tmp/osb-smoke/$task" \
+              --synthetic --judge-mode exact --checkpoint-every 5
+            osb bundle validate "/tmp/osb-smoke/$task"
+            osb score "/tmp/osb-smoke/$task" --judge-mode exact
+          done
       - name: Scan for private paths and credentials
         shell: bash
         run: |

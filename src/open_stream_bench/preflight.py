@@ -176,6 +176,8 @@ def build_preflight_snapshot(
             "configuration": config.adapter_config,
         },
         "execution_track": {
+            "pacing": config.pacing,
+            "classification_source": "adapter_declared_capabilities",
             "visual_state": (
                 "Native Streaming"
                 if capabilities.state_lifetime == "persistent"

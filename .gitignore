@@ -31,3 +31,7 @@ scripts/build_v0_data.py
 *.mov
 *.mkv
 # Model-specific local adapters and evaluation outputs stay outside releases.
+# Retain local ThinkStream launch material while deferring its public example.
+/examples/thinkstream/
+/docs/thinkstream-adapter-contract.md
+/scripts/run_thinkstream_v1_full_1fps.sh

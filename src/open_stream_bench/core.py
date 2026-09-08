@@ -1079,12 +1079,20 @@ def run(config: RunConfig) -> Path:
             newly_terminal += 1
             if newly_terminal % config.checkpoint_every_records == 0:
                 checkpoint()
-    except BaseException:
-        if newly_terminal % config.checkpoint_every_records:
-            checkpoint()
+    except BaseException as original_error:
+        try:
+            if newly_terminal % config.checkpoint_every_records:
+                checkpoint()
+        except Exception as checkpoint_error:
+            if hasattr(original_error, "add_note"):
+                original_error.add_note(f"Checkpoint also failed: {checkpoint_error}")
         close_adapter = getattr(adapter, "close", None)
         if callable(close_adapter):
-            close_adapter()
+            try:
+                close_adapter()
+            except Exception as close_error:
+                if hasattr(original_error, "add_note"):
+                    original_error.add_note(f"Adapter cleanup also failed: {close_error}")
         raise
 
     if newly_terminal % config.checkpoint_every_records:

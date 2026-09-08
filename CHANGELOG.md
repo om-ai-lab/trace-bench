@@ -2,6 +2,17 @@
 
 ## Unreleased — public repository preparation
 
+- Add equivalent English/Chinese READMEs and an executable synthetic CLI flow
+  for both tasks, bundle validation and rescoring; CI runs the same flow.
+- Validate LiveCC as the first model walkthrough; defer ThinkStream launch
+  material while preserving local files and existing Python adapter imports.
+- Record declared classification provenance and pacing; eligibility policy v2
+  marks explicitly logical runs diagnostic without changing quality scores.
+- Preserve the original fatal run error when checkpoint or adapter cleanup
+  also fails. Keep source data hashes unchanged.
+- Correct video-root priority and document explicit judge model/URL overrides
+  when rescoring existing bundles.
+
 - Keep only annotation release v1.1.0; master follows latest, version branches
   preserve snapshots. Annotation and audit hashes remain unchanged.
 - Add upstream video setup, adapter tutorial, model configs, dataset card,

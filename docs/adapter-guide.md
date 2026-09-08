@@ -10,10 +10,12 @@ plus a JSON `--adapter-config`. No Core registry edit is needed.
 | Reference | What to study | Setup |
 | --- | --- | --- |
 | [LiveCC](../src/open_stream_bench/livecc_adapter.py) | Persistent KV state, RGB preprocessing, QA and autonomous Proactive, measured GPU workload | [Guide](livecc-adapter.md) |
-| [ThinkStream](../src/open_stream_bench/thinkstream_adapter.py) | Two-frame chunks, deferred QA query, native silence and response fragments | [Guide](thinkstream-adapter-contract.md) |
 | [TestDoubleAdapter](../src/open_stream_bench/adapters.py) | Smallest runnable interface and software tests | `python -m pytest -q tests/test_cli.py tests/test_core.py` |
 
-Start with LiveCC for a real integration; use ThinkStream for chunked generation.
+Start with LiveCC for a real integration. ThinkStream's model walkthrough is
+deferred pending fresh validation after its end-of-evidence flush changes;
+the existing Python import is retained for compatibility, not advertised as
+a release-validated example.
 The test double reads GT deliberately and is strictly synthetic; never copy its
 answer-selection logic into a real adapter. Neither model example's presence
 certifies a run as official: bundle validation checks actual evidence coverage.

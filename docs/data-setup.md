@@ -53,9 +53,9 @@ It should expose both upstream trees, for example:
     ...
 ```
 
-Run from a checkout without a second `videos/` or `src_videos/` tree: Core's
-legacy path resolver prefers a matching file in the working directory before
-using `--video-root`. The checker verifies the explicit root shown here.
+For relative video paths, both Core and the checker prioritize the explicit
+`--video-root`. Without that option, paths are relative to the working directory.
+Absolute paths remain explicit overrides.
 
 Use symlinks to existing downloads instead of making another video copy:
 

@@ -1,29 +1,23 @@
-# Model examples
+# First-release examples
 
-Implementations remain at their stable `open_stream_bench.*_adapter` imports;
-configuration examples live here. Install upstream model dependencies and obtain
-weights from upstream under their own licenses; OSB does not distribute them.
+The first real-model walkthrough is [LiveCC](../docs/livecc-adapter.md).
+Use [logical.json](livecc/logical.json) for the README's quick QA/Proactive
+execution check, or [wall_clock.json](livecc/wall_clock.json) with matching Core
+pacing for timing experiments. Obtain the upstream source, weights and runtime
+separately; OSB contains no model weights.
 
-- [LiveCC upstream](https://github.com/showlab/livecc),
-  [weights](https://huggingface.co/chenjoya/LiveCC-7B-Instruct),
-  [OSB instructions](../docs/livecc-adapter.md).
-- [ThinkStream upstream](https://github.com/CASIA-IVA-Lab/ThinkStream),
-  [weights](https://huggingface.co/CASIA-IVA-Lab/ThinkStream-3B),
-  [response contract](../docs/thinkstream-adapter-contract.md).
+The [test double](../src/open_stream_bench/adapters.py) and
+[synthetic fixture generator](../scripts/make_smoke_fixture.py) exercise the
+complete software pipeline without a model. The test double reads GT on purpose
+and must only be used with `--synthetic`; its scores are never benchmark results.
 
-For ThinkStream, copy `thinkstream/config.json` to an external local file and
-replace the source/weight paths. In the model's environment:
+ThinkStream launch examples are deferred until fresh validation of its corrected
+flush behavior. Its Python adapter import remains for existing users, with CPU
+contract tests, but is not a validated public walkthrough. AURA, JoyAI, MOSS,
+VideoLLM-online and MiniCPM deployments are not shipped as release examples.
+They can still be installed externally through `module:Class`; their presence
+elsewhere is not a certification of their OSB protocol conformance.
 
-```bash
-python -m pip install -e /path/to/open_stream_bench
-osb run --task qa --release data/releases/v1.1.0 --subset tiny \
-  --adapter open_stream_bench.thinkstream_adapter:ThinkStreamAdapter \
-  --adapter-config /path/to/thinkstream-local.json --pacing wall_clock \
-  --video-root /path/to/osb-media --output /path/to/results/thinkstream-qa \
-  --preflight-only
-```
-
-Repeat without `--preflight-only` to infer; use `--task proactive` with a new
-output directory and `--proactive-window-s 5` for Proactive. Run
-`osb bundle validate /path/to/results/thinkstream-qa` afterwards.
-See [scoring](../docs/scoring-and-results.md) before comparing results.
+Even for the retained example, successful execution is distinct from official
+result eligibility. Inspect response behavior, failures, judge coverage and
+telemetry; Native status requires implementation review beyond declarations.
