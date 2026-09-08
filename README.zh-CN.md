@@ -40,15 +40,15 @@ bundle 校验和重新算分。无需 GPU、源数据下载、模型权重或 ju
 测试替身会故意读取 GT，分数必须标为 synthetic，不能作为模型结果。每次换一个新输出目录。
 
 ```bash
-python scripts/make_smoke_fixture.py --output /tmp/osb-smoke
-osb data validate --release /tmp/osb-smoke/release
+python scripts/make_smoke_fixture.py --output output/smoke
+osb data validate --release output/smoke/release
 for task in qa proactive; do
-  osb run --task "$task" --release /tmp/osb-smoke/release --subset tiny \
+  osb run --task "$task" --release output/smoke/release --subset tiny \
     --adapter open_stream_bench.adapters:TestDoubleAdapter \
-    --video-root /tmp/osb-smoke --output "/tmp/osb-smoke/$task" \
+    --video-root output/smoke --output "output/smoke/$task" \
     --synthetic --judge-mode exact --checkpoint-every 5
-  osb bundle validate "/tmp/osb-smoke/$task"
-  osb score "/tmp/osb-smoke/$task" --judge-mode exact
+  osb bundle validate "output/smoke/$task"
+  osb score "output/smoke/$task" --judge-mode exact
 done
 ```
 
