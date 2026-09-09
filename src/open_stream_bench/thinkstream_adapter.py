@@ -1,7 +1,8 @@
 """ThinkStream-3B adapter for the Open Stream Bench Core.
 
-ThinkStream dependencies are imported lazily so the public OSB package remains
-installable without the private ThinkStream environment.
+ThinkStream dependencies are imported lazily, so OSB installs without its model
+runtime. This integration is experimental, not a release-validated walkthrough.
+See docs/thinkstream-adapter.md for setup requirements and validation scope.
 """
 
 from __future__ import annotations

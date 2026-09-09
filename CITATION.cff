@@ -4,5 +4,7 @@ type: software
 title: Open Stream Bench
 authors:
   - name: Open Stream Bench contributors
-version: 0.0.0
+version: 0.1.0
+repository-code: "https://github.com/om-ai-lab/Open-Stream-Bench"
+url: "https://github.com/om-ai-lab/Open-Stream-Bench"
 license: MIT

@@ -34,6 +34,7 @@ def _snapshot(synthetic_release):
 
 def test_preflight_freezes_protocol_data_visual_and_adapter_identity(synthetic_release):
     _, snapshot = _snapshot(synthetic_release)
+    assert snapshot["software_version"] == "0.1.0"
     assert snapshot["protocol"]["identity"] == "osb-incremental-decoded-rgb-v4"
     assert snapshot["protocol"]["contract"] == "osb-contract-v4"
     assert snapshot["protocol"]["core_delivery_chunk_frames"] == 1

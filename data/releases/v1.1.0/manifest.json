@@ -30,31 +30,31 @@
   "schema_version": "osb-canonical-v0",
   "source_files": [
     {
-      "path": "vlx_eval/data/streambench_qa.json",
+      "path": "source-snapshots/streambench_qa.json",
       "sha256": "44ea02bb367a2258f943b838b9d7dc16dc115fd11ad5b3a03867c2d408d6f8cd"
     },
     {
-      "path": "vlx_eval/data/ovo_bench_qa.json",
+      "path": "source-snapshots/ovo_bench_qa.json",
       "sha256": "bd86230e14355dcde42f2426458ecda782788bedd72840b8e66a5dc60185676c"
     },
     {
-      "path": "vlx_eval/data/streambench_proactive.json",
+      "path": "source-snapshots/streambench_proactive.json",
       "sha256": "945e14157651d7669e0d05525ea854c5c569116f2db77f3160bed68d99bec037"
     },
     {
-      "path": "vlx_eval/data/ovo_bench_proactive.json",
+      "path": "source-snapshots/ovo_bench_proactive.json",
       "sha256": "bef52e18eae5246167736ffeda6815786dd051500f9257f6c53b826d505c608b"
     },
     {
-      "path": "vlx_eval/review/benchmark_audit/review_queue.jsonl",
+      "path": "annotation-review/review_queue.jsonl",
       "sha256": "81b818c3cbd23956d8e0829cd9f9673d1791176ccb7d055ffe761af6083e3cb4"
     },
     {
-      "path": "vlx_eval/review/benchmark_human_review/human_reviews.jsonl",
+      "path": "annotation-review/human_reviews.jsonl",
       "sha256": "a78f38261b7e4fa3721263ed9fccc462ee3a75da1c0959891d5ec60eb6a26554"
     },
     {
-      "path": "vlx_eval/review/benchmark_audit/manifest.json",
+      "path": "annotation-review/manifest.json",
       "sha256": "455942a831132fac6364ed737ece5e385a30341c4570895d00cee23cccae0c1f"
     },
     {
@@ -62,7 +62,7 @@
       "sha256": "e17db411762c643afa70c17895871bf3e9d20b2119890889034ee31fb96a590d"
     }
   ],
-  "status": "public",
+  "status": "private_provisional",
   "tiny_proactive_ids_file": "tiny_proactive_ids.json",
   "tiny_qa_ids_file": "tiny_qa_ids.json",
   "video_root_notes": "Map recorded relative paths against user-prepared StreamingBench and OVO-Bench video roots; source videos are not bundled."

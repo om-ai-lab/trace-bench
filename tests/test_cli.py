@@ -1,3 +1,5 @@
+import pytest
+
 from open_stream_bench.cli import build_parser, main
 
 
@@ -55,3 +57,32 @@ def test_cli_preflight_only_does_not_run_inference(synthetic_release, capsys):
     ]) == 0
     assert '"preflight_schema": "osb-preflight-v4"' in capsys.readouterr().out
     assert not output.exists()
+
+
+def test_cli_reports_missing_release_without_traceback(tmp_path, capsys):
+    assert main(["data", "validate", "--release", str(tmp_path / "missing")]) == 1
+    output = capsys.readouterr()
+    assert "release manifest does not exist" in output.err
+    assert "Traceback" not in output.err
+    with pytest.raises(FileNotFoundError):
+        main(["--debug", "data", "validate", "--release", str(tmp_path / "missing")])
+
+
+def test_cli_missing_video_root_fails_before_output(synthetic_release, capsys):
+    release, root = synthetic_release
+    output = root / "must-not-exist"
+    assert main([
+        "run", "--task", "qa", "--release", str(release),
+        "--adapter", "nonexistent:Adapter", "--video-root", str(root / "missing"),
+        "--output", str(output),
+    ]) == 1
+    assert "video root is not a directory" in capsys.readouterr().err
+    assert not output.exists()
+
+
+def test_cli_does_not_hide_unexpected_errors(monkeypatch):
+    def broken(*args):
+        raise RuntimeError("unexpected bug")
+    monkeypatch.setattr("open_stream_bench.cli.validate_release", broken)
+    with pytest.raises(RuntimeError, match="unexpected bug"):
+        main(["data", "validate", "--release", "unused"])

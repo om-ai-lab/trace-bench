@@ -10,6 +10,7 @@ from typing import Any
 
 import cv2
 
+from . import __version__
 from .adapters import Adapter
 from .config import CORE_STREAM_FPS, stable_hash
 from .data import Release, validate_release
@@ -88,6 +89,7 @@ def build_preflight_snapshot(
 
     snapshot: dict[str, Any] = {
         "preflight_schema": PREFLIGHT_SCHEMA,
+        "software_version": __version__,
         "protocol": {
             "identity": PROTOCOL_IDENTITY,
             "contract": CONTRACT_VERSION,

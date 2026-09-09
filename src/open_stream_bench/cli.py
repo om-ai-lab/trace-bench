@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
+from . import __version__
 from .adapters import load_adapter, validate_adapter
 from .bundle import RunBundle
 from .config import resolve_config
@@ -103,6 +105,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="osb", description="Open Stream Bench local evaluation Core"
     )
+    parser.add_argument("--debug", action="store_true", help="show full error tracebacks")
+    parser.add_argument("--version", action="version", version=f"osb {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     data_parser = subparsers.add_parser("data", help="data release commands")
@@ -126,6 +130,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    try:
+        return _execute(args)
+    except (OSError, ValueError) as exc:
+        if args.debug:
+            raise
+        message = " ".join(str(exc).splitlines())
+        print(f"osb: error: {message}", file=sys.stderr)
+        return 1
+
+
+def _execute(args: argparse.Namespace) -> int:
     if args.command == "data":
         _json(validate_release(args.release))
         return 0
@@ -196,6 +211,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     adapter_config = {}
+    if args.video_root is not None and not Path(args.video_root).is_dir():
+        raise ValueError(f"video root is not a directory: {args.video_root}")
     if args.adapter_config:
         with args.adapter_config.open("r", encoding="utf-8") as handle:
             adapter_config = json.load(handle)

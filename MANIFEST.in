@@ -2,6 +2,10 @@ include README.md README.zh-CN.md CHANGELOG.md LICENSE DATA_TERMS.md THIRD_PARTY
 recursive-include docs *.md
 recursive-include examples *.md *.json
 recursive-include scripts *.py *.sh
+recursive-include tests *.py
+include SECURITY.md CODE_OF_CONDUCT.md
+include *.zh-CN.md
+global-exclude *.py[cod]
 recursive-include data/releases/v1.1.0 *.json *.jsonl
 prune examples/thinkstream
 exclude docs/thinkstream-adapter-contract.md

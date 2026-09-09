@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "open-stream-bench"
-version = "0.0.0"
+version = "0.1.0"
 description = "Local, reproducible evaluation Core for Open Stream Bench."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,6 +22,11 @@ dev = [
   "build>=1.0",
   "ruff>=0.9",
 ]
+
+[project.urls]
+Repository = "https://github.com/om-ai-lab/Open-Stream-Bench"
+Documentation = "https://github.com/om-ai-lab/Open-Stream-Bench#readme"
+Issues = "https://github.com/om-ai-lab/Open-Stream-Bench/issues"
 
 [project.scripts]
 osb = "open_stream_bench.cli:main"

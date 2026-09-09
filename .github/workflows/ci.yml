@@ -19,30 +19,33 @@ jobs:
       - name: Install development dependencies
         run: python -m pip install -e ".[dev]"
       - name: Run tests
-        run: python -m pytest -p no:cacheprovider -q
+        run: |
+          mkdir -p output
+          python -m pytest -p no:cacheprovider -q --basetemp=output/pytest
       - name: Lint
         run: ruff check .
       - name: Validate public release
         run: python -m open_stream_bench.cli data validate --release data/releases/v1.1.0
-      - name: Build wheel
-        run: python -m build
+      - name: Build and test distributions
+        run: |
+          python -m build --outdir output/dist
+          python scripts/check_distribution.py --dist output/dist --output output/distribution-check
+      - name: Check bilingual documentation
+        run: python scripts/check_docs.py
       - name: README end-to-end software flow
         shell: bash
         run: |
-          python scripts/make_smoke_fixture.py --output /tmp/osb-smoke
-          osb data validate --release /tmp/osb-smoke/release
+          set -euo pipefail
+          python scripts/make_smoke_fixture.py --output output/smoke
+          osb data validate --release output/smoke/release
           for task in qa proactive; do
-            osb run --task "$task" --release /tmp/osb-smoke/release --subset tiny \
+            osb run --task "$task" --release output/smoke/release --subset tiny \
               --adapter open_stream_bench.adapters:TestDoubleAdapter \
-              --video-root /tmp/osb-smoke --output "/tmp/osb-smoke/$task" \
-              --synthetic --judge-mode exact --checkpoint-every 5
-            osb bundle validate "/tmp/osb-smoke/$task"
-            osb score "/tmp/osb-smoke/$task" --judge-mode exact
+              --video-root output/smoke --output "output/smoke/$task" \
+              --synthetic --judge-mode exact --checkpoint-every 5 --proactive-step-s 1
+            osb bundle validate "output/smoke/$task"
+            osb score "output/smoke/$task" --judge-mode exact
           done
+          python scripts/check_smoke_results.py --output output/smoke
       - name: Scan for private paths and credentials
-        shell: bash
-        run: |
-          ! rg -n --hidden '10\.[0-9]+\.[0-9]+\.[0-9]+|/data[0-9]+|/training|/vsan|BEGIN (RSA|OPENSSH) PRIVATE KEY|sk-[A-Za-z0-9]{20,}' \
-            --glob '!.git/**' \
-            --glob '!.github/workflows/ci.yml' \
-            --glob '!src/open_stream_bench.egg-info/**' .
+        run: python scripts/check_public_files.py

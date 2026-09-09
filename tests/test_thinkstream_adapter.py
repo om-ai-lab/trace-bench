@@ -17,6 +17,13 @@ from open_stream_bench.thinkstream_adapter import ThinkStreamAdapter, parse_thin
 torch = pytest.importorskip("torch")
 
 
+@pytest.fixture(autouse=True)
+def fake_runtime_has_no_cuda(monkeypatch):
+    # These engines use CPU tensors. Host GPU availability must not change
+    # their resource-coverage assertions or initialize the real CUDA runtime.
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+
+
 class _Inputs(dict):
     def to(self, _device):
         return self

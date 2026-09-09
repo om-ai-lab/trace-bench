@@ -15,7 +15,7 @@ LIVECC_ROOT="${LIVECC_ROOT:?Set LIVECC_ROOT to a local LiveCC checkout}"
 LIVECC_MODEL_PATH="${LIVECC_MODEL_PATH:?Set LIVECC_MODEL_PATH to local LiveCC weights}"
 ADAPTER="${ADAPTER:-open_stream_bench.livecc_adapter:LiveCCAdapter}"
 ADAPTER_CONFIG="${ADAPTER_CONFIG:-}"
-OUTPUT_ROOT="${OUTPUT_ROOT:-$ROOT/runs/livecc-v1.1-full}"
+OUTPUT_ROOT="${OUTPUT_ROOT:-$ROOT/output/livecc-full}"
 PACING="${PACING:-wall_clock}"
 PROACTIVE_WINDOW_S="${PROACTIVE_WINDOW_S:-5}"
 if [[ -z "$ADAPTER_CONFIG" ]]; then
