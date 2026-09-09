@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 
 def main() -> int:
-    paths = subprocess.check_output([
-        "git", "ls-files", "-z", "--cached", "--others", "--exclude-standard",
-    ]).decode().split("\0")
+    try:
+        paths = subprocess.check_output([
+            "git", "ls-files", "-z", "--cached", "--others", "--exclude-standard",
+        ], stderr=subprocess.PIPE).decode().split("\0")
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        print("error: this check requires Git and a Git checkout (git ls-files); "
+              "run it from the repository root", file=sys.stderr)
+        return 1
     pattern = re.compile(
         rb"10\.[0-9]+\.[0-9]+\.[0-9]+|/data[0-9]+|/training|/vsan|vlx_eval/|"
         rb"BEGIN (RSA|OPENSSH) PRIVATE KEY|sk-[A-Za-z0-9]{20,}"

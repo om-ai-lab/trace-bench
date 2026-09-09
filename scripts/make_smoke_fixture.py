@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import cv2
@@ -24,7 +25,7 @@ def create_fixture(root: Path) -> None:
     if not writer.isOpened():
         raise RuntimeError("OpenCV MJPG encoder unavailable")
     try:
-        for index in range(40):
+        for index in range(120):
             frame = np.zeros((48, 64, 3), dtype=np.uint8)
             frame[:] = (index, 40, 180)
             writer.write(frame)
@@ -38,7 +39,7 @@ def create_fixture(root: Path) -> None:
     proactive = ProactiveRecord(
         record_id="smoke:proactive", source_id="synthetic", video_path="video.avi",
         instruction="Report the event.", instruction_time_s=0,
-        windows=[ResponseWindow(start_s=1, end_s=2.5, expected_answer="event")],
+        windows=[ResponseWindow(start_s=5, end_s=7.5, expected_answer="event")],
     )
     for name, value in {
         "qa.jsonl": qa.model_dump(mode="json"),
@@ -60,7 +61,18 @@ def create_fixture(root: Path) -> None:
     print(f"Synthetic fixture ready: {root}")
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    create_fixture(parser.parse_args().output)
+    args = parser.parse_args(argv)
+    try:
+        create_fixture(args.output)
+    except FileExistsError:
+        print(f"error: output directory already exists: {args.output}; choose a new directory",
+              file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

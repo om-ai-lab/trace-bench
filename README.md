@@ -49,7 +49,7 @@ for task in qa proactive; do
   osb run --task "$task" --release output/smoke/release --subset tiny \
     --adapter open_stream_bench.adapters:TestDoubleAdapter \
     --video-root output/smoke --output "output/smoke/$task" \
-    --synthetic --judge-mode exact --checkpoint-every 5 --proactive-step-s 1
+    --synthetic --judge-mode exact --checkpoint-every 5
   osb bundle validate "output/smoke/$task"
   osb score "output/smoke/$task" --judge-mode exact
 done
@@ -58,7 +58,7 @@ python scripts/check_smoke_results.py --output output/smoke
 
 Expect both answer checks to pass, QA accuracy and Proactive window accuracy
 to equal 1.0, zero failures, and `synthetic: true` / `official_eligible: false`.
-The explicit 1-second polling interval is for this short fixture only.
+The 12-second fixture has an answer window aligned to default 5-second polling.
 Missing model telemetry is expected here. A valid bundle alone does not prove
 that an answer was produced.
 
@@ -93,6 +93,11 @@ comparison dimensions. See the [evaluation protocol](docs/evaluation-protocol.md
 - [Citation](CITATION.cff) and [changelog](CHANGELOG.md)
 
 ## Development checks
+
+The two Git-based checks below (check_docs.py and check_public_files.py) require
+a Git checkout and must run from its root. ZIP users can still install OSB, run
+evaluations, tests and distribution checks; clone the repository to run these
+two maintainer checks. CI covers Python 3.10–3.13.
 
 ```bash
 mkdir -p output

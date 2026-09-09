@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -42,7 +42,7 @@ jobs:
             osb run --task "$task" --release output/smoke/release --subset tiny \
               --adapter open_stream_bench.adapters:TestDoubleAdapter \
               --video-root output/smoke --output "output/smoke/$task" \
-              --synthetic --judge-mode exact --checkpoint-every 5 --proactive-step-s 1
+              --synthetic --judge-mode exact --checkpoint-every 5
             osb bundle validate "output/smoke/$task"
             osb score "output/smoke/$task" --judge-mode exact
           done

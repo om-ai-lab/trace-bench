@@ -67,7 +67,7 @@ def check(dist: Path, output: Path) -> None:
             "run", "--task", task, "--release", str(smoke / "release"),
             "--adapter", "open_stream_bench.adapters:TestDoubleAdapter",
             "--video-root", str(smoke), "--output", str(bundle),
-            "--synthetic", "--judge-mode", "exact", "--proactive-step-s", "1",
+            "--synthetic", "--judge-mode", "exact",
             "--checkpoint-every", "5",
         ], cwd=output, check=True, stdout=subprocess.DEVNULL)
         subprocess.run(cli + ["bundle", "validate", str(bundle)],

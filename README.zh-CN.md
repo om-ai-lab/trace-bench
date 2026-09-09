@@ -45,7 +45,7 @@ for task in qa proactive; do
   osb run --task "$task" --release output/smoke/release --subset tiny \
     --adapter open_stream_bench.adapters:TestDoubleAdapter \
     --video-root output/smoke --output "output/smoke/$task" \
-    --synthetic --judge-mode exact --checkpoint-every 5 --proactive-step-s 1
+    --synthetic --judge-mode exact --checkpoint-every 5
   osb bundle validate "output/smoke/$task"
   osb score "output/smoke/$task" --judge-mode exact
 done
@@ -54,7 +54,7 @@ python scripts/check_smoke_results.py --output output/smoke
 
 预期两个任务的答案检查通过，QA accuracy 和 Proactive window accuracy 均为 1.0，
 无失败，并标记 `synthetic: true` / `official_eligible: false`。
-显式的 1 秒 polling 只用于这个短 fixture。模型遥测缺失在此测试中属于预期情况。
+12 秒 fixture 的回答窗口与默认 5 秒 polling 对齐。模型遥测缺失在此测试中属于预期情况。
 bundle 有效不等于模型产生了正确回答。
 
 结果保存在被 Git 忽略的 `output/`。生成器拒绝覆盖已有 fixture；
@@ -86,6 +86,10 @@ Native/non-native 视觉状态与 autonomous/polling 触发方式是独立比较
 - [引用](CITATION.cff)及[更新记录](CHANGELOG.zh-CN.md)
 
 ## 开发检查
+
+以下 check_docs.py 和 check_public_files.py 两个 Git 检查需要 Git checkout，
+并在仓库根目录运行。ZIP 用户仍可安装、评估、运行测试和发行包检查；
+需要运行这两个维护检查时请克隆仓库。CI 覆盖 Python 3.10–3.13。
 
 ```bash
 mkdir -p output
