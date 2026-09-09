@@ -86,6 +86,7 @@ comparison dimensions. See the [evaluation protocol](docs/evaluation-protocol.md
 ## Documentation
 
 - [Data and limitations](docs/dataset-card.md)
+- [Release files and fields](data/releases/README.md)
 - [Examples and support status](examples/README.md)
 - [Release/version policy](docs/releasing.md) and [validation](docs/release-validation.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md), [contributing](CONTRIBUTING.md),

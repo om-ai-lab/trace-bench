@@ -18,6 +18,8 @@
 
 ## 文件与时间坐标
 
+每个文件及其字段的解释见 [release 文件与字段说明](../data/releases/README.zh-CN.md)。
+
 `qa.jsonl` 和 `proactive.jsonl` 保存标准记录。ID 文件定义子集。
 `manifest.json` 保存哈希和来源指纹；来源路径是溯源标识，不是用户需要准备的本地文件。
 审计附属文件记录标注变更与排除情况。

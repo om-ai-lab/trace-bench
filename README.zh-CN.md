@@ -79,6 +79,7 @@ Native/non-native 视觉状态与 autonomous/polling 触发方式是独立比较
 ## 文档
 
 - [数据及限制](docs/dataset-card.zh-CN.md)
+- [Release 文件与字段](data/releases/README.zh-CN.md)
 - [示例与支持状态](examples/README.zh-CN.md)
 - [发布/版本规则](docs/releasing.zh-CN.md)及[验证](docs/release-validation.zh-CN.md)
 - [第三方声明](THIRD_PARTY_NOTICES.zh-CN.md)、[贡献](CONTRIBUTING.zh-CN.md)、

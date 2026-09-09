@@ -18,6 +18,8 @@ Data and software versions are independent.
 
 ## Files and time coordinates
 
+See the [release file and field reference](../data/releases/README.md) for every file and its fields.
+
 `qa.jsonl` and `proactive.jsonl` contain canonical records. ID files define
 subsets. `manifest.json` contains hashes and source fingerprints; source paths
 are provenance identifiers, not required local files. Audit sidecars document
