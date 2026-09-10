@@ -18,6 +18,74 @@ a GPU; OSB does not host an online evaluator.
 Only v1.1.0 annotations are included. Download videos and model weights separately.
 See the [dataset card](docs/dataset-card.md) for populations and limitations.
 
+## Tasks and research findings
+
+QA asks a question at a specified time about the legal video history;
+Proactive gives an instruction before an event and tests whether the model responds
+when the visual condition holds. OSB reports quality, timeliness, extra responses,
+workload and execution reliability together.
+
+### Cross-task scorecard
+
+<table>
+<thead>
+<tr><th rowspan="2">Model configuration</th><th colspan="2">QA · 833 records</th><th colspan="5">Proactive · 1,270 windows</th></tr>
+<tr><th>Accuracy ↑</th><th>Completion ↑</th><th>SWA ↑</th><th>TCR@5s ↑</th><th>Completion ↑</th><th>Redundant ↓</th><th>Outside-window ↓</th></tr>
+</thead>
+<tbody>
+<tr><td colspan="8"><strong>Autonomous model + adapter</strong></td></tr>
+<tr><td>LiveCC</td><td align="right">65.19%</td><td align="right">93.88%</td><td align="right">12.98%</td><td align="right">12.51%</td><td align="right">87.71%</td><td align="right">202.4</td><td align="right">562.0</td></tr>
+<tr><td>MOSS-Preview</td><td align="right">65.07%</td><td align="right">100.00%</td><td align="right">4.45%</td><td align="right">4.31%</td><td align="right">100.00%</td><td align="right">68.3</td><td align="right">503.6</td></tr>
+<tr><td>MOSS-VL</td><td align="right">75.03%</td><td align="right">99.88%</td><td align="right">8.05%</td><td align="right">7.50%</td><td align="right">100.00%</td><td align="right">185.6</td><td align="right">160.2</td></tr>
+<tr><td>ThinkStream</td><td align="right">61.46%</td><td align="right">100.00%</td><td align="right">0.52%</td><td align="right">0.34%</td><td align="right">100.00%</td><td align="right">3.8</td><td align="right">29.4</td></tr>
+<tr><td>VideoLLM-Online</td><td align="right">2.64%</td><td align="right">100.00%</td><td align="right">0.18%</td><td align="right">0.15%</td><td align="right">100.00%</td><td align="right">5.4</td><td align="right">45.0</td></tr>
+<tr><td>AURA</td><td align="right">73.83%</td><td align="right">99.88%</td><td align="right">7.92%</td><td align="right">7.39%</td><td align="right">99.26%</td><td align="right">28.4</td><td align="right">188.1</td></tr>
+<tr><td colspan="8"><strong>End-to-end autonomous system</strong></td></tr>
+<tr><td>JoyAI</td><td align="right">67.47%</td><td align="right">91.36%</td><td align="right">17.08%</td><td align="right">15.18%</td><td align="right">95.58%</td><td align="right">74.6</td><td align="right">114.0</td></tr>
+<tr><td colspan="8"><strong>Non-native polling baseline</strong></td></tr>
+<tr><td>MiniCPM-O (polling)</td><td align="right">71.31%</td><td align="right">99.88%</td><td align="right">40.91%</td><td align="right">26.97%</td><td align="right">95.33%</td><td align="right">32.3</td><td align="right">215.8</td></tr>
+</tbody>
+</table>
+
+Accuracy is the report's **Recoverable Accuracy**, not the current Core default
+strict single-label score. Redundant and outside-window values are **counts per
+100 target windows**, not probabilities. Groups follow Proactive interaction
+boundaries, with no cross-group ranking. AURA uses non-native QA input; its
+autonomous Proactive output does not certify native visual state.
+
+[Interactive explorer: filters, sorting and trade-offs](docs/results-explorer.md) ·
+[Full results, provenance and measurement limits](docs/benchmark-results.md)
+
+This table uses retained v1.0.0 inference bundles analyzed on the v1.1.0 standard
+population: Proactive covers 407 records / 1,270 windows with W=5s.
+The default `--subset full` includes additional sampling-stress records and
+must not be compared directly as the same population.
+
+### Representative findings
+
+**Similar QA scores can hide different completion and generation workload.**
+LiveCC and MOSS-Preview score 65.19% / 65.07%, with completion of 93.88% / 100%.
+Recorded query-stage time is not end-to-end latency; tokens are not equal
+compute cost across models.
+
+![QA quality versus recorded query time and generation workload](docs/assets/results/fig_qa_accuracy_workload.png)
+
+**Similar window scores can hide different notification behavior.** MOSS-VL and
+AURA score 8.05% / 7.92% SWA with roughly 6.5-fold different repetition counts,
+while MOSS-VL produces fewer outside-window responses.
+
+![Proactive quality versus outside-window and redundant responses](docs/assets/results/fig_proactive_quality_behavior.png)
+
+<details>
+<summary>Evaluation design: causal input, response windows and independent execution dimensions</summary>
+
+![OSB evaluation design schematic](docs/assets/results/evaluation-design.en.png)
+
+The diagram illustrates the protocol, not an observed model trace.
+[Figure sources and regeneration](docs/homepage-figures.md).
+
+</details>
+
 ## Install
 
 Tested with Python 3.10–3.12. Clone or download

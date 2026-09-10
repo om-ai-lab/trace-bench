@@ -17,6 +17,69 @@
 仓库仅包含 v1.1.0 标注，视频和模型权重需另行下载。
 数据范围和限制见[数据卡](docs/dataset-card.zh-CN.md)。
 
+## 任务与研究发现
+
+QA 在指定时刻提出问题，检查模型对合法视频历史的理解；
+Proactive 在事件之前给出指令，检查模型能否在视觉条件成立时主动响应。
+OSB 联合报告答案质量、及时性、额外响应、工作量与执行可靠性。
+
+### 跨任务成绩表
+
+<table>
+<thead>
+<tr><th rowspan="2">模型配置</th><th colspan="2">QA · 833 条</th><th colspan="5">Proactive · 1,270 窗口</th></tr>
+<tr><th>准确率 ↑</th><th>完成率 ↑</th><th>SWA ↑</th><th>TCR@5s ↑</th><th>完成率 ↑</th><th>重复响应 ↓</th><th>窗口外响应 ↓</th></tr>
+</thead>
+<tbody>
+<tr><td colspan="8"><strong>自主响应模型 + adapter</strong></td></tr>
+<tr><td>LiveCC</td><td align="right">65.19%</td><td align="right">93.88%</td><td align="right">12.98%</td><td align="right">12.51%</td><td align="right">87.71%</td><td align="right">202.4</td><td align="right">562.0</td></tr>
+<tr><td>MOSS-Preview</td><td align="right">65.07%</td><td align="right">100.00%</td><td align="right">4.45%</td><td align="right">4.31%</td><td align="right">100.00%</td><td align="right">68.3</td><td align="right">503.6</td></tr>
+<tr><td>MOSS-VL</td><td align="right">75.03%</td><td align="right">99.88%</td><td align="right">8.05%</td><td align="right">7.50%</td><td align="right">100.00%</td><td align="right">185.6</td><td align="right">160.2</td></tr>
+<tr><td>ThinkStream</td><td align="right">61.46%</td><td align="right">100.00%</td><td align="right">0.52%</td><td align="right">0.34%</td><td align="right">100.00%</td><td align="right">3.8</td><td align="right">29.4</td></tr>
+<tr><td>VideoLLM-Online</td><td align="right">2.64%</td><td align="right">100.00%</td><td align="right">0.18%</td><td align="right">0.15%</td><td align="right">100.00%</td><td align="right">5.4</td><td align="right">45.0</td></tr>
+<tr><td>AURA</td><td align="right">73.83%</td><td align="right">99.88%</td><td align="right">7.92%</td><td align="right">7.39%</td><td align="right">99.26%</td><td align="right">28.4</td><td align="right">188.1</td></tr>
+<tr><td colspan="8"><strong>端到端自主系统</strong></td></tr>
+<tr><td>JoyAI</td><td align="right">67.47%</td><td align="right">91.36%</td><td align="right">17.08%</td><td align="right">15.18%</td><td align="right">95.58%</td><td align="right">74.6</td><td align="right">114.0</td></tr>
+<tr><td colspan="8"><strong>Non-native polling 基线</strong></td></tr>
+<tr><td>MiniCPM-O (polling)</td><td align="right">71.31%</td><td align="right">99.88%</td><td align="right">40.91%</td><td align="right">26.97%</td><td align="right">95.33%</td><td align="right">32.3</td><td align="right">215.8</td></tr>
+</tbody>
+</table>
+
+准确率为报告的 **Recoverable Accuracy**，不是当前 Core 默认严格单标签分数。
+重复和窗口外响应的单位是**每百目标窗口的次数**，不是概率。
+按 Proactive 交互边界分组，不计算跨组总排名；AURA 的 QA 是 Non-native，
+其 Proactive 自主输出不代表原生视觉状态已获核验。
+
+[交互结果看板：筛选、排序与双指标比较](docs/results-explorer.zh-CN.md) ·
+[完整结果、来源与测量限制](docs/benchmark-results.zh-CN.md)
+
+本表基于保留的 v1.0.0 推理 bundle，按 v1.1.0 标准总体分析；
+Proactive 为 407 条 / 1,270 个窗口、W=5s。
+默认 `--subset full` 包含额外采样压力记录，不能直接与本表混比。
+
+### 代表性发现
+
+**相近 QA 得分可能对应不同完成率和生成量。** LiveCC 与 MOSS-Preview
+准确率为 65.19% / 65.07%，完成率为 93.88% / 100%。
+图中的查询阶段时间不等于端到端延迟，token 不等于跨模型计算成本。
+
+![QA 质量与记录查询时间、生成量](docs/assets/results/fig_qa_accuracy_workload.png)
+
+**相近窗口得分可以隐藏不同的通知行为。** MOSS-VL 与 AURA
+SWA 为 8.05% / 7.92%，重复响应相差约 6.5 倍，但 MOSS-VL 窗口外输出更少。
+
+![Proactive 质量与窗口外、重复响应的取舍](docs/assets/results/fig_proactive_quality_behavior.png)
+
+<details>
+<summary>查看评估机制：因果输入、响应窗口与独立执行维度</summary>
+
+![OSB 评估机制示意](docs/assets/results/evaluation-design.zh-CN.png)
+
+机制图是协议示意，不是实际模型轨迹。
+[图表来源与重新生成](docs/homepage-figures.zh-CN.md)。
+
+</details>
+
 ## 安装
 
 已测试 Python 3.10–3.12。克隆或下载[本仓库](https://github.com/om-ai-lab/Open-Stream-Bench)，
