@@ -55,6 +55,11 @@ def check(dist: Path, output: Path) -> None:
     ], cwd=output, check=True)
     subprocess.run([str(python), "-I", "-m", "trace_bench.cli", "--help"],
                    cwd=output, check=True)
+    # The console entry points must both exist: `trace` and the compatibility
+    # alias `osb` promised in the changelog.
+    for script in ("trace", "osb"):
+        subprocess.run([str(wheel_env / "bin" / script), "--version"],
+                       cwd=output, check=True)
     smoke = output / "wheel-smoke"
     subprocess.run([
         str(python), "-I", str(source / "scripts/make_smoke_fixture.py"),
