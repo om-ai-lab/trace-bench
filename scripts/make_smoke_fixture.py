@@ -11,7 +11,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from open_stream_bench.models import ProactiveRecord, QARecord, ReleaseManifest, ResponseWindow
+from trace_bench.models import ProactiveRecord, QARecord, ReleaseManifest, ResponseWindow
 
 
 def create_fixture(root: Path) -> None:

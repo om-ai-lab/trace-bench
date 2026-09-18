@@ -211,7 +211,7 @@ def validate_adapter(adapter: Adapter, task: TaskName, config: RunConfig) -> Ada
     except Exception as exc:
         raise TypeError(f"adapter capabilities are invalid: {exc}") from exc
     if capabilities.evidence_delivery != "decoded_frames":
-        raise ValueError("OSB only supports adapters receiving Core-decoded frames")
+        raise ValueError("TRACE only supports adapters receiving Core-decoded frames")
     if capabilities.pacing != config.pacing:
         raise ValueError(
             f"adapter pacing {capabilities.pacing!r} does not match run pacing {config.pacing!r}"

@@ -1,6 +1,6 @@
 import pytest
 
-from open_stream_bench.cli import build_parser, main
+from trace_bench.cli import build_parser, main
 
 
 def test_cli_exposes_core_commands():
@@ -28,7 +28,7 @@ def test_cli_runs_synthetic_vertical_slice(synthetic_release, capsys):
         "--subset",
         "tiny",
         "--adapter",
-        "open_stream_bench.adapters:TestDoubleAdapter",
+        "trace_bench.adapters:TestDoubleAdapter",
         "--video-root",
         str(video_root),
         "--output",
@@ -49,7 +49,7 @@ def test_cli_preflight_only_does_not_run_inference(synthetic_release, capsys):
         "run",
         "--task", "qa",
         "--release", str(release),
-        "--adapter", "open_stream_bench.adapters:TestDoubleAdapter",
+        "--adapter", "trace_bench.adapters:TestDoubleAdapter",
         "--video-root", str(video_root),
         "--output", str(output),
         "--preflight-only",
@@ -83,6 +83,6 @@ def test_cli_missing_video_root_fails_before_output(synthetic_release, capsys):
 def test_cli_does_not_hide_unexpected_errors(monkeypatch):
     def broken(*args):
         raise RuntimeError("unexpected bug")
-    monkeypatch.setattr("open_stream_bench.cli.validate_release", broken)
+    monkeypatch.setattr("trace_bench.cli.validate_release", broken)
     with pytest.raises(RuntimeError, match="unexpected bug"):
         main(["data", "validate", "--release", "unused"])

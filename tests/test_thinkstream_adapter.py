@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from types import SimpleNamespace
 
-from open_stream_bench.models import (
+from trace_bench.models import (
     FatalEvaluationError,
     Observation,
     ProactiveRecord,
@@ -12,7 +12,7 @@ from open_stream_bench.models import (
     RunConfig,
     TaskName,
 )
-from open_stream_bench.thinkstream_adapter import ThinkStreamAdapter, parse_thinkstream_output
+from trace_bench.thinkstream_adapter import ThinkStreamAdapter, parse_thinkstream_output
 
 torch = pytest.importorskip("torch")
 

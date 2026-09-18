@@ -1,11 +1,11 @@
-# Open Stream Bench
+# TRACE: Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding
 
 English | [简体中文](README.zh-CN.md)
 
 A local benchmark for timestamped video QA and proactive responses.
 Download the source videos, connect a model through an adapter, and retain
 raw outputs, timing, failures and scores. Real model evaluation normally requires
-a GPU; OSB does not host an online evaluator.
+a GPU; TRACE does not host an online evaluator.
 
 | Component | Version / scope |
 | --- | --- |
@@ -22,7 +22,7 @@ See the [dataset card](docs/dataset-card.md) for populations and limitations.
 
 QA asks a question at a specified time about the legal video history;
 Proactive gives an instruction before an event and tests whether the model responds
-when the visual condition holds. OSB reports quality, timeliness, extra responses,
+when the visual condition holds. TRACE reports quality, timeliness, extra responses,
 workload and execution reliability together.
 
 ### Cross-task scorecard
@@ -79,7 +79,7 @@ while MOSS-VL produces fewer outside-window responses.
 <details>
 <summary>Evaluation design: causal input, response windows and independent execution dimensions</summary>
 
-![OSB evaluation design schematic](docs/assets/results/evaluation-design.en.png)
+![TRACE evaluation design schematic](docs/assets/results/evaluation-design.en.png)
 
 The diagram illustrates the protocol, not an observed model trace.
 [Figure sources and regeneration](docs/homepage-figures.md).
@@ -89,15 +89,22 @@ The diagram illustrates the protocol, not an observed model trace.
 ## Install
 
 Tested with Python 3.10–3.12. Clone or download
-[this repository](https://github.com/om-ai-lab/Open-Stream-Bench), then enter
+[this repository](https://github.com/om-ai-lab/trace-bench), then enter
 its root directory before running these commands:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-osb --help
-osb data validate --release data/releases/v1.1.0
+trace --help
+```
+
+The `osb` command remains installed as a compatibility alias of `trace`, and
+`OSB_VLM_JUDGE_*` environment variables are still read as fallbacks for the
+`TRACE_VLM_JUDGE_*` names.
+
+```bash
+trace data validate --release data/releases/v1.1.0
 ```
 
 Keep the source checkout: the wheel alone does not include annotations or videos.
@@ -112,14 +119,14 @@ The test double deliberately reads GT; these are software tests, not model score
 ```bash
 set -euo pipefail
 python scripts/make_smoke_fixture.py --output output/smoke
-osb data validate --release output/smoke/release
+trace data validate --release output/smoke/release
 for task in qa proactive; do
-  osb run --task "$task" --release output/smoke/release --subset tiny \
-    --adapter open_stream_bench.adapters:TestDoubleAdapter \
+  trace run --task "$task" --release output/smoke/release --subset tiny \
+    --adapter trace_bench.adapters:TestDoubleAdapter \
     --video-root output/smoke --output "output/smoke/$task" \
     --synthetic --judge-mode exact --checkpoint-every 5
-  osb bundle validate "output/smoke/$task"
-  osb score "output/smoke/$task" --judge-mode exact
+  trace bundle validate "output/smoke/$task"
+  trace score "output/smoke/$task" --judge-mode exact
 done
 python scripts/check_smoke_results.py --output output/smoke
 ```
@@ -164,7 +171,7 @@ comparison dimensions. See the [evaluation protocol](docs/evaluation-protocol.md
 ## Development checks
 
 The two Git-based checks below (check_docs.py and check_public_files.py) require
-a Git checkout and must run from its root. ZIP users can still install OSB, run
+a Git checkout and must run from its root. ZIP users can still install TRACE, run
 evaluations, tests and distribution checks; clone the repository to run these
 two maintainer checks. CI covers Python 3.10–3.13.
 

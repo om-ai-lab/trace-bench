@@ -13,12 +13,12 @@ user-configured OpenAI-compatible semantic judge. After generating the example
 bundle, replace endpoint/model/key values and run:
 
 ```bash
-osb bundle validate output/livecc-proactive
-export OSB_VLM_JUDGE_BASE_URL=http://127.0.0.1:30099/v1
-export OSB_VLM_JUDGE_MODEL=your-served-judge-model
-export OSB_VLM_JUDGE_API_KEY=your-key
-osb score output/livecc-proactive --judge-mode auto \
-  --judge-base-url "$OSB_VLM_JUDGE_BASE_URL" --judge-model "$OSB_VLM_JUDGE_MODEL"
+trace bundle validate output/livecc-proactive
+export TRACE_VLM_JUDGE_BASE_URL=http://127.0.0.1:30099/v1
+export TRACE_VLM_JUDGE_MODEL=your-served-judge-model
+export TRACE_VLM_JUDGE_API_KEY=your-key
+trace score output/livecc-proactive --judge-mode auto \
+  --judge-base-url "$TRACE_VLM_JUDGE_BASE_URL" --judge-model "$TRACE_VLM_JUDGE_MODEL"
 ```
 
 `auto` routes SSR/CRR to the configured judge and other types to exact matching.
@@ -52,9 +52,9 @@ See the [protocol](evaluation-protocol.md) for populations and track definitions
 ## Troubleshooting
 
 - Missing videos: run the video checker and inspect root/archive nesting.
-- Missing bundle files: run `osb run` before `bundle validate` and `score`.
+- Missing bundle files: run `trace run` before `bundle validate` and `score`.
 - Adapter import: install its package in the model environment.
 - Pacing mismatch: match Core pacing to adapter capability/config.
 - CUDA initialization: fix the runtime before resume; it is not model error rate.
 - Changed configuration: retain the old bundle and choose a new output.
-- Unexpected failure: use `osb --debug ...` to show the traceback.
+- Unexpected failure: use `trace --debug ...` to show the traceback.

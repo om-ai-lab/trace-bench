@@ -1,4 +1,4 @@
-"""The single ``osb`` command-line interface."""
+"""The single ``trace`` command-line interface."""
 
 from __future__ import annotations
 
@@ -84,7 +84,7 @@ def _add_judge_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--judge-base-url",
-        help="OpenAI-compatible judge base URL; prefer OSB_VLM_JUDGE_BASE_URL",
+        help="OpenAI-compatible judge base URL; prefer TRACE_VLM_JUDGE_BASE_URL",
     )
     parser.add_argument("--judge-model", help="judge model id")
     parser.add_argument(
@@ -103,10 +103,10 @@ def _add_judge_arguments(parser: argparse.ArgumentParser) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="osb", description="Open Stream Bench local evaluation Core"
+        prog="trace", description="TRACE local evaluation Core"
     )
     parser.add_argument("--debug", action="store_true", help="show full error tracebacks")
-    parser.add_argument("--version", action="version", version=f"osb {__version__}")
+    parser.add_argument("--version", action="version", version=f"trace {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     data_parser = subparsers.add_parser("data", help="data release commands")
@@ -136,7 +136,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.debug:
             raise
         message = " ".join(str(exc).splitlines())
-        print(f"osb: error: {message}", file=sys.stderr)
+        print(f"trace: error: {message}", file=sys.stderr)
         return 1
 
 

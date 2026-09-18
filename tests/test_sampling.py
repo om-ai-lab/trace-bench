@@ -3,7 +3,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
-from open_stream_bench.sampling import sample_video, timestamp_plan, video_duration_s
+from trace_bench.sampling import sample_video, timestamp_plan, video_duration_s
 
 
 def test_timestamp_plan_and_opencv_sampling(synthetic_release):
@@ -79,7 +79,7 @@ def test_sampling_reopens_and_decodes_sequentially_after_seek_failure(
         captures.append(capture)
         return capture
 
-    monkeypatch.setattr("open_stream_bench.sampling.cv2.VideoCapture", factory)
+    monkeypatch.setattr("trace_bench.sampling.cv2.VideoCapture", factory)
     sampled = sample_video(root / "video.avi", [0.2])
     assert sampled.observations[0].frame_index == 2
     assert int(sampled.observations[0].rgb[0, 0, 0]) == 2
@@ -112,7 +112,7 @@ def test_duration_probe_does_not_decode_full_video_when_frame_count_is_unavailab
 
     capture = FakeCapture()
     monkeypatch.setattr(
-        "open_stream_bench.sampling.cv2.VideoCapture", lambda _path: capture
+        "trace_bench.sampling.cv2.VideoCapture", lambda _path: capture
     )
 
     assert video_duration_s(root / "video.avi") is None

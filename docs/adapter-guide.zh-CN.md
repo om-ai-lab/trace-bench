@@ -2,17 +2,17 @@
 
 [English](adapter-guide.md) | 简体中文
 
-Adapter 可以放在自己的仓库。在模型环境安装它和 OSB，通过
+Adapter 可以放在自己的仓库。在模型环境安装它和 TRACE，通过
 `--adapter module:Class --adapter-config file.json` 接入，无需修改 Core 注册表。
 参见 [LiveCC](livecc-adapter.zh-CN.md)及实验性
 [ThinkStream](thinkstream-adapter.zh-CN.md)。
-[TestDoubleAdapter](../src/open_stream_bench/adapters.py) 仅用于合成测试且故意读取 GT，
+[TestDoubleAdapter](../src/trace_bench/adapters.py) 仅用于合成测试且故意读取 GT，
 不能复制其答案选择逻辑。
 
 ## 接口边界
 
-使用 [models.py](../src/open_stream_bench/models.py) 和
-[adapters.py](../src/open_stream_bench/adapters.py) 中的协议。
+使用 [models.py](../src/trace_bench/models.py) 和
+[adapters.py](../src/trace_bench/adapters.py) 中的协议。
 
 1. 声明解码帧输入、持久/无状态、query/polling/autonomous 触发、pacing 和部署方式。
    Core 和 adapter pacing 必须匹配。

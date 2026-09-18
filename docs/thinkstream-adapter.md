@@ -2,7 +2,7 @@
 
 English | [简体中文](thinkstream-adapter.zh-CN.md)
 
-The bundled `open_stream_bench.thinkstream_adapter:ThinkStreamAdapter`
+The bundled `trace_bench.thinkstream_adapter:ThinkStreamAdapter`
 provides a local-weight integration. Its contract has CPU fake-runtime tests;
 this release revision has not been revalidated with real ThinkStream weights.
 Use [LiveCC](livecc-adapter.md) for the previously GPU-checked walkthrough.
@@ -15,7 +15,7 @@ The adapter requires upstream `thinkstream.model`,
 `thinkstream.model.inference` and `thinkstream.data.stream_data_processor`,
 plus PyTorch, Transformers and FlashAttention 2. Weights alone are insufficient.
 
-In the OSB root, create `output/` and save this JSON as
+In the TRACE root, create `output/` and save this JSON as
 `output/thinkstream.local.json`, replacing paths with your locations.
 This file stays local and ignored. Retain the upstream 24576-token context
 default unless explicitly studying a different configuration.
@@ -33,26 +33,26 @@ default unless explicitly studying a different configuration.
 ## Tiny run
 
 Prepare the [source videos](data-setup.md). Execute in the model environment
-from the OSB root after saving the configuration above:
+from the TRACE root after saving the configuration above:
 
 ```bash
 mkdir -p output
 export CUDA_VISIBLE_DEVICES=0
-export VIDEO_ROOT=/path/to/osb-media
+export VIDEO_ROOT=/path/to/trace-media
 python -m pip install -e .
-osb run --task qa --release data/releases/v1.1.0 --subset tiny \
-  --adapter open_stream_bench.thinkstream_adapter:ThinkStreamAdapter \
+trace run --task qa --release data/releases/v1.1.0 --subset tiny \
+  --adapter trace_bench.thinkstream_adapter:ThinkStreamAdapter \
   --adapter-config output/thinkstream.local.json --pacing wall_clock \
   --video-root "$VIDEO_ROOT" --output output/thinkstream-qa \
   --judge-mode exact --checkpoint-every 5 --preflight-only
 for task in qa proactive; do
-  osb run --task "$task" --release data/releases/v1.1.0 --subset tiny \
-    --adapter open_stream_bench.thinkstream_adapter:ThinkStreamAdapter \
+  trace run --task "$task" --release data/releases/v1.1.0 --subset tiny \
+    --adapter trace_bench.thinkstream_adapter:ThinkStreamAdapter \
     --adapter-config output/thinkstream.local.json --pacing wall_clock \
     --video-root "$VIDEO_ROOT" --output "output/thinkstream-$task" \
     --judge-mode exact --checkpoint-every 5 --proactive-window-s 5
-  osb bundle validate "output/thinkstream-$task"
-  osb score "output/thinkstream-$task" --judge-mode exact
+  trace bundle validate "output/thinkstream-$task"
+  trace score "output/thinkstream-$task" --judge-mode exact
 done
 ```
 

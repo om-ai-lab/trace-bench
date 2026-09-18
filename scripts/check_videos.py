@@ -3,7 +3,7 @@
 import argparse
 from pathlib import Path
 
-from open_stream_bench.data import load_release, validate_release
+from trace_bench.data import load_release, validate_release
 
 
 def main() -> int:

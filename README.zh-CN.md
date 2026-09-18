@@ -1,10 +1,10 @@
-# Open Stream Bench
+# TRACE:Temporal Audit and Condition-aware Evaluation
 
 [English](README.md) | 简体中文
 
 用于时间戳视频 QA 和主动响应的本地评估基准。
 用户下载源视频，通过 adapter 接入模型，保存原始输出、耗时、失败和分数。
-真实模型评估通常需要 GPU；OSB 不提供托管在线评估。
+真实模型评估通常需要 GPU；TRACE 不提供托管在线评估。
 
 | 内容 | 版本与范围 |
 | --- | --- |
@@ -21,7 +21,7 @@
 
 QA 在指定时刻提出问题，检查模型对合法视频历史的理解；
 Proactive 在事件之前给出指令，检查模型能否在视觉条件成立时主动响应。
-OSB 联合报告答案质量、及时性、额外响应、工作量与执行可靠性。
+TRACE 联合报告答案质量、及时性、额外响应、工作量与执行可靠性。
 
 ### 跨任务成绩表
 
@@ -73,7 +73,7 @@ SWA 为 8.05% / 7.92%，重复响应相差约 6.5 倍，但 MOSS-VL 窗口外输
 <details>
 <summary>查看评估机制：因果输入、响应窗口与独立执行维度</summary>
 
-![OSB 评估机制示意](docs/assets/results/evaluation-design.zh-CN.png)
+![TRACE 评估机制示意](docs/assets/results/evaluation-design.zh-CN.png)
 
 机制图是协议示意，不是实际模型轨迹。
 [图表来源与重新生成](docs/homepage-figures.zh-CN.md)。
@@ -82,15 +82,21 @@ SWA 为 8.05% / 7.92%，重复响应相差约 6.5 倍，但 MOSS-VL 窗口外输
 
 ## 安装
 
-已测试 Python 3.10–3.12。克隆或下载[本仓库](https://github.com/om-ai-lab/Open-Stream-Bench)，
+已测试 Python 3.10–3.12。克隆或下载[本仓库](https://github.com/om-ai-lab/trace-bench)，
 进入仓库根目录后执行：
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-osb --help
-osb data validate --release data/releases/v1.1.0
+trace --help
+```
+
+`osb` 命令仍作为 `trace` 的兼容别名保留安装；环境变量在 `TRACE_VLM_JUDGE_*`
+未设置时仍会读取旧的 `OSB_VLM_JUDGE_*` 名称。
+
+```bash
+trace data validate --release data/releases/v1.1.0
 ```
 
 请保留源码目录；仅安装 wheel 不包含标注和视频。模型依赖应安装在模型自己的环境中。
@@ -103,14 +109,14 @@ osb data validate --release data/releases/v1.1.0
 ```bash
 set -euo pipefail
 python scripts/make_smoke_fixture.py --output output/smoke
-osb data validate --release output/smoke/release
+trace data validate --release output/smoke/release
 for task in qa proactive; do
-  osb run --task "$task" --release output/smoke/release --subset tiny \
-    --adapter open_stream_bench.adapters:TestDoubleAdapter \
+  trace run --task "$task" --release output/smoke/release --subset tiny \
+    --adapter trace_bench.adapters:TestDoubleAdapter \
     --video-root output/smoke --output "output/smoke/$task" \
     --synthetic --judge-mode exact --checkpoint-every 5
-  osb bundle validate "output/smoke/$task"
-  osb score "output/smoke/$task" --judge-mode exact
+  trace bundle validate "output/smoke/$task"
+  trace score "output/smoke/$task" --judge-mode exact
 done
 python scripts/check_smoke_results.py --output output/smoke
 ```

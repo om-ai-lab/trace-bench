@@ -10,7 +10,7 @@ Issue 请提供软件/数据版本、命令、预期行为和脱敏日志。
 不要顺便放宽 QA parser 或修改 finalized 原始结果。
 说明用户是否需要重算或重新推理。
 
-OSB 自有代码贡献采用 MIT；复制内容保留上游许可。
+TRACE 自有代码贡献采用 MIT；复制内容保留上游许可。
 数据遵循[数据条款](DATA_TERMS.zh-CN.md)。
 遵守[行为准则](CODE_OF_CONDUCT.md)和[发布规则](docs/releasing.zh-CN.md)。
 欢迎中英文贡献，配对文档及命令块保持一致。

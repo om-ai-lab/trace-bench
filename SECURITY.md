@@ -1,7 +1,7 @@
 # Security / 安全
 
 Report vulnerabilities privately using the repository's
-[security reporting page](https://github.com/om-ai-lab/Open-Stream-Bench/security/advisories/new)
+[security reporting page](https://github.com/om-ai-lab/trace-bench/security/advisories/new)
 if enabled. Otherwise open an issue requesting a private contact channel,
 without exploit details or credentials. Do not post secrets, private endpoints,
 videos or personal data in public issues.

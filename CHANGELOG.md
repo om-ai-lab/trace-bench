@@ -2,6 +2,16 @@
 
 English | [简体中文](CHANGELOG.zh-CN.md)
 
+## Unreleased
+
+- Renamed the project to TRACE (repository `om-ai-lab/trace-bench`). The Python
+  package is now `trace_bench` and the console command is `trace`; the previous
+  `osb` command is kept as a compatibility alias.
+- Judge settings read `TRACE_VLM_JUDGE_*` environment variables first and fall
+  back to the previous `OSB_VLM_JUDGE_*` names.
+- Protocol, contract, scorer and schema identities such as `osb-contract-v4`
+  and `osb-scoring-v6` are unchanged, so existing Run Bundles remain valid.
+
 ## 0.1.0
 
 - Local QA/Proactive Core with OpenCV RGB sampling and an external adapter interface.

@@ -4,7 +4,7 @@ English | [简体中文](benchmark-results.zh-CN.md)
 
 Explore these results with the [interactive scorecard and plots](results-explorer.md).
 
-This page summarizes Chapters 3–5 and Appendix B of the Open Stream Bench technical
+This page summarizes Chapters 3–5 and Appendix B of the TRACE technical
 report, as reviewed on 2026-09-10. Figures are the report's selected figures;
 tables describe the tested configurations, not a combined leaderboard or a claim
 that every adapter is included in this repository.
@@ -55,7 +55,7 @@ Accuracy below is the report's **Recoverable Accuracy**: accept one unambiguous
 explicit option label, including an answer introduction or option text beginning
 with the label; reject two distinct labels and unlabelled prose. Hidden thinking
 is removed before parsing. This is **not the software 0.1.0 default strict
-single-label `accuracy`**. Re-running `osb score` alone does not reproduce this
+single-label `accuracy`**. Re-running `trace score` alone does not reproduce this
 report analysis; this documentation update does not change the Core parser.
 
 ### Native model + adapter

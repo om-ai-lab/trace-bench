@@ -7,13 +7,13 @@ cd "$ROOT"
 
 # Set model-specific paths in the environment. The public repository does not
 # assume a particular machine, Conda environment, GPU, or weight location.
-OSB_PYTHON="${OSB_PYTHON:-python}"
+TRACE_PYTHON="${TRACE_PYTHON:-${OSB_PYTHON:-python}}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 RELEASE="${RELEASE:-$ROOT/data/releases/v1.1.0}"
 VIDEO_ROOT="${VIDEO_ROOT:?Set VIDEO_ROOT to the local source-video root}"
 LIVECC_ROOT="${LIVECC_ROOT:?Set LIVECC_ROOT to a local LiveCC checkout}"
 LIVECC_MODEL_PATH="${LIVECC_MODEL_PATH:?Set LIVECC_MODEL_PATH to local LiveCC weights}"
-ADAPTER="${ADAPTER:-open_stream_bench.livecc_adapter:LiveCCAdapter}"
+ADAPTER="${ADAPTER:-trace_bench.livecc_adapter:LiveCCAdapter}"
 ADAPTER_CONFIG="${ADAPTER_CONFIG:-}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-$ROOT/output/livecc-full}"
 PACING="${PACING:-wall_clock}"
@@ -38,7 +38,7 @@ die() {
   exit 1
 }
 
-command -v "$OSB_PYTHON" >/dev/null || die "Python executable is not runnable: $OSB_PYTHON"
+command -v "$TRACE_PYTHON" >/dev/null || die "Python executable is not runnable: $TRACE_PYTHON"
 command -v jq >/dev/null || die "Install jq to use this wrapper"
 [[ -d "$RELEASE" ]] || die "Release directory does not exist: $RELEASE"
 [[ -d "$VIDEO_ROOT" ]] || die "Video root does not exist: $VIDEO_ROOT"
@@ -52,8 +52,8 @@ command -v jq >/dev/null || die "Install jq to use this wrapper"
 
 mkdir -p "$OUTPUT_ROOT"
 
-run_osb() {
-  "$OSB_PYTHON" -m open_stream_bench.cli "$@"
+run_trace() {
+  "$TRACE_PYTHON" -m trace_bench.cli "$@"
 }
 
 COMMON_ARGS=(
@@ -75,7 +75,7 @@ if [[ -n "$ADAPTER_CONFIG" ]]; then
 fi
 
 echo "=== Environment ==="
-echo "Python: $OSB_PYTHON"
+echo "Python: $TRACE_PYTHON"
 echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
 echo "Release: $RELEASE"
 echo "Video root: $VIDEO_ROOT"
@@ -83,7 +83,7 @@ echo "Output root: $OUTPUT_ROOT"
 echo
 
 echo "=== Validate release ==="
-run_osb data validate --release "$RELEASE" \
+run_trace data validate --release "$RELEASE" \
   | tee "$OUTPUT_ROOT/release.validate.json"
 
 run_task() {
@@ -107,23 +107,23 @@ run_task() {
       die "finalized bundle uses an older protocol; choose a new OUTPUT_ROOT: $output"
     fi
     echo "Existing finalized bundle found; skipping inference: $output"
-    run_osb bundle validate "$output" | tee "$validation"
+    run_trace bundle validate "$output" | tee "$validation"
     return
   fi
 
-  run_osb run --task "$task" --output "$output" "${COMMON_ARGS[@]}" \
+  run_trace run --task "$task" --output "$output" "${COMMON_ARGS[@]}" \
     --preflight-only >"$preflight" 2>"$preflight_stderr"
 
   echo "Preflight: $preflight"
   echo "Preflight stderr: $preflight_stderr"
   echo
   echo "=== Full $task ($expected_count records; resume enabled) ==="
-  run_osb run --task "$task" --output "$output" "${COMMON_ARGS[@]}" \
+  run_trace run --task "$task" --output "$output" "${COMMON_ARGS[@]}" \
     2>&1 | tee "$run_log"
 
   echo
   echo "=== Validate $task bundle ==="
-  run_osb bundle validate "$output" | tee "$validation"
+  run_trace bundle validate "$output" | tee "$validation"
   echo "Bundle: $output"
   echo "Run log: $run_log"
 }

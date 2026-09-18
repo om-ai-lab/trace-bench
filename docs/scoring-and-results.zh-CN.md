@@ -11,12 +11,12 @@ QA 使用单标签选项评分。Proactive 使用精确匹配或用户配置的
 OpenAI-compatible 语义 judge。生成示例 bundle 后，替换服务地址、模型名和密钥执行：
 
 ```bash
-osb bundle validate output/livecc-proactive
-export OSB_VLM_JUDGE_BASE_URL=http://127.0.0.1:30099/v1
-export OSB_VLM_JUDGE_MODEL=your-served-judge-model
-export OSB_VLM_JUDGE_API_KEY=your-key
-osb score output/livecc-proactive --judge-mode auto \
-  --judge-base-url "$OSB_VLM_JUDGE_BASE_URL" --judge-model "$OSB_VLM_JUDGE_MODEL"
+trace bundle validate output/livecc-proactive
+export TRACE_VLM_JUDGE_BASE_URL=http://127.0.0.1:30099/v1
+export TRACE_VLM_JUDGE_MODEL=your-served-judge-model
+export TRACE_VLM_JUDGE_API_KEY=your-key
+trace score output/livecc-proactive --judge-mode auto \
+  --judge-base-url "$TRACE_VLM_JUDGE_BASE_URL" --judge-model "$TRACE_VLM_JUDGE_MODEL"
 ```
 
 `auto` 对 SSR/CRR 使用配置的 judge，其他类型精确匹配；
@@ -47,9 +47,9 @@ Finalized 结果不能续写或覆盖。设置变化要求新输出目录。
 ## 排错
 
 - 缺视频：运行视频检查器，检查根目录和解压层级。
-- 缺 bundle 文件：先 `osb run`，再 `bundle validate` 和 `score`。
+- 缺 bundle 文件：先 `trace run`，再 `bundle validate` 和 `score`。
 - Adapter 导入失败：在模型环境安装 adapter 包。
 - Pacing 不匹配：使 Core pacing 与 adapter 能力/配置一致。
 - CUDA 初始化失败：先修环境再续跑，不能解释为模型错误率。
 - 配置变化：保留旧 bundle，换新输出目录。
-- 意外错误：使用 `osb --debug ...` 查看 traceback。
+- 意外错误：使用 `trace --debug ...` 查看 traceback。

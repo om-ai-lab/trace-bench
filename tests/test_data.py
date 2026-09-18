@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from open_stream_bench.data import load_release, validate_release
-from open_stream_bench.models import ProactiveRecord, QARecord, ReleaseManifest
+from trace_bench.data import load_release, validate_release
+from trace_bench.models import ProactiveRecord, QARecord, ReleaseManifest
 
 
 def test_public_v1_1_release_is_valid():

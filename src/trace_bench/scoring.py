@@ -153,7 +153,7 @@ class VLMJudge:
         base_url: str | None,
         model: str = "Qwen3.5-35B-A3B",
         api_key: str | None = None,
-        api_key_env: str = "OSB_VLM_JUDGE_API_KEY",
+        api_key_env: str = "TRACE_VLM_JUDGE_API_KEY",
         timeout_s: float = 60.0,
         temperature: float = 0.0,
         prompt_template: str = VLM_JUDGE_PROMPT,
@@ -265,7 +265,7 @@ class JudgeRouter:
         base_url: str | None = None,
         model: str = "Qwen3.5-35B-A3B",
         api_key: str | None = None,
-        api_key_env: str = "OSB_VLM_JUDGE_API_KEY",
+        api_key_env: str = "TRACE_VLM_JUDGE_API_KEY",
         timeout_s: float = 60.0,
         temperature: float = 0.0,
         semantic_task_types: set[str] | frozenset[str] | list[str] | None = None,
@@ -371,12 +371,18 @@ def judge_from_settings(settings: Mapping[str, Any]) -> JudgeRouter:
             return getattr(settings, name)
         return settings.get(name, default)
 
-    api_key_env = str(value("judge_api_key_env", "OSB_VLM_JUDGE_API_KEY"))
+    api_key_env = str(value("judge_api_key_env", "TRACE_VLM_JUDGE_API_KEY"))
+    # The legacy OSB_* key name stays accepted for runs configured before the
+    # TRACE rename; an explicitly configured custom env name is used as-is.
+    api_key = os.getenv(api_key_env)
+    if not api_key and api_key_env == "TRACE_VLM_JUDGE_API_KEY":
+        api_key = os.getenv("OSB_VLM_JUDGE_API_KEY")
     return JudgeRouter(
         mode=str(value("judge_mode", "auto")),
-        base_url=value("judge_base_url") or os.getenv("OSB_VLM_JUDGE_BASE_URL"),
+        base_url=value("judge_base_url") or os.getenv("TRACE_VLM_JUDGE_BASE_URL")
+        or os.getenv("OSB_VLM_JUDGE_BASE_URL"),
         model=str(value("judge_model", "Qwen3.5-35B-A3B")),
-        api_key=os.getenv(api_key_env),
+        api_key=api_key,
         api_key_env=api_key_env,
         timeout_s=float(value("judge_timeout_s", 60.0)),
         temperature=float(value("judge_temperature", 0.0)),

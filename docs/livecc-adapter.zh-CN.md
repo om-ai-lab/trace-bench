@@ -2,7 +2,7 @@
 
 [English](livecc-adapter.md) | 简体中文
 
-`open_stream_bench.livecc_adapter:LiveCCAdapter` 运行本地
+`trace_bench.livecc_adapter:LiveCCAdapter` 运行本地
 [LiveCC-7B-Instruct](https://huggingface.co/chenjoya/LiveCC-7B-Instruct) 权重。
 只消费 Core 的 `Observation.rgb`，不自行打开视频或回放文件。
 权重和 processor 加载一次，每条记录独立创建 `past_ids/past_key_values`。
@@ -19,7 +19,7 @@ livecc-utils 0.0.2、qwen-vl-utils 0.0.11、NumPy 1.26.4、OpenCV 4.11.0.86。
 FlashAttention 必须匹配 PyTorch/CUDA/GLIBC。保留 qwen-vl-utils 0.0.11，
 新版本删除了 livecc-utils 依赖的符号。
 
-在该环境内进入 OSB 根目录，替换两个路径并执行：
+在该环境内进入 TRACE 根目录，替换两个路径并执行：
 
 ```bash
 export LIVECC_ROOT=/path/to/livecc
@@ -38,22 +38,22 @@ python -c "import torch; from livecc_utils import prepare_multiturn_multimodal_i
 按[数据准备](data-setup.zh-CN.md)配置视频，替换 VIDEO_ROOT 后执行：
 
 ```bash
-export VIDEO_ROOT=/path/to/osb-media
+export VIDEO_ROOT=/path/to/trace-media
 python scripts/check_videos.py --release data/releases/v1.1.0 \
   --video-root "$VIDEO_ROOT" --subset tiny
-osb run --task qa --release data/releases/v1.1.0 --subset tiny \
-  --adapter open_stream_bench.livecc_adapter:LiveCCAdapter \
+trace run --task qa --release data/releases/v1.1.0 --subset tiny \
+  --adapter trace_bench.livecc_adapter:LiveCCAdapter \
   --adapter-config examples/livecc/logical.json --pacing logical \
   --video-root "$VIDEO_ROOT" --output output/livecc-qa \
   --judge-mode exact --checkpoint-every 5 --preflight-only
 for task in qa proactive; do
-  osb run --task "$task" --release data/releases/v1.1.0 --subset tiny \
-    --adapter open_stream_bench.livecc_adapter:LiveCCAdapter \
+  trace run --task "$task" --release data/releases/v1.1.0 --subset tiny \
+    --adapter trace_bench.livecc_adapter:LiveCCAdapter \
     --adapter-config examples/livecc/logical.json --pacing logical \
     --video-root "$VIDEO_ROOT" --output "output/livecc-$task" \
     --judge-mode exact --checkpoint-every 5 --proactive-window-s 5
-  osb bundle validate "output/livecc-$task"
-  osb score "output/livecc-$task" --judge-mode exact
+  trace bundle validate "output/livecc-$task"
+  trace score "output/livecc-$task" --judge-mode exact
 done
 ```
 
@@ -68,7 +68,7 @@ done
 Full 包含 833 条 QA、415 条 Proactive（含采样压力子集）。运行脚本需要 `jq`：
 
 ```bash
-export VIDEO_ROOT=/path/to/osb-media
+export VIDEO_ROOT=/path/to/trace-media
 export LIVECC_ROOT=/path/to/livecc
 export LIVECC_MODEL_PATH=/path/to/LiveCC-7B-Instruct
 export OUTPUT_ROOT=output/livecc-full

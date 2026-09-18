@@ -6,7 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-from open_stream_bench.bundle import RunBundle
+from trace_bench.bundle import RunBundle
 
 
 def check(root: Path) -> None:

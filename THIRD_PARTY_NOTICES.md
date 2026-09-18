@@ -2,7 +2,7 @@
 
 English | [简体中文](THIRD_PARTY_NOTICES.zh-CN.md)
 
-MIT covers OSB-owned software. External code, model weights and source data
+MIT covers TRACE-owned software. External code, model weights and source data
 retain their own licenses. Install model runtimes separately and consult their
 current license/model cards before use.
 
@@ -21,7 +21,7 @@ the licenses of every component in a user's GPU environment.
 Data permissions and the OVO license discrepancy are described in
 [data terms](DATA_TERMS.md).
 
-Cite OSB and the source benchmark papers:
+Cite TRACE and the source benchmark papers:
 
 - Lin et al., [StreamingBench: Assessing the Gap for MLLMs to Achieve Streaming
   Video Understanding](https://arxiv.org/abs/2411.03628).

@@ -2,6 +2,15 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## 未发布
+
+- 项目更名为 TRACE（仓库 `om-ai-lab/trace-bench`）。Python 包改为 `trace_bench`，
+  命令行改为 `trace`；原 `osb` 命令保留为兼容别名。
+- 评分配置优先读取 `TRACE_VLM_JUDGE_*` 环境变量，未设置时回退到原有
+  `OSB_VLM_JUDGE_*` 名称。
+- 协议、合约、算分器和 schema 标识（如 `osb-contract-v4`、`osb-scoring-v6`）
+  保持不变，已有 Run Bundle 仍然有效。
+
 ## 0.1.0
 
 - QA/Proactive 本地 Core、OpenCV RGB 抽帧和外部 adapter 接口。

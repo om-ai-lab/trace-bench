@@ -25,7 +25,7 @@ jobs:
       - name: Lint
         run: ruff check .
       - name: Validate public release
-        run: python -m open_stream_bench.cli data validate --release data/releases/v1.1.0
+        run: python -m trace_bench.cli data validate --release data/releases/v1.1.0
       - name: Build and test distributions
         run: |
           python -m build --outdir output/dist
@@ -37,14 +37,14 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/make_smoke_fixture.py --output output/smoke
-          osb data validate --release output/smoke/release
+          trace data validate --release output/smoke/release
           for task in qa proactive; do
-            osb run --task "$task" --release output/smoke/release --subset tiny \
-              --adapter open_stream_bench.adapters:TestDoubleAdapter \
+            trace run --task "$task" --release output/smoke/release --subset tiny \
+              --adapter trace_bench.adapters:TestDoubleAdapter \
               --video-root output/smoke --output "output/smoke/$task" \
               --synthetic --judge-mode exact --checkpoint-every 5
-            osb bundle validate "output/smoke/$task"
-            osb score "output/smoke/$task" --judge-mode exact
+            trace bundle validate "output/smoke/$task"
+            trace score "output/smoke/$task" --judge-mode exact
           done
           python scripts/check_smoke_results.py --output output/smoke
       - name: Scan for private paths and credentials

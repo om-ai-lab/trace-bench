@@ -2,14 +2,14 @@
 
 English | [简体中文](DATA_TERMS.zh-CN.md)
 
-OSB's newly created annotations are licensed under
+TRACE's newly created annotations are licensed under
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/),
-to the extent OSB contributors hold the rights. This requires attribution,
+to the extent TRACE contributors hold the rights. This requires attribution,
 noncommercial use and sharing adaptations under the same license.
-The [MIT license](LICENSE) applies to OSB's own code, not the data.
+The [MIT license](LICENSE) applies to TRACE's own code, not the data.
 
 Questions, options, answers and other source-derived fields remain subject
-to their upstream terms. OSB additions do not relicense that content.
+to their upstream terms. TRACE additions do not relicense that content.
 Source videos and model weights are not included; obtain them from their providers.
 
 ## Upstream permissions
@@ -23,5 +23,5 @@ Source videos and model weights are not included; obtain them from their provide
 Until resolved, the annotation manifest is marked `private_provisional`
 and new runs are provisional. This software flag does not grant redistribution rights.
 
-Cite OSB and the upstream papers, identify modifications and retain applicable
+Cite TRACE and the upstream papers, identify modifications and retain applicable
 notices. See [third-party notices](THIRD_PARTY_NOTICES.md).

@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from open_stream_bench.bundle import RunBundle
+from trace_bench.bundle import RunBundle
 
 
 def test_checkpoint_commits_terminal_records_and_events_atomically(tmp_path):

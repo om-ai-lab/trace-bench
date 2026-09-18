@@ -46,26 +46,26 @@ def check(dist: Path, output: Path) -> None:
     ], cwd=output, check=True)
     subprocess.run([
         str(python), "-I", "-c",
-        "from pathlib import Path; import sys, open_stream_bench as osb; "
+        "from pathlib import Path; import sys, trace_bench as trace; "
         "from importlib.resources import files; "
-        "assert files('open_stream_bench').joinpath('presets/current.json').is_file(); "
-        "assert Path(osb.__file__).resolve().is_relative_to(Path(sys.prefix)); "
-        "assert osb.__version__ == '0.1.0'; "
-        "print('Installed wheel:', osb.__file__)",
+        "assert files('trace_bench').joinpath('presets/current.json').is_file(); "
+        "assert Path(trace.__file__).resolve().is_relative_to(Path(sys.prefix)); "
+        "assert trace.__version__ == '0.1.0'; "
+        "print('Installed wheel:', trace.__file__)",
     ], cwd=output, check=True)
-    subprocess.run([str(python), "-I", "-m", "open_stream_bench.cli", "--help"],
+    subprocess.run([str(python), "-I", "-m", "trace_bench.cli", "--help"],
                    cwd=output, check=True)
     smoke = output / "wheel-smoke"
     subprocess.run([
         str(python), "-I", str(source / "scripts/make_smoke_fixture.py"),
         "--output", str(smoke),
     ], cwd=output, check=True)
-    cli = [str(python), "-I", "-m", "open_stream_bench.cli"]
+    cli = [str(python), "-I", "-m", "trace_bench.cli"]
     for task in ("qa", "proactive"):
         bundle = smoke / task
         subprocess.run(cli + [
             "run", "--task", task, "--release", str(smoke / "release"),
-            "--adapter", "open_stream_bench.adapters:TestDoubleAdapter",
+            "--adapter", "trace_bench.adapters:TestDoubleAdapter",
             "--video-root", str(smoke), "--output", str(bundle),
             "--synthetic", "--judge-mode", "exact",
             "--checkpoint-every", "5",

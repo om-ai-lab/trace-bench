@@ -2,7 +2,7 @@
 
 [English](thinkstream-adapter.md) | 简体中文
 
-仓库中的 `open_stream_bench.thinkstream_adapter:ThinkStreamAdapter`
+仓库中的 `trace_bench.thinkstream_adapter:ThinkStreamAdapter`
 支持本地权重接入。其接口有 CPU 模拟运行测试，但本轮发布修订没有重新使用真实
 ThinkStream 权重验证。此前经过 GPU 检查的教程见 [LiveCC](livecc-adapter.zh-CN.md)。
 
@@ -13,7 +13,7 @@ ThinkStream 权重验证。此前经过 GPU 检查的教程见 [LiveCC](livecc-a
 `thinkstream.model.inference`、`thinkstream.data.stream_data_processor`，
 以及 PyTorch、Transformers 和 FlashAttention 2；仅有权重不足以运行。
 
-在 OSB 根目录创建 `output/`，将以下 JSON 保存为
+在 TRACE 根目录创建 `output/`，将以下 JSON 保存为
 `output/thinkstream.local.json`，替换为实际路径。该文件仅保留在本地并被 Git 忽略。
 除非明确研究其他配置，否则保留上游 24576-token 上下文默认值。
 
@@ -29,26 +29,26 @@ ThinkStream 权重验证。此前经过 GPU 检查的教程见 [LiveCC](livecc-a
 
 ## Tiny 运行
 
-准备[源视频](data-setup.zh-CN.md)，保存上述配置后，在模型环境的 OSB 根目录执行：
+准备[源视频](data-setup.zh-CN.md)，保存上述配置后，在模型环境的 TRACE 根目录执行：
 
 ```bash
 mkdir -p output
 export CUDA_VISIBLE_DEVICES=0
-export VIDEO_ROOT=/path/to/osb-media
+export VIDEO_ROOT=/path/to/trace-media
 python -m pip install -e .
-osb run --task qa --release data/releases/v1.1.0 --subset tiny \
-  --adapter open_stream_bench.thinkstream_adapter:ThinkStreamAdapter \
+trace run --task qa --release data/releases/v1.1.0 --subset tiny \
+  --adapter trace_bench.thinkstream_adapter:ThinkStreamAdapter \
   --adapter-config output/thinkstream.local.json --pacing wall_clock \
   --video-root "$VIDEO_ROOT" --output output/thinkstream-qa \
   --judge-mode exact --checkpoint-every 5 --preflight-only
 for task in qa proactive; do
-  osb run --task "$task" --release data/releases/v1.1.0 --subset tiny \
-    --adapter open_stream_bench.thinkstream_adapter:ThinkStreamAdapter \
+  trace run --task "$task" --release data/releases/v1.1.0 --subset tiny \
+    --adapter trace_bench.thinkstream_adapter:ThinkStreamAdapter \
     --adapter-config output/thinkstream.local.json --pacing wall_clock \
     --video-root "$VIDEO_ROOT" --output "output/thinkstream-$task" \
     --judge-mode exact --checkpoint-every 5 --proactive-window-s 5
-  osb bundle validate "output/thinkstream-$task"
-  osb score "output/thinkstream-$task" --judge-mode exact
+  trace bundle validate "output/thinkstream-$task"
+  trace score "output/thinkstream-$task" --judge-mode exact
 done
 ```
 

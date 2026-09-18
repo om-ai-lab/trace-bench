@@ -2,7 +2,7 @@
 
 English | [简体中文](livecc-adapter.zh-CN.md)
 
-`open_stream_bench.livecc_adapter:LiveCCAdapter` runs local
+`trace_bench.livecc_adapter:LiveCCAdapter` runs local
 [LiveCC-7B-Instruct](https://huggingface.co/chenjoya/LiveCC-7B-Instruct) weights.
 It consumes Core's `Observation.rgb`; it does not open videos or replay files.
 Weights/processor load once, while each record gets fresh `past_ids/past_key_values`.
@@ -20,7 +20,7 @@ accelerate 1.12.0, livecc-utils 0.0.2, qwen-vl-utils 0.0.11,
 NumPy 1.26.4 and OpenCV 4.11.0.86. FlashAttention must match PyTorch/CUDA/GLIBC.
 Retain qwen-vl-utils 0.0.11: newer versions removed a livecc-utils dependency.
 
-From the OSB root in that environment, replace the two paths and run:
+From the TRACE root in that environment, replace the two paths and run:
 
 ```bash
 export LIVECC_ROOT=/path/to/livecc
@@ -32,7 +32,7 @@ python -m pip install -e .
 python -c "import torch; from livecc_utils import prepare_multiturn_multimodal_inputs_for_generation; assert torch.cuda.is_available()"
 ```
 
-Fix upstream import/CUDA errors before running OSB. Development dependencies
+Fix upstream import/CUDA errors before running TRACE. Development dependencies
 are optional for inference; install `'.[dev]'` if running the test suite.
 
 ## Tiny execution check
@@ -40,22 +40,22 @@ are optional for inference; install `'.[dev]'` if running the test suite.
 Prepare videos using [data setup](data-setup.md), replace VIDEO_ROOT, then run:
 
 ```bash
-export VIDEO_ROOT=/path/to/osb-media
+export VIDEO_ROOT=/path/to/trace-media
 python scripts/check_videos.py --release data/releases/v1.1.0 \
   --video-root "$VIDEO_ROOT" --subset tiny
-osb run --task qa --release data/releases/v1.1.0 --subset tiny \
-  --adapter open_stream_bench.livecc_adapter:LiveCCAdapter \
+trace run --task qa --release data/releases/v1.1.0 --subset tiny \
+  --adapter trace_bench.livecc_adapter:LiveCCAdapter \
   --adapter-config examples/livecc/logical.json --pacing logical \
   --video-root "$VIDEO_ROOT" --output output/livecc-qa \
   --judge-mode exact --checkpoint-every 5 --preflight-only
 for task in qa proactive; do
-  osb run --task "$task" --release data/releases/v1.1.0 --subset tiny \
-    --adapter open_stream_bench.livecc_adapter:LiveCCAdapter \
+  trace run --task "$task" --release data/releases/v1.1.0 --subset tiny \
+    --adapter trace_bench.livecc_adapter:LiveCCAdapter \
     --adapter-config examples/livecc/logical.json --pacing logical \
     --video-root "$VIDEO_ROOT" --output "output/livecc-$task" \
     --judge-mode exact --checkpoint-every 5 --proactive-window-s 5
-  osb bundle validate "output/livecc-$task"
-  osb score "output/livecc-$task" --judge-mode exact
+  trace bundle validate "output/livecc-$task"
+  trace score "output/livecc-$task" --judge-mode exact
 done
 ```
 
@@ -72,7 +72,7 @@ For wall-clock measurements use `examples/livecc/wall_clock.json` and
 including sampling stress. The wrapper requires `jq`:
 
 ```bash
-export VIDEO_ROOT=/path/to/osb-media
+export VIDEO_ROOT=/path/to/trace-media
 export LIVECC_ROOT=/path/to/livecc
 export LIVECC_MODEL_PATH=/path/to/LiveCC-7B-Instruct
 export OUTPUT_ROOT=output/livecc-full

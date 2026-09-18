@@ -64,8 +64,8 @@ def protocol(output, lang):
     ax = fig.add_axes((0, 0, 1, 1))
     ax.set(xlim=(0, 1), ylim=(0, 1))
     ax.axis("off")
-    label(ax, .04, .945, tr("What OSB measures along a video stream",
-                            "OSB 如何沿视频流评估模型"), 25, weight="bold")
+    label(ax, .04, .945, tr("What TRACE measures along a video stream",
+                            "TRACE 如何沿视频流评估模型"), 25, weight="bold")
     label(ax, .04, .891, tr("Causal evidence + controlled query timing + traceable outcomes",
                             "因果视觉输入 + 明确的问题时机 + 可追溯的结果"), 15, MUTED)
     for y in (.54, .22):

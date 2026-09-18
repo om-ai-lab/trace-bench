@@ -2,7 +2,7 @@
 
 [English](THIRD_PARTY_NOTICES.md) | 简体中文
 
-MIT 仅覆盖 OSB 自有软件。外部代码、模型权重和源数据保留各自许可。
+MIT 仅覆盖 TRACE 自有软件。外部代码、模型权重和源数据保留各自许可。
 模型环境另行安装，使用前查看上游当前许可证和模型卡。
 
 | 组件 | 来源 / 条款 |
@@ -18,7 +18,7 @@ MIT 仅覆盖 OSB 自有软件。外部代码、模型权重和源数据保留�
 保留安装依赖附带的声明。此列表不替代用户 GPU 环境各组件的许可证。
 数据权限和 OVO 许可差异统一见[数据条款](DATA_TERMS.zh-CN.md)。
 
-引用 OSB 及源基准论文：
+引用 TRACE 及源基准论文：
 
 - Lin 等，[StreamingBench: Assessing the Gap for MLLMs to Achieve Streaming
   Video Understanding](https://arxiv.org/abs/2411.03628)。

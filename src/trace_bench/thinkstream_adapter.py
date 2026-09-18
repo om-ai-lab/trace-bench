@@ -1,6 +1,6 @@
-"""ThinkStream-3B adapter for the Open Stream Bench Core.
+"""ThinkStream-3B adapter for the TRACE Core.
 
-ThinkStream dependencies are imported lazily, so OSB installs without its model
+ThinkStream dependencies are imported lazily, so TRACE installs without its model
 runtime. This integration is experimental, not a release-validated walkthrough.
 See docs/thinkstream-adapter.md for setup requirements and validation scope.
 """

@@ -37,7 +37,7 @@ including audit and derived files.
 
 Times and durations are in seconds. Timestamps use the original video's time
 coordinates, not elapsed inference time. Intervals are half-open `[start_s, end_s)`.
-`video_path` is relative to the video root supplied to OSB. Videos and model weights
+`video_path` is relative to the video root supplied to TRACE. Videos and model weights
 are not included.
 
 The tables describe fields present in v1.1.0; “optional” means a field may be absent.
@@ -238,6 +238,6 @@ and `checks` (named booleans):
 | `streambench_proactive_128_matches_upstream` | Specific source-record consistency check |
 
 These are saved build-time checks, not a fresh validation of your local media or a
-license grant. Use `osb data validate --release data/releases/v1.1.0` from the
+license grant. Use `trace data validate --release data/releases/v1.1.0` from the
 repository root to validate the installed snapshot's schema and hashes.
 

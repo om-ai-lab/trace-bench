@@ -9,7 +9,7 @@ import cv2
 
 import pytest
 
-from open_stream_bench.cli import main
+from trace_bench.cli import main
 
 
 @pytest.mark.parametrize("step", [None, 20])
@@ -23,7 +23,7 @@ def test_documented_smoke_checks_answer_path(tmp_path, step):
         bundle = root / task
         assert main([
             "run", "--task", task, "--release", str(root / "release"),
-            "--adapter", "open_stream_bench.adapters:TestDoubleAdapter",
+            "--adapter", "trace_bench.adapters:TestDoubleAdapter",
             "--video-root", str(root), "--output", str(bundle), "--synthetic",
             "--judge-mode", "exact",
             "--checkpoint-every", "5",

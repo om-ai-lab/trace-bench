@@ -1,5 +1,6 @@
-from open_stream_bench.scoring import (
+from trace_bench.scoring import (
     JudgeRouter,
+    judge_from_settings,
     assess_official_eligibility,
     assemble_response_episodes,
     extract_choice,
@@ -725,3 +726,23 @@ def test_streaming_deltas_count_as_one_query_for_ttft_coverage():
     result = summarize_telemetry(events, [{"record_id": "qa", "status": "completed"}])
     assert result["responsiveness"]["ttft_ms"]["population_count"] == 1
     assert result["telemetry_coverage"]["query_ttft"] == 1.0
+
+
+def test_judge_env_prefers_trace_names_and_falls_back_to_osb(monkeypatch):
+    monkeypatch.delenv("TRACE_VLM_JUDGE_BASE_URL", raising=False)
+    monkeypatch.setenv("OSB_VLM_JUDGE_BASE_URL", "http://legacy:1/v1")
+    assert judge_from_settings({}).base_url == "http://legacy:1/v1"
+
+    monkeypatch.setenv("TRACE_VLM_JUDGE_BASE_URL", "http://primary:1/v1")
+    assert judge_from_settings({}).base_url == "http://primary:1/v1"
+
+
+def test_judge_api_key_reads_legacy_osb_name(monkeypatch):
+    monkeypatch.delenv("TRACE_VLM_JUDGE_API_KEY", raising=False)
+    monkeypatch.setenv("OSB_VLM_JUDGE_API_KEY", "legacy-key")
+    router = judge_from_settings({})
+    assert router.api_key_env == "TRACE_VLM_JUDGE_API_KEY"
+    assert router.vlm.api_key == "legacy-key"
+
+    monkeypatch.setenv("TRACE_VLM_JUDGE_API_KEY", "primary-key")
+    assert judge_from_settings({}).vlm.api_key == "primary-key"

@@ -11,7 +11,7 @@ policy changes need regression tests and a compatibility review.
 Do not widen QA parsing as incidental cleanup or edit finalized raw runs.
 Explain whether users need rescoring or new inference.
 
-OSB-owned code contributions use MIT; preserve upstream licenses for copied
+TRACE-owned code contributions use MIT; preserve upstream licenses for copied
 material. Data follows [data terms](DATA_TERMS.md).
 Follow the [code of conduct](CODE_OF_CONDUCT.md) and
 [release policy](docs/releasing.md). Contributions in English or Chinese are welcome;

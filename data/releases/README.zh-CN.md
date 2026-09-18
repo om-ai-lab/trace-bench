@@ -36,7 +36,7 @@ ID 文件是由 `record_id` 字符串组成的 JSON 数组。
 
 时间戳与时长均以秒为单位。时间戳对应原始视频的时间坐标，不是推理经过的墙钟时间。
 区间采用左闭右开形式 `[start_s, end_s)`。
-`video_path` 相对于运行 OSB 时指定的视频根目录。仓库不包含视频或模型权重。
+`video_path` 相对于运行 TRACE 时指定的视频根目录。仓库不包含视频或模型权重。
 
 下表说明 v1.1.0 中出现的字段；“可选”表示部分记录可能没有该字段。
 加载器也允许 `memory_length` 和历史 `deadline_s` 为 null。
@@ -231,6 +231,6 @@ GT 答案与复核元数据用于评分和审计，不是提供给模型的输�
 | `streambench_proactive_128_matches_upstream` | 特定来源记录的一致性检查 |
 
 这些是保存的构建期检查，不等于重新检查用户本地视频，也不代表许可授权。
-在仓库根目录运行 `osb data validate --release data/releases/v1.1.0`，
+在仓库根目录运行 `trace data validate --release data/releases/v1.1.0`，
 可检查当前快照的 schema 和哈希。
 

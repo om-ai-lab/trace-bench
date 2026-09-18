@@ -2,16 +2,16 @@
 
 English | [简体中文](adapter-guide.zh-CN.md)
 
-An adapter can live in its own repository. Install it and OSB in the model
+An adapter can live in its own repository. Install it and TRACE in the model
 environment, then use `--adapter module:Class --adapter-config file.json`.
 No Core registry edits are needed. See [LiveCC](livecc-adapter.md) and experimental
-[ThinkStream](thinkstream-adapter.md); [TestDoubleAdapter](../src/open_stream_bench/adapters.py)
+[ThinkStream](thinkstream-adapter.md); [TestDoubleAdapter](../src/trace_bench/adapters.py)
 is synthetic and deliberately reads GT. Never copy its answer-selection logic.
 
 ## Boundary
 
-Use [models.py](../src/open_stream_bench/models.py) and the protocols in
-[adapters.py](../src/open_stream_bench/adapters.py).
+Use [models.py](../src/trace_bench/models.py) and the protocols in
+[adapters.py](../src/trace_bench/adapters.py).
 
 1. Declare decoded-frame delivery, persistent/stateless state, query/polling/
    autonomous triggering, pacing and deployment. Core and adapter pacing must match.
