@@ -4,9 +4,13 @@
 
 - 评估设计：[英文 SVG](assets/results/evaluation-design.en.svg)、
   [中文 SVG](assets/results/evaluation-design.zh-CN.svg)。这是机制示意，
-  不是模型轨迹。图中为 Proactive 中间窗口；后续帧不表示越过最终评估边界。
-  QA 历史处理可因执行方式而发生在提问前或提问时，两部分花销都记录。
-  运行耗时一行不与视频时间轴对齐。
+  不是模型轨迹。图示包含 Core–适配器–模型–打分各环节、QA 的视频时间与
+  运行时钟双轴及记录的时延标记、以及含提前、窗口内、冗余、迟到片段的
+  Proactive 响应窗口示例。运行轴不与视频时间对齐；时间轴为示意。
+- 执行模式：[英文 SVG](assets/results/execution-modes.en.svg)、
+  [中文 SVG](assets/results/execution-modes.zh-CN.svg)。视觉状态（原生持续
+  状态 / 合法前缀重放）、响应触发（自主 / 轮询）与评测边界（模型 + 适配器 /
+  完整系统）是相互独立的声明维度，不是能力等级。
 - 相近得分、不同表现：[英文 SVG](assets/results/score-versus-behavior.en.svg)、
   [中文 SVG](assets/results/score-versus-behavior.zh-CN.svg)。数值为技术报告
   第五章的舍入结果，核对日期为 2026-09-10。
@@ -29,6 +33,6 @@ python -m pip install 'matplotlib>=3.7'
 MPLCONFIGDIR=output/matplotlib-cache python scripts/plot_homepage_figures.py --output output/homepage-preview
 ```
 
-生成八个文件：两张图 × 两种语言 × PNG/SVG。检查预览后，
+生成十二个文件：三张图 × 两种语言 × PNG/SVG。检查预览后，
 使用相同命令并改为 `--output docs/assets/results` 更新公开资源。
 生成器只替换自己命名的文件。

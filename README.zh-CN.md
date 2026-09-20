@@ -80,6 +80,16 @@ SWA 为 8.05% / 7.92%，重复响应相差约 6.5 倍，但 MOSS-VL 窗口外输
 
 </details>
 
+<details>
+<summary>执行模式：视觉状态、响应触发与评测边界</summary>
+
+![TRACE 执行模式示意](docs/assets/results/execution-modes.zh-CN.png)
+
+执行类别声明的是比较条件，而非能力等级。
+[图表来源与重新生成](docs/homepage-figures.zh-CN.md)。
+
+</details>
+
 ## 安装
 
 已测试 Python 3.10–3.12。克隆或下载[本仓库](https://github.com/om-ai-lab/trace-bench)，

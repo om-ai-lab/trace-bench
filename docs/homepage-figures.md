@@ -4,10 +4,16 @@ English | [简体中文](homepage-figures.zh-CN.md)
 
 - Evaluation design: [English SVG](assets/results/evaluation-design.en.svg),
   [Chinese SVG](assets/results/evaluation-design.zh-CN.svg). This is a schematic,
-  not a model trace. It shows an intermediate Proactive window; later frames do
-  not imply processing beyond the final evaluation boundary. QA history may be
-  processed before or at query time depending on execution mode; both history
-  and answering costs are recorded. The runtime row is not aligned to video time.
+  not a model trace. It shows the Core–adapter–model–scoring surfaces, the QA
+  video-time and runtime-clock axes with recorded latency landmarks, and a
+  Proactive response-window example with early, in-window, redundant and late
+  segments. The runtime axis is not aligned to video time; timelines are
+  illustrative.
+- Execution modes: [English SVG](assets/results/execution-modes.en.svg),
+  [Chinese SVG](assets/results/execution-modes.zh-CN.svg). Visual state (native
+  persistent state vs. legal-prefix replay), response triggering (autonomous
+  vs. polling) and the evaluation boundary (model + adapter vs. complete
+  system) are independent declared dimensions, not capability levels.
 - Similar scores, different behavior: [English SVG](assets/results/score-versus-behavior.en.svg),
   [Chinese SVG](assets/results/score-versus-behavior.zh-CN.svg). Values are rounded
   report Chapter 5 results, reviewed on 2026-09-10. See
@@ -31,6 +37,6 @@ python -m pip install 'matplotlib>=3.7'
 MPLCONFIGDIR=output/matplotlib-cache python scripts/plot_homepage_figures.py --output output/homepage-preview
 ```
 
-This writes eight files: two figures × two languages × PNG/SVG. Inspect previews,
+This writes twelve files: three figures × two languages × PNG/SVG. Inspect previews,
 then use the same command with `--output docs/assets/results` to update public
 assets. The generator replaces only its own named files.

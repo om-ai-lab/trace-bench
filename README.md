@@ -86,6 +86,16 @@ The diagram illustrates the protocol, not an observed model trace.
 
 </details>
 
+<details>
+<summary>Execution modes: visual state, response triggering and evaluation boundary</summary>
+
+![TRACE execution modes schematic](docs/assets/results/execution-modes.en.png)
+
+Execution categories declare comparison conditions, not capability levels.
+[Figure sources and regeneration](docs/homepage-figures.md).
+
+</details>
+
 ## Install
 
 Tested with Python 3.10–3.12. Clone or download
