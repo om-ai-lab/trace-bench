@@ -17,7 +17,7 @@
 <p>
   <a href="README.zh-CN.md">简体中文</a>
   · <a href="https://om-ai-lab.github.io/trace-bench/">Project page</a>
-  · <a href="https://om-ai-lab.github.io/trace-bench/results/index.zh.html">Leaderboard</a>
+  · <a href="https://om-ai-lab.github.io/trace-bench/results/">Leaderboard</a>
   · <a href="docs/evaluation-protocol.md">Evaluation protocol</a>
   · <a href="docs/dataset-card.md">Dataset card</a>
 </p>
