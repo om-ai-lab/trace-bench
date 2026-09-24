@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TRACE — 交互结果看板</title>
+<title>TRACE — 排行榜</title>
 <style>html{color-scheme:light dark}body{margin:0;background:light-dark(#edf2f6,#0c1219)}#osb-explorer{max-width:1240px;margin:24px auto}#osb-explorer a{color:var(--osb-blue)}@media(max-width:600px){#osb-explorer{margin:0;border-radius:0}}</style>
 </head>
 <body>
@@ -19,14 +19,14 @@
 #osb-explorer .group td{background:var(--osb-bg);padding:18px 12px 8px;border-top:1px solid var(--osb-line);font-size:11px;letter-spacing:.025em}
 #osb-explorer .group:first-child td{border-top:0}#osb-explorer tbody tr:not(.group):hover td{background:var(--osb-soft)}
 #osb-explorer .metric-start{border-left:1px solid var(--osb-line)}#osb-explorer .measure{background:none;padding:0;font-weight:400}#osb-explorer .measure.best{font-weight:650;color:var(--osb-blue)}
-#osb-explorer .model-button{color:var(--osb-text)}#osb-explorer .table-note{font-size:11px;color:var(--osb-muted);padding:10px 0}
+#osb-explorer .model-button{color:var(--osb-text)}
 #osb-explorer .plot-caption{font-size:12px;color:var(--osb-muted);margin:8px 0 16px}
 #osb-explorer .point-label{paint-order:stroke;stroke:var(--osb-bg);stroke-width:4px;stroke-linejoin:round}
 #osb-explorer .point-label.selected{font-weight:650}#osb-explorer .legend{margin-bottom:14px}
 </style>
-<header><div class="brand">TRACE <small>与论文对齐的结果 explorer</small></div><nav aria-label="Language"><a href="index.html">English</a></nav><span class="tag">离线 snapshot</span></header>
-<main><div class="meta" style="margin-bottom:18px"><a href="../benchmark-results.zh-CN.md">完整表格、结果来源与测量限制</a> · <a href="data/paper-results.json">公开结果 snapshot</a></div>
-<div class="intro"><div><h1>超越分数：有条件的运行行为</h1><div class="meta">当前论文 snapshot · 八个配置 · v1.0.0 推理 bundle / v1.1.0 标准总体</div></div><span class="tag">1 FPS · Proactive W = 5s</span></div>
+<header><div class="brand">TRACE <small>排行榜</small></div><nav aria-label="语言"><a href="index.html">English</a></nav><span class="tag">离线 benchmark</span></header>
+<main>
+<div class="intro"><div><h1>TRACE 排行榜</h1><div class="meta">benchmark 快照 · 八个配置 · v1.1.0 标准总体</div></div><span class="tag">1 FPS · Proactive W = 5s</span></div>
 <div class="controls">
 <label>任务<select id="osb-task"><option value="all">跨任务成绩卡</option><option value="qa">QA</option><option value="pro">Proactive</option></select></label>
 <label>比较组<select id="osb-group"></select></label>
@@ -36,11 +36,8 @@
 <details><summary>选择模型与指标列</summary><div class="models" id="osb-models"></div><div class="models" id="osb-columns"></div></details>
 <div class="status" id="osb-status" aria-live="polite"></div>
 <div id="osb-table-view" class="table-wrap"><table><thead id="osb-head"></thead><tbody id="osb-body"></tbody></table></div>
-<div class="table-note" id="osb-table-note">粗体：当前比较组内该列最优观测值（含并列）；不代表统计显著性或跨组排名。</div>
 <div id="osb-plot-view" hidden><div class="plot-controls"><label>横轴 · 运行/错误指标<select id="osb-x"></select></label><label>纵轴 · 质量指标<select id="osb-y"></select></label></div><div class="legend"><span>● 模型 + Adapter</span><span>■ 端到端系统</span><span>▲ 原生 duplex 诊断</span></div><div id="osb-chart"></div><div class="plot-caption" id="osb-chart-caption"></div><div class="meta" id="osb-plot-note"></div></div>
 <section class="detail" id="osb-detail" hidden aria-live="polite"></section>
-<footer><span>保留失败分母 · N/A 不填零 · 不计算跨组总排名</span><button type="button" id="osb-method">查看本次结果口径</button></footer>
-<section class="detail" id="osb-method-panel" hidden><h2>结果口径</h2><div class="detail-grid"><div><small>推理与分析版本</small>保留的 v1.0.0 推理 bundle<br>按 v1.1.0 标准总体分析</div><div><small>评分总体</small>QA：833 条 / 340 个视频<br>Proactive：407 条 / 1,270 窗口</div><div><small>论文指标</small>Recoverable Accuracy / Response Latency<br>窗口内准确率 / 延迟 / 误报 / 漏报</div></div><div class="detail-note">Response Latency 从问题到达开始。Proactive 延迟只统计观测到 onset 的已回答窗口。误报是全局 episode 指标，漏报是目标窗口指标。MOSS 提交图像数是独特帧代理。Polling 仍可运行，但不在论文主总体中。</div></section>
 </main>
 <script>
 (()=>{
@@ -78,7 +75,7 @@ function render(){
 const rs=rows(),ks=visibleKeys();options(el('sort'),ks,el('sort').value);el('sort').disabled=!ks.length;const sort=el('sort').value;
 el('status').textContent=rs.length+' 个配置 · '+(task==='qa'?'833 条 QA':task==='pro'?'407 条标准 Proactive / 1,270 窗口':'QA 833 条 / Proactive 1,270 标准窗口')+(view==='table'&&sort?' · 组内按 '+metrics[sort].label+' 排序':'')+(task==='all'?' · 以下按 Proactive 边界分组':'');
 el('table-view').hidden=view!=='table';el('plot-view').hidden=view!=='plot';el('table-button').setAttribute('aria-pressed',view==='table');el('plot-button').setAttribute('aria-pressed',view==='plot');
-el('sort-wrap').hidden=view!=='table';el('table-note').hidden=view!=='table';el('columns').hidden=view!=='table';
+el('sort-wrap').hidden=view!=='table';el('columns').hidden=view!=='table';
 const qaKeys=ks.filter(k=>metrics[k].task==='qa'),proKeys=ks.filter(k=>metrics[k].task==='pro');
 el('head').innerHTML='<tr class="task-heading"><th rowspan="2">模型配置</th>'+(qaKeys.length?'<th class="qa-heading" colspan="'+qaKeys.length+'">QA <span class="unit">/ 833 records</span></th>':'')+(proKeys.length?'<th class="pro-heading" colspan="'+proKeys.length+'">PROACTIVE <span class="unit">/ 1,270 windows</span></th>':'')+'</tr><tr>'+ks.map((k,i)=>'<th class="'+(i===0||k===proKeys[0]?'metric-start':'')+'"><button type="button" class="sort-head '+(sort===k?'active':'')+'" data-sort="'+k+'">'+metrics[k].label.replace('QA ','').replace('Proactive ','')+' '+(metrics[k].up?'↑':'↓')+'</button><br><span class="unit">'+metrics[k].unit+'</span></th>').join('')+'</tr>';
 el('head').querySelectorAll('[data-sort]').forEach(btn=>btn.onclick=()=>{el('sort').value=btn.dataset.sort;render()});
@@ -124,7 +121,6 @@ const note=el('plot-note');note.replaceChildren();rs.forEach(d=>{const btn=docum
 el('task').onchange=()=>{task=el('task').value;if(task==='all')view='table';setup()};
 el('group').onchange=render;el('sort').onchange=render;el('x').onchange=draw;el('y').onchange=draw;
 el('table-button').onclick=()=>{view='table';render()};el('plot-button').onclick=()=>{view='plot';if(task==='all'){task='pro';el('task').value='pro';setup()}else render()};
-el('method').onclick=()=>{el('method-panel').hidden=!el('method-panel').hidden};
 new ResizeObserver(()=>{if(view==='plot')draw()}).observe(el('chart'));
 setup();
 })();

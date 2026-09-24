@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="TRACE is a condition-aware benchmark for temporal video evaluation.">
+<title>TRACE · Project Page</title>
+<style>
+:root{--ink:#17283d;--muted:#5e7183;--line:#dbe5ed;--paper:#fff;--wash:#f5f8fb;--blue:#256db0;--blue-soft:#eaf4fc;--teal:#087f78;--teal-soft:#e7f7f4;--purple:#7654b8;--purple-soft:#f1edfb;--orange:#b96d27;--orange-soft:#fff3e6;--shadow:0 18px 55px rgba(29,63,91,.11);--radius:22px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f8fbfd 0,#fff 28%,#f7fafc 100%);color:var(--ink);font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}img{max-width:100%;height:auto}button{font:inherit}.site-header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(219,229,237,.9)}.nav-shell{max-width:1180px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--ink);font-weight:800;letter-spacing:.08em;font-size:18px}.brand:hover{text-decoration:none}.brand-mark{width:29px;height:29px;display:grid;place-items:center;border-radius:9px;color:#fff;font-size:14px;background:linear-gradient(135deg,var(--blue),var(--teal));box-shadow:0 5px 15px rgba(37,109,176,.25)}.nav{display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-wrap:wrap}.nav a{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:7px 12px;color:var(--muted);font-size:13px;font-weight:650;white-space:nowrap}.nav a:hover,.nav a.active{color:var(--ink);background:var(--wash);text-decoration:none}.nav a.primary{color:#fff;background:var(--ink);box-shadow:0 5px 14px rgba(23,40,61,.13)}.nav a.primary:hover{background:#29445e;color:#fff}.nav small{font-size:10px;line-height:1;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:.03em}.container{max-width:1180px;margin:0 auto;padding:0 28px}.hero{padding:75px 0 30px;text-align:center}.eyebrow,.kicker{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.hero h1{max-width:900px;margin:15px auto 16px;font-size:clamp(38px,6vw,72px);line-height:1.04;letter-spacing:-.055em}.hero .lead{max-width:780px;margin:0 auto;color:var(--muted);font-size:clamp(17px,2.2vw,21px);line-height:1.6}.hero-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:29px 0 22px}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--ink);border-radius:999px;padding:11px 20px;color:#fff;background:var(--ink);font-size:14px;font-weight:750;box-shadow:0 8px 20px rgba(23,40,61,.13)}.button:hover{color:#fff;background:#29445e;text-decoration:none;transform:translateY(-1px)}.button.secondary{color:var(--ink);background:#fff;border-color:var(--line);box-shadow:none}.button.secondary:hover{background:var(--wash);color:var(--ink)}.hero-tags{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:12px;font-weight:700}.pill i{width:7px;height:7px;border-radius:50%;background:var(--blue)}.pill.teal i{background:var(--teal)}.pill.purple i{background:var(--purple)}.pill.orange i{background:var(--orange)}.hero-figure{margin:32px auto 0;padding:12px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.hero-figure img{display:block;width:100%;border-radius:14px}.caption{margin:13px 8px 3px;color:var(--muted);font-size:13px;text-align:left}.section{padding:78px 0 0}.section-heading{max-width:760px;margin-bottom:27px}.section-heading h2{margin:7px 0 11px;font-size:clamp(29px,4vw,44px);line-height:1.12;letter-spacing:-.035em}.section-heading p{margin:0;color:var(--muted);font-size:17px}.tag-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.tag-card{min-height:180px;padding:22px 19px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(29,63,91,.05)}.tag-card .icon{width:36px;height:36px;display:grid;place-items:center;margin-bottom:18px;border-radius:11px;font-weight:850}.tag-card h3{margin:0 0 7px;font-size:17px;line-height:1.2}.tag-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}.tag-card.blue .icon{background:var(--blue-soft);color:var(--blue)}.tag-card.teal .icon{background:var(--teal-soft);color:var(--teal)}.tag-card.purple .icon{background:var(--purple-soft);color:var(--purple)}.tag-card.orange .icon{background:var(--orange-soft);color:var(--orange)}.tag-card.slate .icon{background:#eef2f6;color:#48627b}.release-strip{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-top:18px;padding:20px 23px;border-radius:18px;background:linear-gradient(110deg,#edf7fc,#f5f1fc);border:1px solid #dbe7f0}.release-strip strong{display:block;margin-bottom:3px;font-size:16px}.release-strip p{margin:0;color:var(--muted);font-size:14px}.release-label{padding:8px 12px;border-radius:10px;background:#fff;color:var(--purple);font-size:12px;font-weight:800;white-space:nowrap}.split{display:grid;grid-template-columns:.85fr 1.15fr;align-items:center;gap:46px}.split.reverse{grid-template-columns:1.15fr .85fr}.split-copy h2{margin:8px 0 13px;font-size:clamp(28px,4vw,42px);line-height:1.12;letter-spacing:-.035em}.split-copy p{color:var(--muted)}.mini-list{display:grid;gap:10px;margin:22px 0 0;padding:0;list-style:none}.mini-list li{display:flex;gap:11px;align-items:flex-start;color:var(--muted);font-size:14px}.mini-list b{display:inline-grid;place-items:center;flex:0 0 23px;height:23px;border-radius:8px;background:var(--blue-soft);color:var(--blue);font-size:12px}.figure-card{padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow)}.figure-card img{display:block;border-radius:13px}.figure-card .caption{margin-bottom:4px}.results-head{display:flex;align-items:end;justify-content:space-between;gap:24px}.results-head .section-heading{margin-bottom:27px}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.gallery-card{overflow:hidden;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(29,63,91,.06)}.gallery-card a{display:block;padding:10px 10px 0}.gallery-card img{display:block;width:100%;border-radius:11px;transition:transform .25s ease}.gallery-card a:hover img{transform:scale(1.018)}.gallery-card figcaption{padding:15px 17px 17px;color:var(--muted);font-size:13px;line-height:1.5}.gallery-card strong{display:block;margin-bottom:4px;color:var(--ink);font-size:15px}.leaderboard-cta{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding:20px 23px;border:1px solid #cfe1ef;border-radius:18px;background:var(--blue-soft)}.leaderboard-cta p{margin:0;color:#43637f;font-size:14px}.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}.quick-card{padding:24px;border:1px solid var(--line);border-radius:18px;background:#fff}.quick-card h3{margin:0 0 9px;font-size:20px}.quick-card p{margin:0 0 16px;color:var(--muted);font-size:14px}.quick-card pre{overflow:auto;margin:0;padding:16px;border-radius:12px;background:#152538;color:#e5f2fc;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.resource-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.resource-links a{padding:7px 11px;border-radius:9px;background:var(--wash);font-size:13px;font-weight:700}.resource-links a:hover{background:var(--blue-soft);text-decoration:none}.footer-section{padding:78px 0 36px}.footer-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:25px;padding:27px 0;border-top:1px solid var(--line)}.footer-grid h2{margin:0 0 9px;font-size:25px}.footer-grid p{margin:0 0 10px;color:var(--muted);font-size:14px}.cite{padding:14px 16px;border-radius:12px;background:var(--wash);color:var(--muted);font-size:13px}.fine-print{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding-top:20px;color:var(--muted);font-size:12px}.fine-print a{color:var(--muted);text-decoration:underline}.top-link{color:var(--muted)}
+@media(max-width:940px){.tag-grid{grid-template-columns:repeat(3,1fr)}.split,.split.reverse{grid-template-columns:1fr;gap:25px}.split.reverse .figure-card{order:2}.gallery{grid-template-columns:1fr 1fr}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.nav-shell{padding:11px 16px;align-items:flex-start}.nav{gap:2px}.nav a{padding:6px 8px;font-size:12px}.nav a.primary{display:none}.container{padding:0 17px}.hero{padding:52px 0 20px}.hero h1{font-size:43px}.hero .lead{font-size:16px}.section{padding-top:58px}.tag-grid,.gallery,.quick-grid,.footer-grid{grid-template-columns:1fr}.tag-card{min-height:0}.release-strip,.leaderboard-cta{align-items:flex-start;flex-direction:column}.release-label{white-space:normal}.results-head{display:block}.hero-figure,.figure-card{padding:8px;border-radius:17px}.caption{font-size:12px}.footer-section{padding-top:58px}}
+</style>
+<style>
+.hero h1{font-size:clamp(52px,8vw,88px);font-weight:700;line-height:1;letter-spacing:.02em;margin-bottom:8px}
+.section-heading h2,.split-copy h2{font-weight:600;letter-spacing:0}
+.hero-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:26px 0 10px}
+.hero-links .button{padding:9px 16px;font-size:13px;box-shadow:none}
+.hero-links .button small{font-size:10px;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+section[id]{scroll-margin-top:82px}
+.leaderboard-embed{margin-top:22px;padding:10px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow)}
+.leaderboard-embed iframe{display:block;width:100%;height:1100px;border:0;border-radius:12px;background:var(--wash)}
+@media(max-width:680px){.hero h1{font-size:54px}.leaderboard-embed iframe{height:1320px}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-shell">
+    <a class="brand" href="index.html" aria-label="TRACE Project Page"><span class="brand-mark">T</span><span>TRACE</span></a>
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="active" href="#top">Project Page</a>
+      <a class="primary" href="#leaderboard">Leaderboard</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <section class="hero" id="top">
+    <div class="eyebrow">Temporal Audit and Condition-aware Evaluation</div>
+    <h1>TRACE</h1>
+    <p class="lead">TRACE is a public benchmark for evaluating how models observe a video stream, answer at the right time, and respond under clearly declared execution conditions.</p>
+    <div class="hero-links" aria-label="Project resources">
+      <a class="button secondary" href="https://arxiv.org/abs/2609.00000">Paper <small>Coming soon</small></a>
+      <a class="button secondary" href="https://huggingface.co/datasets/omlab/trace-bench">Hugging Face <small>Open dataset</small></a>
+      <a class="button" href="#leaderboard">Leaderboard <span aria-hidden="true">↓</span></a>
+    </div>
+    <div class="hero-tags" aria-label="TRACE scope">
+      <span class="pill"><i></i>Temporal QA</span>
+      <span class="pill teal"><i></i>Proactive response</span>
+      <span class="pill purple"><i></i>Condition-aware</span>
+      <span class="pill orange"><i></i>Versioned release</span>
+    </div>
+    <figure class="hero-figure">
+      <img src="assets/results/evaluation-design-report.en.png" alt="TRACE evaluation design: causal video history enters Core and an Adapter before reaching a model or system and the scorer." width="3240" height="2160">
+      <figcaption class="caption">The TRACE evaluation path keeps the observed history, Core → Adapter boundary, model or system response, telemetry and scoring connected.</figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-heading">
+      <div class="kicker">A benchmark with visible boundaries</div>
+      <h2>What TRACE makes easier to inspect</h2>
+      <p>Streaming systems can produce similar answers through very different paths. TRACE keeps those paths legible so quality, timing and behavior can be read together.</p>
+    </div>
+    <div class="tag-grid">
+      <article class="tag-card blue"><div class="icon">Q</div><h3>QA</h3><p>Ask a question at a timestamp and score the answer against the legal video history available at that moment.</p></article>
+      <article class="tag-card teal"><div class="icon">↗</div><h3>Proactive</h3><p>Let a system decide what to say and when to say it around an upcoming event window.</p></article>
+      <article class="tag-card purple"><div class="icon">◷</div><h3>Temporal audit</h3><p>Keep timestamps, history boundaries, response windows and stopping points alongside each result.</p></article>
+      <article class="tag-card orange"><div class="icon">→</div><h3>Core → Adapter</h3><p>Separate benchmark timing and visual delivery from the model or end-to-end system being tested.</p></article>
+      <article class="tag-card slate"><div class="icon">✓</div><h3>Release scope</h3><p>Use versioned annotations, reproducible bundles and explicit data terms as part of the workflow.</p></article>
+    </div>
+    <div class="release-strip"><div><strong>TRACE v1.1.0</strong><p>A local-first release for inspecting streaming behavior under declared conditions.</p></div><span class="release-label">Quality · timing · behavior · workload</span></div>
+  </section>
+
+  <section class="section" id="execution">
+    <div class="split">
+      <div class="split-copy">
+        <div class="kicker">Read the conditions first</div>
+        <h2>Execution modes are comparison context</h2>
+        <p>Native and non-native visual states, autonomous and polling triggers, and model/Adapter versus complete-system boundaries describe how a result was obtained. They are dimensions of comparison, not a single capability ladder.</p>
+        <ul class="mini-list">
+          <li><b>01</b><span><strong>Visual state</strong><br>What representation reaches the model over time?</span></li>
+          <li><b>02</b><span><strong>Response trigger</strong><br>Does the model speak autonomously or when polled?</span></li>
+          <li><b>03</b><span><strong>Evaluation boundary</strong><br>Which part of the system owns scheduling and memory?</span></li>
+        </ul>
+      </div>
+      <figure class="figure-card">
+        <img src="assets/results/execution-modes-report.en.png" alt="TRACE execution modes: visual state, response trigger and evaluation boundary." width="2880" height="1655" loading="lazy">
+        <figcaption class="caption">Execution conditions are reported alongside the result so comparisons retain their operational context.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="leaderboard">
+    <div class="section-heading">
+      <div class="kicker">Interactive results</div>
+      <h2>Inspect the leaderboard</h2>
+      <p>Filter the measured configurations by task, execution group and operational metric in the embedded leaderboard.</p>
+    </div>
+    <div class="leaderboard-embed" id="leaderboard-view">
+      <iframe src="results/index.html" title="TRACE interactive leaderboard" loading="lazy"></iframe>
+    </div>
+  </section>
+
+  <section class="footer-section" id="resources">
+    <div class="footer-grid">
+      <div><h2>Resources and citation</h2><p>Keep the project page lightweight; the reference documents hold the exact fields, protocol, release manifests and measurement limits.</p><div class="resource-links"><a href="dataset-card.md">Dataset card</a><a href="evaluation-protocol.md">Evaluation protocol</a><a href="#leaderboard">Leaderboard</a><a href="https://github.com/om-ai-lab/trace-bench/blob/main/CITATION.cff">CITATION.cff</a></div></div>
+      <div><h2>Data terms</h2><p class="cite">Code is MIT licensed. StreamingBench authors have granted permission to redistribute modified annotation files; TRACE additions are released under CC BY-NC-SA 4.0 within the rights held by contributors. OVO-Bench terms remain pending.</p><div class="resource-links"><a href="https://github.com/om-ai-lab/trace-bench/blob/main/DATA_TERMS.md">Read the data terms</a><a href="https://github.com/om-ai-lab/trace-bench/blob/main/LICENSE">MIT license</a></div></div>
+    </div>
+    <div class="fine-print"><span>TRACE · Temporal Audit and Condition-aware Evaluation</span><span><a href="#top">Back to top ↑</a></span></div>
+  </section>
+</main>
+</body>
+</html>

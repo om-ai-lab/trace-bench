@@ -2,7 +2,7 @@ include README.md README.zh-CN.md CHANGELOG.md LICENSE DATA_TERMS.md THIRD_PARTY
 recursive-include docs *.md
 recursive-include docs/assets/results *.png *.svg
 recursive-include docs/results *.html
-recursive-include docs/results/data *.json
+include docs/index.html
 recursive-include examples *.md *.json
 recursive-include scripts *.py *.sh
 recursive-include tests *.py
