@@ -2,41 +2,40 @@
 
 English | [简体中文](homepage-figures.zh-CN.md)
 
-- Evaluation design: [English SVG](assets/results/evaluation-design.en.svg),
-  [Chinese SVG](assets/results/evaluation-design.zh-CN.svg). This is a schematic,
-  not a model trace. It shows the Core–adapter–model–scoring surfaces, the QA
-  video-time and runtime-clock axes with recorded latency landmarks, and a
-  Proactive response-window example with early, in-window, redundant and late
-  segments. The runtime axis is not aligned to video time; timelines are
-  illustrative.
-- Execution modes: [English SVG](assets/results/execution-modes.en.svg),
-  [Chinese SVG](assets/results/execution-modes.zh-CN.svg). Visual state (native
-  persistent state vs. legal-prefix replay), response triggering (autonomous
-  vs. polling) and the evaluation boundary (model + adapter vs. complete
-  system) are independent declared dimensions, not capability levels.
-- Similar scores, different behavior: [English SVG](assets/results/score-versus-behavior.en.svg),
-  [Chinese SVG](assets/results/score-versus-behavior.zh-CN.svg). Values are rounded
-  report Chapter 5 results, reviewed on 2026-09-10. See
-  [result provenance and limits](benchmark-results.md).
+- Evaluation design: [paper SVG](assets/results/evaluation-design-report.en.svg)
+  and [paper PNG](assets/results/evaluation-design-report.en.png). This is the
+  exact current-report schematic, not a public redraw.
+- Execution modes: [paper SVG](assets/results/execution-modes-report.en.svg)
+  and [paper PNG](assets/results/execution-modes-report.en.png). This is the
+  exact current-report schematic, not a public redraw.
+- Paper QA quality, response latency and generation workload: [PNG](assets/results/fig_qa_accuracy_workload.png),
+  [SVG](assets/results/fig_qa_accuracy_workload.svg). This is the exact checked-in
+  paper figure, including both paired QA panels.
+- Paper Proactive quality and delay: [PNG](assets/results/fig_proactive_quality_delay.png),
+  [SVG](assets/results/fig_proactive_quality_delay.svg). This is the exact paper
+  asset, including video-clustered confidence intervals.
+- Paper Proactive False-alarm/Miss view: [PNG](assets/results/fig_proactive_fa_miss.png),
+  [SVG](assets/results/fig_proactive_fa_miss.svg). False-alarm is the global
+  episode-level ratio and Miss is the target-window-level ratio.
 
-All bars start at zero; percentages use a 0–100 reference. Blue is the first
-named model in each pair, orange the second. Arrows indicate the preferred
-direction of each quantity, not an overall ranking. Fewer tokens alone do not
-establish better efficiency. No missing values are estimated. The repetition
-ratio uses published rounded counts: 185.6 / 28.4 ≈ 6.5.
+The five figures above are copied verbatim from the current LaTeX report
+(`fig_qa_accuracy_workload`, `fig_proactive_quality_delay`, and
+`fig_proactive_fa_miss`). The report does not provide separate Chinese versions,
+so the Chinese page uses the same English paper assets. The public generator below
+intentionally does not redraw or overwrite these files. Numerical comparisons and
+metric definitions remain in the result tables and the Explorer.
 
-## Regenerate
+## Verify the checked-in paper assets
 
-Run from the repository root with Matplotlib and one of Noto Sans CJK SC,
-WenQuanYi Zen Hei, or Droid Sans Fallback installed. Ubuntu's `fonts-noto-cjk`
-package provides a supported font. SVG fonts are converted to paths for portable
-viewing. Plotting is optional; Core does not require Matplotlib.
+All five figures above are copied verbatim from the current LaTeX report. The
+public checkout intentionally contains no plotting approximation for them. The
+historical `plot_homepage_figures.py` filename is retained as a compatibility
+entry point, but the script only verifies the ten checked-in PNG/SVG hashes; it
+does not redraw or overwrite any figure.
 
 ```bash
-python -m pip install 'matplotlib>=3.7'
-MPLCONFIGDIR=output/matplotlib-cache python scripts/plot_homepage_figures.py --output output/homepage-preview
+python scripts/plot_homepage_figures.py
 ```
 
-This writes twelve files: three figures × two languages × PNG/SVG. Inspect previews,
-then use the same command with `--output docs/assets/results` to update public
-assets. The generator replaces only its own named files.
+When the manuscript changes, export the new report assets from the LaTeX
+checkout, replace the public files together, and update the verifier manifest.

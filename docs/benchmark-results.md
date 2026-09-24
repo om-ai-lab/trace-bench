@@ -3,147 +3,151 @@
 English | [简体中文](benchmark-results.zh-CN.md)
 
 Explore these results with the [interactive scorecard and plots](results-explorer.md).
+The numerical source for the public tables and explorers is the versioned
+[paper result snapshot](results/data/paper-results.json).
 
-This page summarizes Chapters 3–5 and Appendix B of the TRACE technical
-report, as reviewed on 2026-09-10. Figures are the report's selected figures;
-tables describe the tested configurations, not a combined leaderboard or a claim
-that every adapter is included in this repository.
+This page follows the active TRACE LaTeX report. It describes retained v1.0.0
+inference bundles analyzed on the v1.1.0 standard population; it is not a fresh
+inference rerun. The eight rows below are declared configurations, not a single
+cross-boundary leaderboard.
 
-## Tasks and experiment scope
+## Tasks, populations and execution conditions
 
 | Task | What the model must do | Report population |
 | --- | --- | --- |
 | Timestamped QA | Answer a question arriving at a specified time using the legal video history | 833 records / 340 videos |
-| Proactive Response | Receive an instruction before an event, monitor subsequent evidence, and decide when to respond | 407 standard records / 178 videos / 1,270 windows |
+| Proactive Response | Receive one monitoring instruction, observe subsequent evidence, and decide when to respond | 407 standard records / 178 videos / 1,270 windows |
 
 Core supplies causal RGB observations at 1 FPS with wall-clock pacing.
 Point triggers distinguish event onset, action completion and sufficient clues;
 states use annotated intervals. Failures remain in score denominators.
-Proactive results use W=5s scoring, with earlier next-trigger boundaries and
-unchanged state intervals.
+Proactive results use W=5s scoring, with half-open boundaries, earlier next-trigger
+limits and unchanged state intervals.
 
-**Result provenance:** these report analyses use retained v1.0.0 inference bundles,
-with the v1.1.0 standard population applied to Proactive results and record-scoped
-telemetry. They are not newly executed v1.1.0 runs. The shipped release includes
-another 8 sampling-stress records / 68 windows; `--subset full` includes them,
-so its 415-record population differs from this report table.
-See [release fields and subsets](../data/releases/README.md).
+The released full population contains 1,248 records / 522 videos, including 415
+Proactive records and 1,338 windows. Eight sampling-stress records contribute 68
+windows, 25 of them at most one second. `--subset full` includes these records;
+the paper standard population does not. Canonical release files and hashes are
+unchanged. See [release fields and subsets](../data/releases/README.md).
+
+**Table: Per-model configurations and result boundaries.** The columns and row
+order follow the paper's `tab:configurations`; all standard Proactive tracks
+receive one monitoring instruction and self-initiate their responses.
+
+| Model/system | State and input organization | Proactive trigger | Deployment and evaluation boundary |
+| --- | --- | --- | --- |
+| AURA | QA: Non-native prefix processing at query time; Proactive: persistent history with incremental visual-state updates | Autonomous | Local service; model + Adapter |
+| MOSS-VL | Native; real-time session and asynchronous frame queue | Autonomous | Local weights; model + Adapter |
+| MOSS-Preview | Native; real-time session and asynchronous frame queue | Autonomous | Local weights; model + Adapter |
+| LiveCC | Native; persistent session and streaming generation | Autonomous | Local weights; model + Adapter |
+| ThinkStream | Native; two-frame blocks and persistent state | Autonomous | Local weights; model + Adapter |
+| VideoLLM-Online | Native; per-frame visual representations and persistent key-value (KV) state | Autonomous | Local weights; model + Adapter |
+| MiniCPM-O (native duplex) | Native; per-frame input and persistent duplex state | Autonomous | Local weights; model + Adapter diagnostic |
+| JoyAI | Current segments and external summary memory; model-level incremental state unverified | Autonomous | Local multiple services; end-to-end system |
+
+Polling remains a supported runtime mode and historical baseline, but it is not
+part of the paper's primary cohort. The old MiniCPM-O polling scores are not
+renamed as native duplex results.
 
 ## What the benchmark reveals
 
-- Similar QA scores can hide reliability differences: LiveCC and MOSS-Preview
-  score 65.19% and 65.07%, but complete 93.88% and 100% of records.
-- Similar Proactive scores can hide notification behavior: MOSS-VL and AURA
-  score 8.05% and 7.92% SWA, but produce 185.6 and 28.4 redundant responses
-  per 100 target windows, a roughly 6.5-fold difference.
-- Higher window scores can come with more extra output and failures:
-  LiveCC scores 12.98% SWA versus MOSS-VL's 8.05%, while producing 562.0
-  versus 160.2 outside-window responses per 100 windows and completing
-  87.71% versus 100% of records.
-- Polling and autonomous response measure different interactions. MiniCPM-O's
-  40.91% polling SWA measures externally prompted checks, not autonomous triggering.
-- Trigger-specific strengths can reverse: MOSS-Preview scores 23.54% on
-  sufficient-clue windows versus MOSS-VL's 8.75%, but 0% versus 7.21% on
-  action-completion windows. These subsets differ in content and size.
+- Similar QA scores can hide different execution profiles: LiveCC and
+  MOSS-Preview are near 65% accuracy, but their completion, response-latency and
+  observed token profiles differ.
+- Similar Proactive quality can hide different response-selection behavior:
+  MOSS-VL and AURA score 8.05% and 7.92% In-window Accuracy, while MOSS-VL has
+  lower False-alarm Rate (41.1% versus 59.1%) and a shorter observed median delay.
+- JoyAI's 17.08% In-window Accuracy is measured at an end-to-end system boundary;
+  its memory and scheduling components are part of the evaluated system.
+- MiniCPM-O native duplex is a diagnostic interface condition: its QA accuracy is
+  2.40% with 93.52% invalid output, and its Proactive accuracy is 0.51% with
+  24.6% delay-onset coverage. It is not inherited from the historical polling run.
 
-These observations motivate reporting quality, timeliness, extra responses,
-workload and completion separately rather than reducing them to one overall score.
+These observations support reporting quality, timeliness, response-selection
+behavior, workload and execution reliability separately.
 
 ## QA results
 
-Accuracy below is the report's **Recoverable Accuracy**: accept one unambiguous
-explicit option label, including an answer introduction or option text beginning
-with the label; reject two distinct labels and unlabelled prose. Hidden thinking
-is removed before parsing. This is **not the software 0.1.0 default strict
-single-label `accuracy`**. Re-running `trace score` alone does not reproduce this
-report analysis; this documentation update does not change the Core parser.
+QA **Recoverable Accuracy** accepts one unambiguous explicit option label,
+including an answer introduction or label-prefixed option text. Hidden thinking
+is removed before parsing. Two distinct labels, unlabeled prose and ordinary
+articles are invalid. This report metric is separate from the software default
+strict parser; the paper-compatible scoring profile exposes that distinction.
 
-### Native model + adapter
+Response Latency is measured from question arrival at the Evaluation Core to
+completion received. It includes required query-time history processing,
+preparation, queueing and generation. It is not TTFT. Submitted images and
+output tokens are observed workload totals under each configuration's boundary.
 
-| Model | Recoverable accuracy | Record completion | Query-stage p50 (ms) | Recorded output tokens | Invalid output |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| LiveCC | 65.19% | 93.88% | 165.2 | 146,064 | 6.12% |
-| MOSS-Preview | 65.07% | 100.00% | 138.1 | 42,206 | 1.92% |
-| MOSS-VL | 75.03% | 99.88% | 374.6 | 39,768 | 0.84% |
-| ThinkStream | 61.46% | 100.00% | 411.0 | 349,476 | 0.00% |
-| VideoLLM-Online | 2.64% | 100.00% | 681.1 | 39,047 | 95.32% |
+**Table: QA results by execution condition.** Latency is the median Response
+Latency in milliseconds; output tokens are observed run totals over the scheduled
+population and are not normalized by completion. The group labels follow the
+paper's `tab:qa_results`.
 
-### End-to-end system
+| Configuration | Accuracy | Completion | Response latency, median (ms) | Submitted images | Recorded output tokens | Invalid output |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **(a) Native models with Adapters** |  |  |  |  |  |  |
+| LiveCC | 65.19% | 93.88% | 165.2 | 21,917 | 146,064 | 6.12% |
+| MOSS-Preview | 65.07% | 100.00% | 138.1 | 30,835 | 42,206 | 1.92% |
+| MOSS-VL | 75.03% | 99.88% | 374.6 | 30,835 | 39,768 | 0.84% |
+| ThinkStream | 61.46% | 100.00% | 411.0 | 30,835 | 349,476 | 0.00% |
+| VideoLLM-Online | 2.64% | 100.00% | 681.1 | 30,835 | 39,047 | 95.32% |
+| MiniCPM-O (native duplex) | 2.40% | 100.00% | 489.5 | 30,835 | 24,591 | 93.52% |
+| **(b) End-to-end system** |  |  |  |  |  |  |
+| JoyAI | 67.47% | 91.36% | 876.1 | 17,235 | 2,286 | 8.52% |
+| **(c) Non-native prefix-input** |  |  |  |  |  |  |
+| AURA | 73.83% | 99.88% | 819.7 | 31,170 | 2,469 | 0.60% |
 
-| System | Recoverable accuracy | Record completion | Query-stage p50 (ms) | Recorded output tokens | Invalid output |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| JoyAI | 67.47% | 91.36% | 876.1 | 2,286 | 8.52% |
+![QA accuracy, response latency and generation workload](assets/results/fig_qa_accuracy_workload.png)
 
-### Non-native prefix input
-
-| Model | Recoverable accuracy | Record completion | Query-stage p50 (ms) | Recorded output tokens | Invalid output |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| AURA | 73.83% | 99.88% | 819.7 | 2,469 | 0.60% |
-| MiniCPM-O (polling) | 71.31% | 99.88% | 611.9 | N/A | 6.60% |
-
-QA asks once per record; “polling” identifies MiniCPM-O's corresponding Proactive
-configuration. Completion is execution status, while invalid output measures
-failure to parse a legal choice.
-
-![QA accuracy, recorded query duration and generation workload](assets/results/fig_qa_accuracy_workload.png)
-
-Query-stage duration is measured from recorded query boundaries and may exclude
-history processing; it is not end-to-end latency or TTFT. Output tokens include
-recorded history generation, thinking, control text and answers. Missing values
-are not estimated; different tokenizers and incomplete telemetry prevent treating
-these totals as equal compute or monetary cost. The right panel divides totals
-by 833 records and uses a logarithmic axis; shapes distinguish evaluation groups.
+Output-token totals include recorded history, reasoning, control text and
+answers. Different vocabularies and incomplete telemetry prevent interpreting
+them as a common compute or monetary cost. The supplementary native-duplex
+Proactive completion field is unavailable and remains missing.
 
 ## Proactive results
 
-Strict Window Accuracy (SWA) is mean window content score, including partial
-credit. TCR@5s additionally requires a response onset within the 5-second latency
-threshold; missing causal latency contributes zero. Both retain all 1,270 windows
-in the denominator. Semantic judging is text-only using the shared
-Qwen3.5-35B-A3B / `osb-vlm-judge-v1` configuration; timing is scored separately.
+**In-window Accuracy** averages content credit over all 1,270 target windows,
+including misses and failures. **Median Response Delay** is conditional on
+answered windows with an observed first-token onset. The snapshot reports the
+observed-onset and answered counts for coverage. **False-alarm Rate** is a global
+response-episode ratio: an episode beginning outside every currently valid
+window enters the numerator only if a later valid window remains, and final-tail
+episodes do not. **Miss Rate** is a target-window ratio: no assigned response is
+a miss; an incorrect assigned response is not.
 
-### Autonomous model + adapter
+**Table: Proactive results by response track.** In-window Accuracy and Miss are
+window-level; False-alarm Rate is a global response-episode ratio; Median
+Response Delay is conditional on answered windows with an observed onset. The
+group labels follow the paper's `tab:proactive_results`.
 
-| Model | SWA | TCR@5s | Record completion |
-| --- | ---: | ---: | ---: |
-| LiveCC | 12.98% | 12.51% | 87.71% |
-| MOSS-VL | 8.05% | 7.50% | 100.00% |
-| AURA | 7.92% | 7.39% | 99.26% |
-| MOSS-Preview | 4.45% | 4.31% | 100.00% |
-| ThinkStream | 0.52% | 0.34% | 100.00% |
-| VideoLLM-Online | 0.18% | 0.15% | 100.00% |
+| Configuration | In-window Accuracy | Median delay (s) | False-alarm Rate | Miss Rate | Submitted images | Output tokens |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **(a) Autonomous model + Adapter** |  |  |  |  |  |  |
+| LiveCC | 12.98% | 1.08 | 65.0% | 0.31% | 23,243 | 78,478 |
+| AURA | 7.92% | 1.15 | 59.1% | 47.64% | 439,400 | 50,957 |
+| MOSS-VL | 8.05% | 0.33 | 41.1% | 47.24% | 34,520* | 74,672 |
+| MOSS-Preview | 4.45% | 0.20 | 77.7% | 35.67% | 34,520* | 193,517 |
+| ThinkStream | 0.52% | 2.14 | 73.6% | 68.43% | 32,783 | 373,897 |
+| VideoLLM-Online | 0.18% | 0.20 | 82.4% | 60.39% | 32,783 | 42,162 |
+| MiniCPM-O (native duplex) | 0.51% | 1.24 | 80.3% | 65.43% | 32,617 | 23,636 |
+| **(b) End-to-end system** |  |  |  |  |  |  |
+| JoyAI | 17.08% | 1.12 | 50.5% | 32.13% | 313,658 | 797,954 |
 
-“Autonomous” describes output triggering, not proof of native visual state.
-AURA's incremental-state boundary in Proactive remains unverified; its QA
-configuration is non-native.
+![Proactive quality versus response delay](assets/results/fig_proactive_quality_delay.png)
 
-### End-to-end autonomous system
+![Proactive False-alarm Rate versus Miss Rate](assets/results/fig_proactive_fa_miss.png)
 
-| System | SWA | TCR@5s | Record completion |
-| --- | ---: | ---: | ---: |
-| JoyAI | 17.08% | 15.18% | 95.58% |
+`*` MOSS submitted-image values use 34,520 unique frames because repeated queue
+occurrences were not retained. Unique-frame and coverage details are preserved
+in the public snapshot. Repeated in-window responses are supplementary descriptive
+behavior and are not subtracted from In-window Accuracy.
 
-JoyAI includes memory and scheduling components; its model-level incremental
-state remains unverified.
-
-### Non-native polling baseline
-
-| Model | SWA | TCR@5s | Record completion |
-| --- | ---: | ---: | ---: |
-| MiniCPM-O (polling) | 40.91% | 26.97% | 95.33% |
-
-![Proactive window score, completion and timely-correct curves](assets/results/fig_proactive_quality_w5.png)
-
-Error bars are video-clustered 95% bootstrap intervals; overlapping intervals do
-not establish a ranking. Background shading separates system and polling groups.
-MOSS hatching preserves a recorded service label, not a different judge model.
-MiniCPM-O in these figures is the polling configuration.
-
-![Proactive quality versus outside-window and redundant responses](assets/results/fig_proactive_quality_behavior.png)
-
-The two axes count different behaviors per 100 target windows: output outside
-valid windows and redundant output inside windows. Counts can exceed 100 and are
-not probabilities or general false-positive rates on no-trigger videos.
+The paper also reports a trigger-type breakdown for seven standard response
+tracks. The native duplex diagnostic has no matching retained trigger breakdown;
+it remains missing rather than being inferred. Trigger subsets share videos and
+have different sizes, so they are descriptive rather than controlled difficulty
+groups.
 
 ## Interpreting and reproducing results
 
@@ -152,7 +156,8 @@ used longer execution tolerances before common W=5 rescoring, so the same scorin
 population does not imply identical executed input budgets. ThinkStream's tested
 configuration has an end-block commit limitation; JoyAI reflects its tested
 configuration rather than a new full-configuration inference run. MiniCPM-O native
-duplex has incomplete semantic judging and is excluded from these point tables.
+duplex is a diagnostic row with qualified timing coverage; unavailable supplementary
+fields remain missing.
 
 The sufficient-clue breakdown contains 48 windows from only 10 videos, compared
 with 319 action-completion windows. Judge calibration is preliminary: 30/36 binary
@@ -162,8 +167,9 @@ The judge cannot verify visual grounding from text alone.
 Use the [evaluation protocol](evaluation-protocol.md) and
 [scoring documentation](scoring-and-results.md) for new runs. Match population,
 parser, response window, triggering mode and measurement boundary before comparing
-against this snapshot. Report-only Recoverable Accuracy, TCR curves and behavior
-reconstruction are analysis outputs, not a promise of identical default CLI fields.
+against this snapshot. Report-only Recoverable Accuracy, response-selection metrics
+and behavior reconstruction are analysis outputs, not a promise of identical
+legacy CLI fields.
 Raw experiment bundles and the full report analysis pipeline are not distributed
 with this summary. Available public integrations are listed in
 [examples and support status](../examples/README.md).

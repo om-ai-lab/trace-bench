@@ -119,7 +119,7 @@ class RunConfig(BaseModel):
 
     release_dir: str
     task: TaskName
-    subset: Literal["tiny", "full", "all"] = "tiny"
+    subset: Literal["tiny", "full", "all", "standard"] = "tiny"
     adapter: str
     adapter_config: dict[str, Any] = Field(default_factory=dict)
     video_root: Optional[str] = None
@@ -150,6 +150,7 @@ class RunConfig(BaseModel):
     judge_temperature: float = Field(default=0.0, ge=0)
     semantic_task_types: list[str] = Field(default_factory=lambda: ["SSR", "CRR"])
     scorer_version: str = "osb-scoring-v6"
+    scoring_profile: Literal["legacy", "paper-v1"] = "legacy"
 
 
 class QueryRequest(BaseModel):

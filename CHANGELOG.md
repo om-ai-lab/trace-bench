@@ -21,8 +21,11 @@ English | [简体中文](CHANGELOG.zh-CN.md)
 - English and Chinese setup, adapter and protocol documentation.
 - Synthetic smoke verifies correct answers before and after rescoring.
 - Source distributions include test helpers and are tested after extraction.
-- Annotation v1.1.0 remains independent; provisional status reflects pending
-  upstream permissions. Annotation content is unchanged.
+- Annotation v1.1.0 remains independent; its provisional status reflects the
+  unresolved OVO-Bench annotation terms. StreamingBench authors have permitted
+  redistribution of the modified annotation files; StreamingBench-derived TRACE additions are
+  offered under CC BY-NC-SA 4.0 within the rights held by TRACE contributors.
+  Annotation content is unchanged.
 
 Execution contract `osb-contract-v4` and scorer `osb-scoring-v6` retain their
 compatibility identities. Software 0.1.0 does not change scoring rules.

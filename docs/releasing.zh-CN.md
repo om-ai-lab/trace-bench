@@ -11,7 +11,10 @@ README 展示软件与数据版本。Run Bundle 另记录执行合约 `osb-contr
 它们是兼容性标识，不是独立软件包。文档或打包修复不改变评分标识，
 评分规则变化则必须改变；不能重新标记历史 bundle。
 
-v1.1.0 manifest 在[数据条款](../DATA_TERMS.zh-CN.md)所列授权确认前标为 provisional。
+由于该综合快照包含条款仍未解决的 OVO-Bench 标注，v1.1.0 manifest 继续标为 provisional。
+StreamingBench 作者已许可在本仓库中重新分发修改后的标注文件；在 TRACE 贡献者拥有相应
+权利的范围内，StreamingBench 来源的 TRACE 新增内容采用 CC BY-NC-SA 4.0。这不授予原始视频或上游源字段的许可。
+详见[数据条款](../DATA_TERMS.zh-CN.md)。
 来源路径改为描述性溯源 ID。元数据修正不改变标注、答案或其哈希，
 但改变 manifest 身份和新运行资格。旧 bundle 保留原 manifest；
 使用修订元数据时需新输出目录。

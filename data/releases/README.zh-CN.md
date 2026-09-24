@@ -5,6 +5,9 @@
 本文说明当前发布的 [v1.1.0](v1.1.0/manifest.json) 标注快照。
 数据版本与软件版本独立。视频下载见[数据准备](../../docs/data-setup.zh-CN.md)，
 许可见[数据条款](../../DATA_TERMS.zh-CN.md)。
+StreamingBench 作者已许可重新分发此处包含的修改后标注文件。在 TRACE 贡献者拥有相应权利的
+范围内，StreamingBench 来源的 TRACE 新增内容采用 CC BY-NC-SA 4.0。这不授予原始视频或上游源字段的许可；
+OVO-Bench 标注条款仍未解决。
 
 ## 文件清单
 
@@ -139,7 +142,7 @@ GT 答案与复核元数据用于评分和审计，不是提供给模型的输�
 | 字段 | 含义 |
 | --- | --- |
 | `release_id`、`schema_version` | 数据版本标识和 schema 标识（字符串） |
-| `status` | 发布状态；本快照为 `private_provisional`，见数据条款 |
+| `status` | 发布状态；由于 OVO-Bench 标注条款仍未解决，本综合快照为 `private_provisional`。StreamingBench 修改标注已获作者许可重新分发；见数据条款 |
 | `qa_file`、`proactive_file` | 标准 JSONL 文件名 |
 | `tiny_qa_ids_file`、`tiny_proactive_ids_file` | Tiny ID 文件名 |
 | `counts` | 数据范围名称到整数数量的映射对象 |
@@ -233,4 +236,3 @@ GT 答案与复核元数据用于评分和审计，不是提供给模型的输�
 这些是保存的构建期检查，不等于重新检查用户本地视频，也不代表许可授权。
 在仓库根目录运行 `trace data validate --release data/releases/v1.1.0`，
 可检查当前快照的 schema 和哈希。
-

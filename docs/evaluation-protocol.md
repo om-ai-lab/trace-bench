@@ -6,6 +6,20 @@ This is the execution/scoring contract shipped with software 0.1.0.
 Bundle compatibility IDs remain `osb-contract-v4` and `osb-scoring-v6`.
 Software packaging changes do not redefine these rules.
 
+## Paper-aligned profile and populations
+
+The default `legacy` scoring profile preserves the software contract above.
+Use `--scoring-profile paper-v1` when reproducing the current report's
+Recoverable QA Accuracy and Proactive False-alarm/Miss measurements. The profile
+is persisted in the resolved run configuration and derived score sidecars; it
+does not rewrite raw records or reinterpret an existing legacy bundle.
+
+Use `--subset standard` for the report population: all 833 QA records or the
+released 407-record Proactive ID set (1,270 windows). `full` remains the complete
+release population (415 Proactive records / 1,338 windows), including the
+sampling-stress records. `tiny` is a setup check and `all` remains an alias for
+`full`. The canonical release files and manifest hashes are unchanged.
+
 ## Shared evidence and prompts
 
 Core loads local annotations, owns the timeline, and delivers RGB uint8 arrays
@@ -44,7 +58,11 @@ before processing the question-time frame, but must consume that frame before
 answering. TTFT starts at the shared query-arrival boundary, including required
 frame processing and before CUDA synchronization.
 
-Quality is exact choice accuracy over all records, including failures.
+Quality is exact choice accuracy over all records, including failures, under the
+legacy profile. The `paper-v1` profile additionally reports Recoverable Accuracy:
+it accepts one unambiguous explicit option label in a wrapper or label-prefixed
+option text, while rejecting conflicting labels and unlabeled prose. Both values
+are retained in the score output; raw predictions are never rewritten.
 The current parser accepts a single valid option label after existing wrapper
 and reasoning-block normalization (e.g. `B.` or `: C`).
 Option-plus-answer text, answer phrases and incidental letters in sentences are
@@ -142,3 +160,12 @@ copies must match. Rescoring writes sidecars without editing raw evidence.
 Changes to model, data, evidence, prompt, timing or inference settings require a
 new run. Scoring-only changes can rescore preserved evidence when sufficient.
 Compare only matching data populations, execution tracks and scoring settings.
+
+The paper profile's Proactive diagnostics define False-alarm Rate as false-alarm
+response episodes divided by all assembled response episodes. An episode is a
+false alarm only when it starts outside every currently valid target window and
+a later target window remains; episodes after the final strict window are not in
+the numerator. Miss Rate is target-window non-coverage, so an incorrect assigned
+answer is not a miss. Median Response Delay is conditional on answered windows
+with retained onset timing, and its observed/answered coverage is reported
+separately. Repetition is descriptive and does not reduce In-window Accuracy.

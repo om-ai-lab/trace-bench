@@ -38,4 +38,8 @@ Dense windows may be unobservable at 1 FPS; report coverage and sampling-stress
 results separately. Public GT limits claims about unseen-data generalization.
 
 No videos or weights are included. See [data setup](data-setup.md).
-Licensing and pending upstream permissions are centralized in [data terms](../DATA_TERMS.md).
+The StreamingBench authors have permitted redistribution of the modified
+annotation files in this repository; StreamingBench-derived TRACE additions are offered under
+CC BY-NC-SA 4.0 within the rights held by TRACE contributors. This does not
+license the original videos or upstream source fields. OVO-Bench annotation
+terms remain pending; see [data terms](../DATA_TERMS.md).

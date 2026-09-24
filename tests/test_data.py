@@ -16,6 +16,13 @@ def test_public_v1_1_release_is_valid():
     release = load_release(root)
     assert len(release.records("qa", "tiny")) == 9
     assert len(release.records("proactive", "tiny")) == 9
+    assert len(release.records("qa", "standard")) == 833
+    standard_proactive = release.records("proactive", "standard")
+    assert len(standard_proactive) == 407
+    assert sum(len(record.windows) for record in standard_proactive) == 1270
+    full_proactive = release.records("proactive", "full")
+    assert len(full_proactive) == 415
+    assert sum(len(record.windows) for record in full_proactive) == 1338
 
 
 def test_release_rejects_duplicate_record_ids(tmp_path):

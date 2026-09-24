@@ -5,6 +5,18 @@
 本协议对应软件 0.1.0 的执行与评分规则。Bundle 兼容性 ID 保留为
 `osb-contract-v4` 和 `osb-scoring-v6`。软件打包变化不重新定义这些规则。
 
+## 论文对齐 profile 与总体
+
+默认 `legacy` 评分 profile 保留上述软件契约。复现当前报告的
+Recoverable QA Accuracy 以及 Proactive 误报/漏报指标时，使用
+`--scoring-profile paper-v1`。该 profile 会写入 resolved run 配置和派生评分
+sidecar，不会改写原始记录，也不会重新解释已有的 legacy bundle。
+
+使用 `--subset standard` 选择论文总体：833 条 QA，或发布的 407 条 Proactive
+记录（1,270 个窗口）。`full` 仍表示完整发布总体（415 条 Proactive / 1,338
+个窗口），包括 sampling-stress 记录。`tiny` 用于安装检查，`all` 仍是 `full`
+别名。规范 release 文件和 manifest 哈希保持不变。
+
 ## 统一证据与提示词
 
 Core 读取本地标注、控制时间线，通过 OpenCV 以 1 FPS 提供 RGB uint8 数组。
@@ -36,7 +48,10 @@ If the evidence is sufficient, output only a concise answer.
 但必须消费该帧后才能回答。TTFT 从统一 query 到达边界开始，
 包括必要帧处理，并在 CUDA 同步前开始计时。
 
-质量指标是包含所有题目和失败的选项准确率。
+在 legacy profile 下，质量指标是包含所有题目和失败的严格选项准确率。
+`paper-v1` 额外报告 Recoverable Accuracy：允许答案包装或选项标签开头的一个
+明确唯一标签，同时拒绝冲突标签和无标签散文。两种数值都会保留在评分输出中，
+原始预测不会被改写。
 当前 parser 在已有格式包装和推理块归一化后接受一个合法选项标签
 （例如 `B.` 或 `: C`）。选项加正文、答案短语和普通句子中的偶然字母无效。
 Adapter 不能从不合规正文中提取合规字母。原始文本保留，本版不扩大 parser 接受范围。
@@ -119,3 +134,10 @@ Finalized bundle 不可修改；`events.jsonl` 是权威事件源，内嵌副本
 
 模型、数据、证据、prompt、时间或推理设置变化要求新 run。
 仅评分变化且原证据充分时可以重算。比较时保持数据范围、执行类别和评分设置一致。
+
+论文 profile 的 Proactive 诊断将误报率定义为误报响应 episode 数除以所有组装的
+响应 episode 数。只有当 episode 在当前没有有效目标窗口时开始、且之后仍有目标
+窗口时，才计为误报；最终严格窗口之后的 episode 不进入误报分子。漏报率是目标
+窗口未得到响应的比例，因此一个已分配但内容错误的响应不算漏报。Median Response
+Delay 只在已回答且保留 onset 时间的窗口上计算，并单独报告观测/已回答覆盖率。
+重复响应是描述性指标，不会从窗口内准确率中扣除。

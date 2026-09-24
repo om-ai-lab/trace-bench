@@ -154,6 +154,7 @@ def build_preflight_snapshot(
         },
         "scoring": {
             "scorer_version": config.scorer_version,
+            "scoring_profile": config.scoring_profile,
             "judge_mode": config.judge_mode,
             "judge_base_url": config.judge_base_url,
             "judge_model": config.judge_model if config.judge_mode != "exact" else None,

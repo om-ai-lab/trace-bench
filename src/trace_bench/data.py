@@ -56,6 +56,23 @@ class Release:
             raise ValueError(f"unknown task: {task!r}")
         if subset == "full" or subset == "all":
             return list(source)
+        if subset == "standard":
+            if task == "qa":
+                return list(source)
+            standard_path = self.root / "standard_proactive_ids.json"
+            if not standard_path.is_file():
+                raise ValueError(
+                    "standard proactive subset is unavailable in this release: "
+                    f"{standard_path}"
+                )
+            wanted = _read_id_list(standard_path)
+            missing = [record_id for record_id in wanted if record_id not in index]
+            if missing:
+                raise ValueError(
+                    "standard proactive subset contains unknown record IDs: "
+                    f"{missing[:3]}"
+                )
+            return [index[record_id] for record_id in wanted]
         if subset != "tiny":
             raise ValueError(f"unknown subset: {subset!r}")
         wanted = _read_id_list(self.root / ids_file)

@@ -15,6 +15,7 @@ from typing import Any
 
 DEFAULT_SEMANTIC_TASK_TYPES = frozenset({"SSR", "CRR"})
 SCORER_VERSION = "osb-scoring-v6"
+PAPER_SCORING_PROFILE = "paper-v1"
 VLM_JUDGE_PROMPT_VERSION = "osb-vlm-judge-v1"
 VLM_JUDGE_PROMPT = """\
 You are an expert evaluator for a video question answering task.
@@ -1235,6 +1236,59 @@ def extract_choice(value: Any, option_labels: set[str] | None = None) -> str | N
     return None
 
 
+def extract_recoverable_choice(
+    value: Any, option_labels: set[str] | None = None
+) -> str | None:
+    """Recover one explicit option from the paper's report parser.
+
+    This intentionally remains separate from ``extract_choice``: the default
+    Core contract is strict single-label parsing, while the paper profile
+    accepts an unambiguous answer wrapper or label-prefixed option text.
+    """
+
+    text = normalize_text(value).upper()
+    labels = {"A", "B", "C", "D"} if option_labels is None else option_labels
+    if not text or not labels:
+        return None
+    mentioned = {
+        match.upper()
+        for match in re.findall(r"(?<!\w)([A-Z])[.):]", text)
+        if match.upper() in labels
+    }
+    mentioned.update(
+        match.upper()
+        for match in re.findall(
+            r"\b(?:ANSWER|OPTION|CHOICE)\b\s*(?:IS|:|CHOSEN)?\s*([A-Z])\b",
+            text,
+        )
+        if match.upper() in labels
+    )
+    for first, second in re.findall(
+        r"\b([A-Z])\s*(?:[/,;]|\bOR\b|\bAND\b)\s*([A-Z])\b", text
+    ):
+        if first in labels:
+            mentioned.add(first)
+        if second in labels:
+            mentioned.add(second)
+    if len(mentioned) > 1:
+        return None
+    explicit = re.search(
+        r"\b(?:ANSWER|OPTION|CHOICE)\b\s*(?:IS|:|CHOSEN)?\s*([A-Z])\b",
+        text,
+    )
+    if explicit and explicit.group(1) in labels:
+        tail = text[explicit.end() :]
+        if not re.search(r"\b(?:OR|AND)\s+[A-Z]\b", tail):
+            return explicit.group(1)
+    strict = extract_choice(value, labels)
+    if strict is not None:
+        return strict
+    prefixed = re.match(r"^\s*[\[(]?([A-Z])[.)\]]?\s+", text)
+    if prefixed and prefixed.group(1) in labels and len(mentioned) <= 1:
+        return prefixed.group(1)
+    return None
+
+
 def prediction_from_query_events(events: list[dict[str, Any]]) -> str | None:
     """Assemble the answer episode emitted after a QA query dispatch.
 
@@ -1268,7 +1322,10 @@ def score_qa(
     records: list[dict[str, Any]],
     *,
     events: list[dict[str, Any]] | None = None,
+    parser: str = "strict",
 ) -> dict[str, Any]:
+    if parser not in {"strict", "recoverable"}:
+        raise ValueError(f"unknown QA parser: {parser!r}")
     events_by_record: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
     for event in events or []:
         events_by_record[str(event.get("record_id", ""))].append(event)
@@ -1293,18 +1350,30 @@ def score_qa(
         }
         if not option_labels:
             option_labels = {"A", "B", "C", "D"}
-        choice = extract_choice(prediction, option_labels)
+        strict_choice = extract_choice(prediction, option_labels)
+        choice = (
+            extract_recoverable_choice(prediction, option_labels)
+            if parser == "recoverable"
+            else strict_choice
+        )
         item["prediction"] = prediction
         item["prediction_choice"] = choice
+        item["strict_prediction_choice"] = strict_choice
+        item["strict_score"] = int(strict_choice == expected and expected in option_labels)
         item["score"] = int(choice == expected and expected in option_labels)
         scored.append(item)
     correct = sum(item["score"] for item in scored)
+    strict_correct = sum(item["strict_score"] for item in scored)
     failures = sum(1 for item in scored if item.get("failed_reason"))
     return {
         "task": "qa",
         "record_count": len(scored),
         "correct": correct,
         "accuracy": correct / len(scored) if scored else 0.0,
+        "accuracy_definition": "recoverable_explicit_choice" if parser == "recoverable" else "strict_single_label",
+        "parser": parser,
+        "strict_accuracy": strict_correct / len(scored) if scored else 0.0,
+        "strict_correct": strict_correct,
         "failure_count": failures,
         "scored_records": scored,
     }
@@ -1583,6 +1652,7 @@ def score_proactive(
     proactive_window_s: float = 5.0,
     window_boundary: str = "half_open",
     events: list[dict[str, Any]] | None = None,
+    scoring_profile: str = "legacy",
 ) -> dict[str, Any]:
     """Score fixed point/state windows and a separate eventual-response view.
 
@@ -1596,6 +1666,10 @@ def score_proactive(
     judge = judge or JudgeRouter(mode="exact")
     scored: list[dict[str, Any]] = []
     outside = redundant = eventual_outside = eventual_redundant = failures = 0
+    false_alarm_count = miss_count = 0
+    all_answered_episode_count = 0
+    response_delay_ms: list[float] = []
+    answered_window_count = 0
     source_counts: Counter[str] = Counter()
     judge_methods_by_view: dict[str, Counter[str]] = {
         "strict": Counter(),
@@ -1656,7 +1730,11 @@ def score_proactive(
             else record.get("events", []) or _legacy_events(record)
         )
         episodes = assemble_response_episodes(record_events)
-        answered_episodes = [episode for episode in episodes if normalize_text(episode.get("text"))]
+        answered_episodes = [
+            episode
+            for episode in episodes
+            if normalize_text(episode.get("text")) not in {"", "wait"}
+        ]
         windows = _proactive_window_specs(record, proactive_window_s)
         per_window: list[dict[str, Any]] = []
         per_eventual: list[dict[str, Any]] = []
@@ -1711,6 +1789,10 @@ def score_proactive(
                 if chosen is not None and source == "in_window"
                 else (None, None)
             )
+            if source == "in_window":
+                answered_window_count += 1
+                if latency_ms is not None:
+                    response_delay_ms.append(latency_ms)
             observed_frame_count = _window_observation_count(record_events, start_s, end_s)
             observable = observed_frame_count > 0
             per_window.append(
@@ -1828,6 +1910,10 @@ def score_proactive(
             )
             if not in_any:
                 outside += 1
+                if any(float(window["start_s"]) > float(episode["start_video_time_s"]) for window in windows):
+                    false_alarm_count += 1
+        all_answered_episode_count += len(answered_episodes)
+        miss_count += sum(row.get("source") != "in_window" for row in per_window)
         for window in windows:
             in_window = [
                 episode
@@ -1940,6 +2026,29 @@ def score_proactive(
         "fully_correct_windows": strict_all["fully_correct_windows"],
         "window_score_sum": strict_all["window_score_sum"],
         "window_accuracy": strict_all["window_accuracy"],
+        "scoring_profile": scoring_profile,
+        "false_alarm_response_episode_count": false_alarm_count,
+        "false_alarm_rate": (
+            false_alarm_count / all_answered_episode_count
+            if all_answered_episode_count
+            else None
+        ),
+        "false_alarm_denominator_episode_count": all_answered_episode_count,
+        "missed_window_count": miss_count,
+        "miss_rate": miss_count / strict_all["window_count"] if strict_all["window_count"] else None,
+        "median_response_delay_ms": _percentile(response_delay_ms, 0.5),
+        "median_response_delay_s": (
+            _percentile(response_delay_ms, 0.5) / 1000.0
+            if response_delay_ms
+            else None
+        ),
+        "response_delay_observed_count": len(response_delay_ms),
+        "response_delay_answered_window_count": answered_window_count,
+        "response_delay_coverage": (
+            len(response_delay_ms) / answered_window_count
+            if answered_window_count
+            else None
+        ),
         "outside_window_intrusion_count": outside,
         "outside_window_intrusion_rate": outside / strict_all["window_count"]
         if strict_all["window_count"]
@@ -1990,9 +2099,12 @@ def score_records(
     events: list[dict[str, Any]] | None = None,
     proactive_window_s: float | None = None,
     window_boundary: str = "half_open",
+    scoring_profile: str = "legacy",
 ) -> dict[str, Any]:
-    return (
-        score_qa(records, events=events)
+    if scoring_profile not in {"legacy", PAPER_SCORING_PROFILE}:
+        raise ValueError(f"unknown scoring profile: {scoring_profile!r}")
+    result = (
+        score_qa(records, events=events, parser="recoverable" if scoring_profile == PAPER_SCORING_PROFILE else "strict")
         if task == "qa"
         else score_proactive(
             records,
@@ -2000,5 +2112,8 @@ def score_records(
             proactive_window_s=5.0 if proactive_window_s is None else float(proactive_window_s),
             window_boundary=window_boundary,
             events=events,
+            scoring_profile=scoring_profile,
         )
     )
+    result["scoring_profile"] = scoring_profile
+    return result

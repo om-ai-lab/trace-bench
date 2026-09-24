@@ -13,8 +13,13 @@ identities for reproducibility. These are compatibility identifiers, not
 separate packages. A documentation or packaging fix does not change scoring
 identity; a scoring-rule change must. Do not relabel historical bundles.
 
-The v1.1.0 manifest status is provisional pending the permissions described in
-[data terms](../DATA_TERMS.md). Source paths are descriptive provenance IDs.
+The v1.1.0 manifest remains provisional because this combined snapshot includes
+OVO-Bench annotations whose applicable terms are still unresolved. The
+StreamingBench authors have permitted redistribution of the modified annotation
+files in this repository, and StreamingBench-derived TRACE additions are offered under
+CC BY-NC-SA 4.0 within the rights held by TRACE contributors. This does not
+license original videos or upstream source fields. See [data terms](../DATA_TERMS.md).
+Source paths are descriptive provenance IDs.
 This metadata correction does not alter annotations, answers or their hashes;
 it does change the manifest identity and new-run eligibility. Old bundles
 retain their original manifest. Use a new output directory with revised metadata.

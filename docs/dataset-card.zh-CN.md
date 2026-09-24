@@ -35,4 +35,6 @@ Proactive 包含指令时间、事件/状态标注和答案。历史 `deadline_s
 和采样压力子集结果。公开 GT 也限制了对未见数据泛化的结论。
 
 仓库不包含视频或权重，参见[数据准备](data-setup.zh-CN.md)。
-许可与上游待确认事项统一见[数据条款](../DATA_TERMS.zh-CN.md)。
+StreamingBench 作者已许可在本仓库中重新分发修改后的标注文件；在 TRACE 贡献者拥有相应
+权利的范围内，StreamingBench 来源的 TRACE 新增内容采用 CC BY-NC-SA 4.0。这不授予原始视频或上游源字段的许可。
+OVO-Bench 标注条款仍待确认，详见[数据条款](../DATA_TERMS.zh-CN.md)。

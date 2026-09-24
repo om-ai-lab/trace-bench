@@ -5,6 +5,11 @@ English | [简体中文](README.zh-CN.md)
 This reference describes the shipped [v1.1.0](v1.1.0/manifest.json) annotation snapshot.
 Data and software versions are independent. For video downloads, see
 [data setup](../../docs/data-setup.md); for licensing, see [data terms](../../DATA_TERMS.md).
+The StreamingBench authors have permitted redistribution of the modified
+annotation files included here. StreamingBench-derived TRACE additions are offered under
+CC BY-NC-SA 4.0 within the rights held by TRACE contributors. This does not
+license original videos or upstream source fields; OVO-Bench annotation terms
+remain unresolved.
 
 ## File inventory
 
@@ -144,7 +149,7 @@ model latency allowances.
 | Field | Meaning |
 | --- | --- |
 | `release_id`, `schema_version` | Data release identifier and schema identifier (strings) |
-| `status` | Release status; this snapshot is `private_provisional`; see data terms |
+| `status` | Release status; this combined snapshot is `private_provisional` because OVO-Bench annotation terms remain unresolved. StreamingBench modified annotations have author redistribution permission; see data terms |
 | `qa_file`, `proactive_file` | Canonical JSONL filenames |
 | `tiny_qa_ids_file`, `tiny_proactive_ids_file` | Tiny ID filenames |
 | `counts` | Object mapping population names to integer counts |
@@ -240,4 +245,3 @@ and `checks` (named booleans):
 These are saved build-time checks, not a fresh validation of your local media or a
 license grant. Use `trace data validate --release data/releases/v1.1.0` from the
 repository root to validate the installed snapshot's schema and hashes.
-

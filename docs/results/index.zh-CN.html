@@ -24,9 +24,9 @@
 #osb-explorer .point-label{paint-order:stroke;stroke:var(--osb-bg);stroke-width:4px;stroke-linejoin:round}
 #osb-explorer .point-label.selected{font-weight:650}#osb-explorer .legend{margin-bottom:14px}
 </style>
-<header><div class="brand">OPEN STREAM BENCH <small>Results explorer</small></div><nav aria-label="Language"><a href="index.html">English</a></nav><span class="tag">报告结果快照</span></header>
-<main><div class="meta" style="margin-bottom:18px"><a href="https://github.com/om-ai-lab/trace-bench/blob/v1.1.0/docs/benchmark-results.zh-CN.md">完整表格、结果来源与测量限制</a></div>
-<div class="intro"><div><h1>从分数，看到模型的运行表现</h1><div class="meta">报告结果快照 · 2026-09-10 · 8 个受测配置</div></div><span class="tag">1 FPS · Proactive W = 5s</span></div>
+<header><div class="brand">TRACE <small>与论文对齐的结果 explorer</small></div><nav aria-label="Language"><a href="index.html">English</a></nav><span class="tag">离线 snapshot</span></header>
+<main><div class="meta" style="margin-bottom:18px"><a href="../benchmark-results.zh-CN.md">完整表格、结果来源与测量限制</a> · <a href="data/paper-results.json">公开结果 snapshot</a></div>
+<div class="intro"><div><h1>超越分数：有条件的运行行为</h1><div class="meta">当前论文 snapshot · 八个配置 · v1.0.0 推理 bundle / v1.1.0 标准总体</div></div><span class="tag">1 FPS · Proactive W = 5s</span></div>
 <div class="controls">
 <label>任务<select id="osb-task"><option value="all">跨任务成绩卡</option><option value="qa">QA</option><option value="pro">Proactive</option></select></label>
 <label>比较组<select id="osb-group"></select></label>
@@ -37,50 +37,43 @@
 <div class="status" id="osb-status" aria-live="polite"></div>
 <div id="osb-table-view" class="table-wrap"><table><thead id="osb-head"></thead><tbody id="osb-body"></tbody></table></div>
 <div class="table-note" id="osb-table-note">粗体：当前比较组内该列最优观测值（含并列）；不代表统计显著性或跨组排名。</div>
-<div id="osb-plot-view" hidden><div class="plot-controls"><label>横轴 · 运行指标<select id="osb-x"></select></label><label>纵轴 · 能力指标<select id="osb-y"></select></label></div><div class="legend"><span>● 模型 + adapter</span><span>■ 完整系统</span><span>▲ Non-native / polling</span></div><div id="osb-chart"></div><div class="plot-caption" id="osb-chart-caption"></div><div class="meta" id="osb-plot-note"></div></div>
+<div id="osb-plot-view" hidden><div class="plot-controls"><label>横轴 · 运行/错误指标<select id="osb-x"></select></label><label>纵轴 · 质量指标<select id="osb-y"></select></label></div><div class="legend"><span>● 模型 + Adapter</span><span>■ 端到端系统</span><span>▲ 原生 duplex 诊断</span></div><div id="osb-chart"></div><div class="plot-caption" id="osb-chart-caption"></div><div class="meta" id="osb-plot-note"></div></div>
 <section class="detail" id="osb-detail" hidden aria-live="polite"></section>
 <footer><span>保留失败分母 · N/A 不填零 · 不计算跨组总排名</span><button type="button" id="osb-method">查看本次结果口径</button></footer>
-<section class="detail" id="osb-method-panel" hidden><h2>结果口径</h2><div class="detail-grid"><div><small>推理与分析版本</small>保留的 v1.0.0 推理 bundle<br>按 v1.1.0 标准总体分析</div><div><small>评分总体</small>QA：833 条<br>Proactive：407 条 / 1,270 窗口</div><div><small>QA / Proactive 评分</small>Recoverable Accuracy / SWA<br>文本语义 Judge，W=5s</div></div><div class="detail-note">QA 报告解析不同于当前 Core 默认严格单标签解析。查询阶段时间不等于端到端延迟；token 不等于跨模型计算成本。本页仅提供已核对的指标，不提供未执行的 W=10、压力子集或不同 FPS 结果。</div></section>
+<section class="detail" id="osb-method-panel" hidden><h2>结果口径</h2><div class="detail-grid"><div><small>推理与分析版本</small>保留的 v1.0.0 推理 bundle<br>按 v1.1.0 标准总体分析</div><div><small>评分总体</small>QA：833 条 / 340 个视频<br>Proactive：407 条 / 1,270 窗口</div><div><small>论文指标</small>Recoverable Accuracy / Response Latency<br>窗口内准确率 / 延迟 / 误报 / 漏报</div></div><div class="detail-note">Response Latency 从问题到达开始。Proactive 延迟只统计观测到 onset 的已回答窗口。误报是全局 episode 指标，漏报是目标窗口指标。MOSS 提交图像数是独特帧代理。Polling 仍可运行，但不在论文主总体中。</div></section>
 </main>
 <script>
 (()=>{
 const root=document.getElementById('osb-explorer');
 const el=id=>root.querySelector('#osb-'+id);
-const metrics={qa:{label:'QA 准确率',unit:'%',up:true,task:'qa'},qc:{label:'QA 完成率',unit:'%',up:true,task:'qa'},qt:{label:'查询阶段 p50',unit:'ms',up:false,task:'qa'},tok:{label:'记录输出 token',unit:'token',up:false,task:'qa'},inv:{label:'无效输出',unit:'%',up:false,task:'qa'},swa:{label:'SWA',unit:'%',up:true,task:'pro'},tcr:{label:'TCR@5s',unit:'%',up:true,task:'pro'},pc:{label:'Proactive 完成率',unit:'%',up:true,task:'pro'}};
+const metrics={qa:{label:'QA 准确率',unit:'%',up:true,task:'qa'},qc:{label:'QA 完成率',unit:'%',up:true,task:'qa'},qlat:{label:'响应时延',unit:'ms',up:false,task:'qa'},qimg:{label:'提交图像',unit:'image',up:false,task:'qa'},qtok:{label:'输出 token',unit:'token',up:false,task:'qa'},qinv:{label:'无效输出',unit:'%',up:false,task:'qa'},pacc:{label:'窗口内准确率',unit:'%',up:true,task:'pro'},pdelay:{label:'中位响应延迟',unit:'s',up:false,task:'pro'},pfa:{label:'误报率',unit:'%',up:false,task:'pro'},pmiss:{label:'漏报率',unit:'%',up:false,task:'pro'},pimg:{label:'提交图像',unit:'image',up:false,task:'pro'},ptok:{label:'输出 token',unit:'token',up:false,task:'pro'},pc:{label:'Proactive 记录完成率',unit:'%',up:true,task:'pro'}};
 const data=[
-{name:'LiveCC',qa:65.19,qc:93.88,qt:165.2,tok:146064,inv:6.12,swa:12.98,tcr:12.51,pc:87.71,qaGroup:'native',proGroup:'auto',note:'持续会话与流式生成。应同时查看窗口得分、完成率与额外输出。'},
-{name:'MOSS-Preview',qa:65.07,qc:100,qt:138.1,tok:42206,inv:1.92,swa:4.45,tcr:4.31,pc:100,qaGroup:'native',proGroup:'auto',note:'实时会话与异步帧队列；队列提交不等于内部状态更新完成。'},
-{name:'MOSS-VL',qa:75.03,qc:99.88,qt:374.6,tok:39768,inv:.84,swa:8.05,tcr:7.50,pc:100,qaGroup:'native',proGroup:'auto',note:'每百目标窗口重复响应 185.6 次，窗口外响应 160.2 次。'},
-{name:'ThinkStream',qa:61.46,qc:100,qt:411,tok:349476,inv:0,swa:.52,tcr:.34,pc:100,qaGroup:'native',proGroup:'auto',note:'两帧处理块与持续状态；受测 Proactive 配置存在末尾处理块提交限制。'},
-{name:'VideoLLM-Online',qa:2.64,qc:100,qt:681.1,tok:39047,inv:95.32,swa:.18,tcr:.15,pc:100,qaGroup:'native',proGroup:'auto',note:'记录完成不代表答案有效：QA 无效输出率为 95.32%。'},
-{name:'AURA',qa:73.83,qc:99.88,qt:819.7,tok:2469,inv:.60,swa:7.92,tcr:7.39,pc:99.26,qaGroup:'prefix',proGroup:'auto',note:'QA 重建历史前缀；Proactive 自主输出，增量视觉状态仍待核验。每百窗口重复 28.4 次、窗口外响应 188.1 次。'},
-{name:'JoyAI',qa:67.47,qc:91.36,qt:876.1,tok:2286,inv:8.52,swa:17.08,tcr:15.18,pc:95.58,qaGroup:'system',proGroup:'system',note:'完整系统边界，包含记忆和调度组件；不与单模型做统一排名。'},
-{name:'MiniCPM-O (polling)',qa:71.31,qc:99.88,qt:611.9,tok:null,inv:6.60,swa:40.91,tcr:26.97,pc:95.33,qaGroup:'prefix',proGroup:'poll',note:'周期外部查询基线；QA 每条记录仍只问一次。输出 token 遥测缺失。'}];
-metrics.rep={label:'重复响应',unit:'次 / 百窗口',up:false,task:'pro'};
-metrics.out={label:'窗口外响应',unit:'次 / 百窗口',up:false,task:'pro'};
-const behavior=[[202.4,562.0],[68.3,503.6],[185.6,160.2],[3.8,29.4],[5.4,45.0],[28.4,188.1],[74.6,114.0],[32.3,215.8]];
-data.forEach((d,i)=>{d.rep=behavior[i][0];d.out=behavior[i][1]});
-metrics.ptok={label:'记录输出 token',unit:'token',up:false,task:'pro'};
-const proTokens=[78478,193517,74672,373897,42162,50957,797954,null];
-data.forEach((d,i)=>{d.ptok=proTokens[i]});
-const groupNames={native:'Native · 模型 + adapter',prefix:'Non-native · 前缀输入',auto:'自主响应 · 模型 + adapter',system:'端到端系统',poll:'Non-native · polling'};
+{name:'LiveCC',qa:65.19,qc:93.88,pc:87.71,qlat:165.2,qimg:21917,qtok:146064,qinv:6.12,pacc:12.98,pdelay:1.08,pfa:65.0,pmiss:.31,pimg:23243,ptok:78478,qaGroup:'adapter',proGroup:'adapter',boundary:'model_adapter',note:'原生持久会话与自主 Proactive 输出。延迟覆盖率为 892 / 1,266（70.5%）。'},
+{name:'AURA',qa:73.83,qc:99.88,pc:99.26,qlat:819.7,qimg:31170,qtok:2469,qinv:.60,pacc:7.92,pdelay:1.15,pfa:59.1,pmiss:47.64,pimg:439400,ptok:50957,qaGroup:'prefix',proGroup:'adapter',boundary:'model_adapter',note:'QA 在提问时使用前缀输入。Proactive 使用持久增量状态并自主输出；延迟覆盖率为 357 / 665（53.7%）。'},
+{name:'MOSS-VL',qa:75.03,qc:99.88,pc:100,qlat:374.6,qimg:30835,qtok:39768,qinv:.84,pacc:8.05,pdelay:.33,pfa:41.1,pmiss:47.24,pimg:34520,ptok:74672,qaGroup:'adapter',proGroup:'adapter',boundary:'model_adapter',note:'原生实时会话。MOSS 提交图像数是 34,520 个不重复帧的代理；延迟覆盖率为 304 / 670（45.4%）。'},
+{name:'MOSS-Preview',qa:65.07,qc:100,pc:100,qlat:138.1,qimg:30835,qtok:42206,qinv:1.92,pacc:4.45,pdelay:.20,pfa:77.7,pmiss:35.67,pimg:34520,ptok:193517,qaGroup:'adapter',proGroup:'adapter',boundary:'model_adapter',note:'原生实时会话。MOSS 提交图像数是 34,520 个不重复帧的代理；延迟覆盖率为 485 / 817（59.4%）。'},
+{name:'ThinkStream',qa:61.46,qc:100,pc:100,qlat:411,qimg:30835,qtok:349476,qinv:0,pacc:.52,pdelay:2.14,pfa:73.6,pmiss:68.43,pimg:32783,ptok:373897,qaGroup:'adapter',proGroup:'adapter',boundary:'model_adapter',note:'原生双帧块与持久状态；受测 Proactive 配置存在末尾提交限制。延迟覆盖率为 70 / 401（17.5%）。'},
+{name:'VideoLLM-Online',qa:2.64,qc:100,pc:100,qlat:681.1,qimg:30835,qtok:39047,qinv:95.32,pacc:.18,pdelay:.20,pfa:82.4,pmiss:60.39,pimg:32783,ptok:42162,qaGroup:'adapter',proGroup:'adapter',boundary:'model_adapter',note:'原生逐帧视觉表示与持久 KV 状态。QA 无效输出为 95.32%；延迟覆盖率为 34 / 503（6.8%）。'},
+{name:'MiniCPM-O (native duplex)',qa:2.40,qc:100,pc:null,qlat:489.5,qimg:30835,qtok:24591,qinv:93.52,pacc:.51,pdelay:1.24,pfa:80.3,pmiss:65.43,pimg:32617,ptok:23636,qaGroup:'adapter',proGroup:'adapter',boundary:'model_adapter_diagnostic',diagnostic:true,note:'原生 duplex 诊断。延迟覆盖率为 108 / 439（24.6%）；Proactive 补充完成率和触发分解不可用。'},
+{name:'JoyAI',qa:67.47,qc:91.36,pc:95.58,qlat:876.1,qimg:17235,qtok:2286,qinv:8.52,pacc:17.08,pdelay:1.12,pfa:50.5,pmiss:32.13,pimg:313658,ptok:797954,qaGroup:'system',proGroup:'system',boundary:'end_to_end_system',note:'端到端系统，包含记忆和调度；延迟覆盖率为 401 / 862（46.5%）。'}];
+const groupNames={adapter:'原生模型 + Adapter · 自主响应',system:'端到端系统',prefix:'非原生前缀输入'};
 let task='all',view='table',selected=null;
-const shown=new Set(data.map(d=>d.name)),columns=new Set(['qa','qc','swa','pc','rep','out']);
-const fmt=(v,k)=>v===null?'N/A':k==='tok'?v.toLocaleString('en-US'):v.toFixed(k==='qt'?1:2)+(metrics[k].unit==='%'?'%':'');
+const shown=new Set(data.map(d=>d.name)),columns=new Set(['qa','qc','qlat','pacc','pdelay','pfa','pmiss']);
+const fmt=(v,k)=>v===null?'N/A':['qimg','qtok','pimg','ptok'].includes(k)?v.toLocaleString('en-US'):v.toFixed(2)+(metrics[k].unit==='%'?'%':'');
 const group=d=>task==='qa'?d.qaGroup:d.proGroup;
 const validKeys=()=>Object.keys(metrics).filter(k=>task==='all'||metrics[k].task===task);
 const visibleKeys=()=>validKeys().filter(k=>columns.has(k));
-const xKeys=()=>task==='qa'?['qt','qc','tok','inv']:['rep','out','pc','ptok'];
-const yKeys=()=>task==='qa'?['qa']:['swa','tcr'];
+const xKeys=()=>task==='qa'?['qlat','qc','qtok','qimg','qinv']:['pdelay','pfa','pmiss','ptok','pimg'];
+const yKeys=()=>task==='qa'?['qa']:['pacc'];
 function options(select,keys,value){select.replaceChildren(...keys.map(k=>{const o=document.createElement('option');o.value=k;o.textContent=metrics[k].label+' ('+metrics[k].unit+') '+(metrics[k].up?'↑':'↓');return o}));select.value=keys.includes(value)?value:keys[0]}
 function setup(){
-const groups=task==='qa'?['native','system','prefix']:['auto','system','poll'];
+const groups=task==='qa'?['adapter','system','prefix']:['adapter','system'];
 el('group').innerHTML='<option value="all">全部比较组（分别展示）</option>'+groups.map(g=>'<option value="'+g+'">'+groupNames[g]+'</option>').join('');
-const keys=validKeys();options(el('sort'),visibleKeys(),task==='pro'?'swa':'qa');options(el('x'),xKeys(),task==='qa'?'qt':'rep');options(el('y'),yKeys(),task==='qa'?'qa':'swa');
+const keys=validKeys();options(el('sort'),visibleKeys(),task==='pro'?'pacc':'qa');options(el('x'),xKeys(),task==='qa'?'qlat':'pdelay');options(el('y'),yKeys(),task==='qa'?'qa':'pacc');
 el('columns').replaceChildren(...keys.map(k=>{const l=document.createElement('label'),c=document.createElement('input');c.type='checkbox';c.checked=columns.has(k);c.addEventListener('change',()=>{c.checked?columns.add(k):columns.delete(k);render()});l.append(c,metrics[k].label);return l}));render();}
 el('models').replaceChildren(...data.map(d=>{const l=document.createElement('label'),c=document.createElement('input');c.type='checkbox';c.checked=true;c.addEventListener('change',()=>{c.checked?shown.add(d.name):shown.delete(d.name);render()});l.append(c,d.name);return l}));
 function rows(){return data.filter(d=>shown.has(d.name)&&(el('group').value==='all'||group(d)===el('group').value))}
-function detail(d){selected=d;const panel=el('detail');panel.hidden=false;panel.innerHTML='<div class="detail-top"><h2>'+d.name+'</h2><button type="button">收起</button></div><div class="detail-grid"><div><small>QA 输入组织</small>'+groupNames[d.qaGroup]+'</div><div><small>Proactive 触发 / 边界</small>'+groupNames[d.proGroup]+'</div><div><small>QA / Proactive 记录完成率</small>'+fmt(d.qc,'qc')+' / '+fmt(d.pc,'pc')+'</div></div><div class="detail-note">'+d.note+'</div>';panel.querySelector('button').onclick=()=>{selected=null;panel.hidden=true;render()};}
+function detail(d){selected=d;const panel=el('detail');panel.hidden=false;panel.innerHTML='<div class="detail-top"><h2>'+d.name+'</h2><button type="button">收起</button></div><div class="detail-grid"><div><small>QA 输入组织</small>'+groupNames[d.qaGroup]+'</div><div><small>Proactive 状态 / 触发</small>'+groupNames[d.proGroup]+' · 自主触发</div><div><small>QA / Proactive 记录完成率</small>'+fmt(d.qc,'qc')+' / '+fmt(d.pc,'pc')+'</div></div><div class="detail-note">'+d.note+'</div>';panel.querySelector('button').onclick=()=>{selected=null;panel.hidden=true;render()};}
 function render(){
 const rs=rows(),ks=visibleKeys();options(el('sort'),ks,el('sort').value);el('sort').disabled=!ks.length;const sort=el('sort').value;
 el('status').textContent=rs.length+' 个配置 · '+(task==='qa'?'833 条 QA':task==='pro'?'407 条标准 Proactive / 1,270 窗口':'QA 833 条 / Proactive 1,270 标准窗口')+(view==='table'&&sort?' · 组内按 '+metrics[sort].label+' 排序':'')+(task==='all'?' · 以下按 Proactive 边界分组':'');
@@ -90,9 +83,9 @@ const qaKeys=ks.filter(k=>metrics[k].task==='qa'),proKeys=ks.filter(k=>metrics[k
 el('head').innerHTML='<tr class="task-heading"><th rowspan="2">模型配置</th>'+(qaKeys.length?'<th class="qa-heading" colspan="'+qaKeys.length+'">QA <span class="unit">/ 833 records</span></th>':'')+(proKeys.length?'<th class="pro-heading" colspan="'+proKeys.length+'">PROACTIVE <span class="unit">/ 1,270 windows</span></th>':'')+'</tr><tr>'+ks.map((k,i)=>'<th class="'+(i===0||k===proKeys[0]?'metric-start':'')+'"><button type="button" class="sort-head '+(sort===k?'active':'')+'" data-sort="'+k+'">'+metrics[k].label.replace('QA ','').replace('Proactive ','')+' '+(metrics[k].up?'↑':'↓')+'</button><br><span class="unit">'+metrics[k].unit+'</span></th>').join('')+'</tr>';
 el('head').querySelectorAll('[data-sort]').forEach(btn=>btn.onclick=()=>{el('sort').value=btn.dataset.sort;render()});
 const body=el('body');body.replaceChildren();
-for(const g of (task==='qa'?['native','system','prefix']:['auto','system','poll'])){
+for(const g of (task==='qa'?['adapter','system','prefix']:['adapter','system'])){
 const part=rs.filter(d=>group(d)===g).sort((a,b)=>!sort?0:a[sort]===null?1:b[sort]===null?-1:(metrics[sort].up?-1:1)*(a[sort]-b[sort]));if(!part.length)continue;
-const tr=document.createElement('tr');tr.className='group';tr.innerHTML='<td colspan="'+(ks.length+1)+'">'+groupNames[g]+(g==='auto'?' · autonomous ≠ 已确认 native':'')+'</td>';body.append(tr);
+const tr=document.createElement('tr');tr.className='group';tr.innerHTML='<td colspan="'+(ks.length+1)+'">'+groupNames[g]+'</td>';body.append(tr);
 for(const d of part){const row=document.createElement('tr');if(selected===d)row.className='selected';const first=document.createElement('td'),btn=document.createElement('button');btn.type='button';btn.className='model-button';btn.textContent=d.name;btn.onclick=()=>{detail(d);render()};first.append(btn);row.append(first);
 for(const k of ks){const td=document.createElement('td');const values=part.map(p=>p[k]).filter(v=>v!==null),best=metrics[k].up?Math.max(...values):Math.min(...values);if(k===ks[0]||k===proKeys[0])td.className='metric-start';td.innerHTML='<span class="measure '+(values.length>1&&d[k]===best?'best':'')+'">'+fmt(d[k],k)+'</span>';row.append(td)}body.append(row)}
 }
@@ -123,7 +116,7 @@ let svg='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+metrics[yk].lab
 for(let i=0;i<=3;i++){const xv=xmax*i/3,yv=ymax*i/3;svg+='<line x1="'+l+'" y1="'+y(yv)+'" x2="'+r+'" y2="'+y(yv)+'" stroke="var(--osb-line)" opacity=".5"/><text x="'+x(xv)+'" y="'+(b+22)+'" text-anchor="middle">'+(xv>=1000?(xv/1000).toFixed(0)+'k':xv.toFixed(1))+'</text><text x="'+(l-10)+'" y="'+(y(yv)+4)+'" text-anchor="end">'+yv.toFixed(1)+'</text>';}
 svg+='<text class="axis-title" data-axis="x" x="'+((l+r)/2)+'" y="'+(h-26)+'" text-anchor="middle">'+metrics[xk].label+' '+(metrics[xk].up?'↑':'↓')+'<tspan x="'+((l+r)/2)+'" dy="17">('+metrics[xk].unit+')</tspan></text><text class="axis-title" data-axis="y" transform="translate(17 '+((t+b)/2)+') rotate(-90)" text-anchor="middle">'+metrics[yk].label+' (%) ↑</text>';
 for(const p of points){const q=p.label;svg+='<line x1="'+p.x+'" y1="'+p.y+'" x2="'+clamp(p.x,q.x,q.x+q.w)+'" y2="'+(q.y+q.h/2)+'" stroke="var(--osb-muted)" stroke-width=".8" opacity=".65"/>';}
-points.forEach(p=>{const d=p.d,px=p.x,py=p.y,g=group(d),color=g==='system'?'var(--osb-green)':g==='poll'||g==='prefix'?'var(--osb-orange)':'var(--osb-blue)';svg+='<g>';if(g==='system')svg+='<rect x="'+(px-5)+'" y="'+(py-5)+'" width="10" height="10" fill="'+color+'"/>';else if(g==='poll'||g==='prefix')svg+='<polygon points="'+px+','+(py-6)+' '+(px-6)+','+(py+5)+' '+(px+6)+','+(py+5)+'" fill="'+color+'"/>';else svg+='<circle cx="'+px+'" cy="'+py+'" r="5" fill="'+color+'"/>';svg+='<circle data-point="'+p.i+'" cx="'+px+'" cy="'+py+'" r="18" fill="transparent"><title>'+d.name+' · '+fmt(d[xk],xk)+' / '+fmt(d[yk],yk)+'</title></circle><text data-label="'+p.i+'" class="point-label" x="'+p.label.x+'" y="'+(p.label.y+12)+'">'+d.name+'</text></g>';});svg+='</svg>';host.innerHTML=svg;
+points.forEach(p=>{const d=p.d,px=p.x,py=p.y,g=group(d),color=g==='system'?'var(--osb-green)':d.boundary==='model_adapter_diagnostic'?'var(--osb-orange)':'var(--osb-blue)';svg+='<g>';if(g==='system')svg+='<rect x="'+(px-5)+'" y="'+(py-5)+'" width="10" height="10" fill="'+color+'"/>';else if(d.boundary==='model_adapter_diagnostic')svg+='<polygon points="'+px+','+(py-6)+' '+(px-6)+','+(py+5)+' '+(px+6)+','+(py+5)+'" fill="'+color+'"/>';else svg+='<circle cx="'+px+'" cy="'+py+'" r="5" fill="'+color+'"/>';svg+='<circle data-point="'+p.i+'" cx="'+px+'" cy="'+py+'" r="18" fill="transparent"><title>'+d.name+' · '+fmt(d[xk],xk)+' / '+fmt(d[yk],yk)+'</title></circle><text data-label="'+p.i+'" class="point-label" x="'+p.label.x+'" y="'+(p.label.y+12)+'">'+d.name+'</text></g>';});svg+='</svg>';host.innerHTML=svg;
 host.querySelectorAll('[data-point],[data-label]').forEach(p=>{p.style.cursor='pointer';p.onclick=()=>detail(rs[Number(p.dataset.point??p.dataset.label)])});
 el('chart-caption').textContent=(metrics[xk].up?'右上：更高能力与更高完成率。':'左上：更高能力与更低所选运行指标。')+' 标签通过引导线连接实际数据点；不移动点位消除重叠。';
 const note=el('plot-note');note.replaceChildren();rs.forEach(d=>{const btn=document.createElement('button');btn.type='button';btn.textContent=d.name;btn.style.margin='4px';btn.onclick=()=>detail(d);note.append(btn)});const excluded=rows().length-rs.length;if(excluded)note.append(' · '+excluded+' 个配置缺少所选指标，未绘制');

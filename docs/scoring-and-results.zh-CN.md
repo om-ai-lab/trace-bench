@@ -7,6 +7,17 @@ Preflight 只检查配置，不执行推理。
 
 ## Judge 与重算
 
+默认评分保留 legacy 严格解析器和契约。要生成当前报告口径的派生 sidecar，使用
+`--scoring-profile paper-v1`：
+
+```bash
+trace score output/livecc-qa --scoring-profile paper-v1
+```
+
+该 profile 选择 Recoverable QA 解析，并在 bundle 证据足够时输出明确的
+`false_alarm_rate`、`miss_rate`、响应延迟中位数和延迟覆盖率。它不会修改
+`records.jsonl`、`events.jsonl` 或已完成的 bundle；profile 会写入派生评分元数据。
+
 QA 使用单标签选项评分。Proactive 使用精确匹配或用户配置的
 OpenAI-compatible 语义 judge。生成示例 bundle 后，替换服务地址、模型名和密钥执行：
 

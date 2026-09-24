@@ -42,6 +42,7 @@ DEFAULT_PRESET = {
     "judge_temperature": 0.0,
     "semantic_task_types": ["SSR", "CRR"],
     "scorer_version": "osb-scoring-v6",
+    "scoring_profile": "legacy",
 }
 
 

@@ -14,6 +14,13 @@ def test_cli_exposes_core_commands():
     ])
     assert run_args.checkpoint_every_records == 5
     assert run_args.no_resume is True
+    paper_args = parser.parse_args([
+        "run", "--task", "proactive", "--release", "data/releases/v1.1.0",
+        "--subset", "standard", "--adapter", "example:adapter",
+        "--output", "runs/paper", "--scoring-profile", "paper-v1",
+    ])
+    assert paper_args.subset == "standard"
+    assert paper_args.scoring_profile == "paper-v1"
 
 
 def test_cli_runs_synthetic_vertical_slice(synthetic_release, capsys):

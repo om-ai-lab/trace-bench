@@ -13,20 +13,27 @@ The explorer adds model/group filtering, visible-column sorting, clickable
 headers, task-specific quality-versus-operation plots and configuration details.
 Hiding the active sort column selects another visible metric. All hidden columns
 leave an unsorted model list. QA plots use accuracy on the vertical axis;
-Proactive uses SWA or TCR. Horizontal choices include completion, recorded tokens,
-query-stage duration (QA), and extra responses (Proactive). Missing observations
-are omitted from plots and retained as N/A in tables.
+Proactive plots use In-window Accuracy. Horizontal choices include completion,
+response latency, recorded tokens, invalid output (QA), median response delay,
+False-alarm Rate, Miss Rate and workload (Proactive). Missing observations are
+omitted from plots and retained as N/A in tables.
 
 ## Result interpretation
 
 This is the same report cohort as [the results page](benchmark-results.md), not
 a new inference or scoring run. Model-level and system-level boundaries remain
-separate. On the cross-task scorecard, groups follow Proactive boundaries; AURA's
-QA input is non-native. Bold values mark within-group best observations, including
-ties, not statistical significance. The report QA parser differs from Core's
-strict default. Output tokens are observed totals, not equal compute costs.
+separate. QA groups follow the paper's native model + Adapter, end-to-end system,
+and non-native prefix-input rows; Proactive groups follow autonomous model +
+Adapter and end-to-end system rows. Bold values mark within-group best
+observations, including ties, not statistical significance. The report QA parser
+differs from Core's strict default. Output tokens are observed totals, not equal
+compute costs.
 
-The two HTML pages embed identical numerical data and behavior. When updating
+The two HTML pages embed identical numerical data and behavior. The report QA
+parser differs from Core's strict default; output tokens are observed totals,
+not equal compute costs. The native-duplex marker denotes the diagnostic
+interface condition; it is not a polling result.
+When updating
 results, update both pages, the README tables and the result documentation together;
 preserve population, missing-value and provenance notes.
 

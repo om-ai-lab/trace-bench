@@ -8,6 +8,18 @@ not perform inference.
 
 ## Judge and rescoring
 
+The default score preserves the legacy strict parser and contract. To produce
+the current report-facing derived sidecar, pass `--scoring-profile paper-v1`:
+
+```bash
+trace score output/livecc-qa --scoring-profile paper-v1
+```
+
+This selects Recoverable QA parsing and emits explicit Proactive
+`false_alarm_rate`, `miss_rate`, delay medians and delay coverage when the bundle
+contains the required evidence. It never edits `records.jsonl`, `events.jsonl`
+or the finalized bundle. The profile is part of the derived scoring metadata.
+
 QA uses single-label choice scoring. Proactive uses exact matching or a
 user-configured OpenAI-compatible semantic judge. After generating the example
 bundle, replace endpoint/model/key values and run:
