@@ -1,29 +1,34 @@
-# Repository and release policy
+# Versions and releases
 
-`master` contains the latest reviewed release. A version branch such as
-`v1.1.0` preserves its corresponding code and annotation snapshot. Each branch
-tracks exactly one public annotation directory under `data/releases/`. Data
-subset and audit files inside that directory belong to the same release.
-Ignored local historical releases may coexist for reproduction; this publication
-boundary does not authorize deleting them. Local `data/releases/v1.0.0/` is
-retained and ignored.
+English | [简体中文](releasing.zh-CN.md)
 
-The data version is independent of Core package 0.0.0, canonical schema
-osb-canonical-v0, protocol/config v4, and scorer osb-scoring-v6. Record all of
-these in results. Do not rename protocol identities merely to match branch names.
-Use annotated tags with distinct names such as `release-v1.1.0` if tags are
-needed; do not create a tag and branch with the same name.
+Software 0.1.0 and annotation v1.1.0 are independent releases.
+`main` follows current development. A data-version branch such as `v1.1.0`
+preserves a selected snapshot and does not automatically follow main.
+Use software tags such as `v0.1.0`; do not reuse a data branch name as a tag.
 
-Before publishing: review the staged file list, validate data hashes, run tests
-and CI checks, execute the documented tiny flow in the selected GPU model
-environment, verify third-party notices and data permission status, and fill
-in the repository URL and author citation details when available.
+README exposes software and data versions. Run Bundles additionally record
+execution contract `osb-contract-v4`, scorer `osb-scoring-v6` and schema
+identities for reproducibility. These are compatibility identifiers, not
+separate packages. A documentation or packaging fix does not change scoring
+identity; a scoring-rule change must. Do not relabel historical bundles.
 
-Source-checkout installation is the supported first-release workflow. Data and
-documentation stay in the checkout; package installation alone does not download
-them. Config defaults are included in the Python package.
+The v1.1.0 manifest remains provisional because this combined snapshot includes
+OVO-Bench annotations whose applicable terms are still unresolved. The
+StreamingBench authors have permitted redistribution of the modified annotation
+files in this repository, and StreamingBench-derived TRACE additions are offered under
+CC BY-NC-SA 4.0 within the rights held by TRACE contributors. This does not
+license original videos or upstream source fields. See [data terms](../DATA_TERMS.md).
+Source paths are descriptive provenance IDs.
+This metadata correction does not alter annotations, answers or their hashes;
+it does change the manifest identity and new-run eligibility. Old bundles
+retain their original manifest. Use a new output directory with revised metadata.
 
-Keep videos, weights, local configurations and Run Bundles outside version
-control. Future updates replace the one data directory on master and preserve
-prior versions on their version branches. Never overwrite historical results
-or change frozen annotations while retaining their release identity.
+## Before publishing
+
+Run README's tests, smoke answer checks, documentation and public-file scans,
+and distribution checks. Review the diff, data permissions, packaged files and
+any claimed GPU/judge validation. See [validation](release-validation.md).
+Do not publish videos, weights, output bundles or local configuration.
+Keep only the selected annotation version in Git; retain older local files
+through ignore rules rather than deleting them.

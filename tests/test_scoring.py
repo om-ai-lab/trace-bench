@@ -1,11 +1,14 @@
-from open_stream_bench.scoring import (
+from trace_bench.scoring import (
     JudgeRouter,
+    judge_from_settings,
     assess_official_eligibility,
     assemble_response_episodes,
     extract_choice,
+    extract_recoverable_choice,
     prediction_from_query_events,
     score_proactive,
     score_qa,
+    score_records,
     summarize_telemetry,
 )
 
@@ -92,6 +95,84 @@ def test_choice_normalization_rejects_ambiguity_and_uses_actual_option_labels():
         ]
     )
     assert result["accuracy"] == 1.0
+
+
+def test_paper_profile_recovers_explicit_choice_without_changing_strict_parser():
+    assert extract_recoverable_choice("The answer is C.", {"A", "B", "C"}) == "C"
+    assert extract_recoverable_choice("C. option text", {"A", "B", "C"}) == "C"
+    assert extract_recoverable_choice("C. A person walks.", {"A", "B", "C"}) == "C"
+    assert extract_recoverable_choice("A or B", {"A", "B", "C"}) is None
+    records = [
+        {
+            "record_id": "paper-qa",
+            "answer": "C",
+            "options": ["A. one", "B. two", "C. three"],
+            "prediction": "The answer is C.",
+        }
+    ]
+    legacy = score_records("qa", records)
+    paper = score_records("qa", records, scoring_profile="paper-v1")
+    assert legacy["accuracy"] == 0.0
+    assert paper["accuracy"] == 1.0
+    assert paper["strict_accuracy"] == 0.0
+    assert paper["scoring_profile"] == "paper-v1"
+
+
+def test_paper_proactive_profile_reports_global_false_alarm_and_window_miss():
+    records = [
+        {
+            "record_id": "paper-proactive",
+            "task": "proactive",
+            "task_type": "exact",
+            "instruction": "Say it",
+            "windows": [
+                {"start_s": 2.0, "end_s": 4.0, "expected_answer": "yes"},
+                {"start_s": 6.0, "end_s": 8.0, "expected_answer": "yes"},
+            ],
+        }
+    ]
+    events = [
+        {
+            "record_id": "paper-proactive",
+            "kind": "answer",
+            "logical_time_s": 0.5,
+            "text": "WAIT",
+            "response_id": "wait",
+            "is_final": True,
+        },
+        {
+            "record_id": "paper-proactive",
+            "kind": "answer",
+            "logical_time_s": 1.0,
+            "text": "too early",
+            "response_id": "early",
+            "is_final": True,
+        },
+        {
+            "record_id": "paper-proactive",
+            "kind": "answer",
+            "logical_time_s": 2.5,
+            "text": "yes",
+            "response_id": "first",
+            "is_final": True,
+        },
+        {
+            "record_id": "paper-proactive",
+            "kind": "answer",
+            "logical_time_s": 12.0,
+            "text": "late",
+            "response_id": "late",
+            "is_final": True,
+        },
+    ]
+    result = score_records(
+        "proactive", records, events=events, scoring_profile="paper-v1"
+    )
+    assert result["false_alarm_response_episode_count"] == 1
+    assert result["false_alarm_denominator_episode_count"] == 3
+    assert result["false_alarm_rate"] == 1 / 3
+    assert result["missed_window_count"] == 1
+    assert result["miss_rate"] == 0.5
 
 
 def test_telemetry_summary_never_estimates_missing_values():
@@ -725,3 +806,23 @@ def test_streaming_deltas_count_as_one_query_for_ttft_coverage():
     result = summarize_telemetry(events, [{"record_id": "qa", "status": "completed"}])
     assert result["responsiveness"]["ttft_ms"]["population_count"] == 1
     assert result["telemetry_coverage"]["query_ttft"] == 1.0
+
+
+def test_judge_env_prefers_trace_names_and_falls_back_to_osb(monkeypatch):
+    monkeypatch.delenv("TRACE_VLM_JUDGE_BASE_URL", raising=False)
+    monkeypatch.setenv("OSB_VLM_JUDGE_BASE_URL", "http://legacy:1/v1")
+    assert judge_from_settings({}).base_url == "http://legacy:1/v1"
+
+    monkeypatch.setenv("TRACE_VLM_JUDGE_BASE_URL", "http://primary:1/v1")
+    assert judge_from_settings({}).base_url == "http://primary:1/v1"
+
+
+def test_judge_api_key_reads_legacy_osb_name(monkeypatch):
+    monkeypatch.delenv("TRACE_VLM_JUDGE_API_KEY", raising=False)
+    monkeypatch.setenv("OSB_VLM_JUDGE_API_KEY", "legacy-key")
+    router = judge_from_settings({})
+    assert router.api_key_env == "TRACE_VLM_JUDGE_API_KEY"
+    assert router.vlm.api_key == "legacy-key"
+
+    monkeypatch.setenv("TRACE_VLM_JUDGE_API_KEY", "primary-key")
+    assert judge_from_settings({}).vlm.api_key == "primary-key"

@@ -1,4 +1,4 @@
-"""Canonical data and runtime models for Open Stream Bench."""
+"""Canonical data and runtime models for TRACE."""
 
 from __future__ import annotations
 
@@ -119,7 +119,7 @@ class RunConfig(BaseModel):
 
     release_dir: str
     task: TaskName
-    subset: Literal["tiny", "full", "all"] = "tiny"
+    subset: Literal["tiny", "full", "all", "standard"] = "tiny"
     adapter: str
     adapter_config: dict[str, Any] = Field(default_factory=dict)
     video_root: Optional[str] = None
@@ -145,11 +145,12 @@ class RunConfig(BaseModel):
     judge_mode: Literal["auto", "exact", "vlm"] = "auto"
     judge_base_url: Optional[str] = None
     judge_model: str = "Qwen3.5-35B-A3B"
-    judge_api_key_env: str = "OSB_VLM_JUDGE_API_KEY"
+    judge_api_key_env: str = "TRACE_VLM_JUDGE_API_KEY"
     judge_timeout_s: float = Field(default=60.0, gt=0)
     judge_temperature: float = Field(default=0.0, ge=0)
     semantic_task_types: list[str] = Field(default_factory=lambda: ["SSR", "CRR"])
     scorer_version: str = "osb-scoring-v6"
+    scoring_profile: Literal["legacy", "paper-v1"] = "legacy"
 
 
 class QueryRequest(BaseModel):

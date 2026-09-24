@@ -1,8 +1,10 @@
 cff-version: 1.2.0
 message: "Please cite this software and the upstream benchmark papers listed in THIRD_PARTY_NOTICES.md. Also report the data release and protocol/scorer identities used."
 type: software
-title: Open Stream Bench
+title: "TRACE: Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding"
 authors:
-  - name: Open Stream Bench contributors
-version: 0.0.0
+  - name: TRACE contributors
+version: 0.1.0
+repository-code: "https://github.com/om-ai-lab/trace-bench"
+url: "https://github.com/om-ai-lab/trace-bench"
 license: MIT

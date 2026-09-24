@@ -3,13 +3,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from open_stream_bench import core
-from open_stream_bench.models import ModelEvent, QARecord, RunConfig
-from open_stream_bench.scoring import assemble_response_episodes, extract_choice
+from trace_bench import core
+from trace_bench.models import ModelEvent, QARecord, RunConfig
+from trace_bench.scoring import assemble_response_episodes, extract_choice
 
 
 def test_logical_timing_run_is_diagnostic():
-    from open_stream_bench.scoring import assess_official_eligibility
+    from trace_bench.scoring import assess_official_eligibility
 
     result = assess_official_eligibility(
         "qa", {"execution_track": {"pacing": "logical"}},
@@ -20,8 +20,8 @@ def test_logical_timing_run_is_diagnostic():
 
 
 def test_fatal_run_keeps_original_error_when_cleanup_fails(synthetic_release, monkeypatch):
-    from open_stream_bench.adapters import TestDoubleAdapter as FakeAdapter
-    from open_stream_bench.models import FatalEvaluationError
+    from trace_bench.adapters import TestDoubleAdapter as FakeAdapter
+    from trace_bench.models import FatalEvaluationError
 
     class BrokenAdapter(FakeAdapter):
         def open(self, context):
@@ -108,8 +108,8 @@ def test_explicit_video_root_overrides_cwd(monkeypatch, tmp_path):
 
 def test_query_clock_includes_delivery_backlog(monkeypatch, tmp_path):
     import numpy as np
-    from open_stream_bench.models import Observation
-    from open_stream_bench.sampling import SampledVideo
+    from trace_bench.models import Observation
+    from trace_bench.sampling import SampledVideo
 
     observation = Observation(timestamp_s=1, frame_index=1,
                               rgb=np.zeros((2, 2, 3), dtype=np.uint8))

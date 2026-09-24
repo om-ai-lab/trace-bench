@@ -5,8 +5,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from open_stream_bench.livecc_adapter import LiveCCAdapter, _resource_telemetry
-from open_stream_bench.models import (
+from trace_bench.livecc_adapter import LiveCCAdapter, _resource_telemetry
+from trace_bench.models import (
     EventKind,
     FatalEvaluationError,
     Observation,

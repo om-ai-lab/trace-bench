@@ -1,191 +1,270 @@
-# Open Stream Bench
+<div align="center">
 
-English | [简体中文](README.zh-CN.md)
+<h1>TRACE</h1>
 
-A local evaluation Core for timestamped video QA and Proactive Response.
-Users download source videos, run their own models through adapters, and keep
-raw outputs, timing, failures and scores in JSON/JSONL Run Bundles.
-There is no hosted evaluator. Real model evaluation normally requires a GPU.
+<h3>Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding</h3>
 
-| Component | Version / scope |
+<p>
+  A reproducible local benchmark for timestamped video question answering and
+  proactive responses.
+</p>
+
+<p>
+  <a href="https://arxiv.org/abs/2609.00000"><img src="https://img.shields.io/badge/Paper-Coming%20soon-6d28d9?style=flat-square" alt="Paper coming soon"></a>
+  <a href="https://huggingface.co/datasets/om-ai-lab/trace-bench"><img src="https://img.shields.io/badge/Hugging%20Face-Coming%20soon-f59e0b?style=flat-square" alt="Hugging Face dataset coming soon"></a>
+</p>
+
+<p>
+  <a href="README.zh-CN.md">简体中文</a>
+  · <a href="docs/results/index.html">Project page</a>
+  · <a href="docs/results-explorer.md">Results explorer</a>
+  · <a href="docs/evaluation-protocol.md">Evaluation protocol</a>
+  · <a href="docs/dataset-card.md">Dataset card</a>
+</p>
+
+</div>
+
+## How TRACE works
+
+TRACE connects causal video history, adapter execution, model or system
+responses, telemetry and scoring in one auditable workflow.
+
+<p align="center">
+  <img src="docs/assets/results/evaluation-design-report.en.png" alt="TRACE evaluation design: causal input, Core, Adapter, model or system, and scoring" width="100%">
+</p>
+
+<p align="center"><em>TRACE evaluation design — the Core → Adapter → model/system → scoring path, with QA and Proactive timelines.</em></p>
+
+### Why TRACE
+
+| | What TRACE makes explicit |
 | --- | --- |
-| Public annotation snapshot | `data/releases/v1.1.0` |
-| Data population | 833 QA, 415 Proactive records; 1,338 Proactive windows |
-| Tiny setup subset | 9 QA + 9 Proactive records |
-| Core package | `0.0.0` (independent of data version) |
-| Protocol / scorer | `osb-contract-v4` / `osb-scoring-v6` |
-| Software / data terms | [MIT](LICENSE) / [DATA_TERMS](DATA_TERMS.md) |
+| **Temporal audit** | Timestamped RGB observations, legal history, response windows and stopping boundaries are retained with the output. |
+| **Controlled execution** | The Core and Adapter separate benchmark timing from model-specific interfaces, so native and non-native integrations can be compared without hiding the boundary. |
+| **Condition-aware reporting** | Quality, delay, false alarms, misses and workload are reported together for each execution condition. |
 
-Only v1.1.0 annotations are shipped. Ignored historical local data is preserved.
-Source videos and weights are not redistributed. Upstream annotation permission
-confirmations remain pending; see [data terms](DATA_TERMS.md) and the
-[dataset card](docs/dataset-card.md) for the publication boundary and review limitations.
+## Execution conditions
 
-## Install
+Execution conditions separate visual state, response triggering and the
+evaluation boundary. They are comparison dimensions rather than capability
+labels.
 
-Use Python 3.10–3.12. Download or clone this repository and enter its root:
+<p align="center">
+  <img src="docs/assets/results/execution-modes-report.en.png" alt="TRACE execution modes: visual state, response triggering, and evaluation boundary" width="100%">
+</p>
 
-```bash
+<p align="center"><em>Execution modes — native versus prefix-input visual state, autonomous versus polling response triggering, and model/Adapter versus complete-system boundaries.</em></p>
+
+## Tasks, data and protocol
+
+TRACE evaluates two complementary behaviors:
+
+| Task | What the model sees and what is measured |
+| --- | --- |
+| **QA** | A question arrives at a specified timestamp. The model receives only the legal video history and is scored with Recoverable Accuracy, completion, response latency and output validity. |
+| **Proactive** | A monitoring instruction arrives before an event. The model must decide what to say and when to say it; the scorecard reports In-window Accuracy, observed median delay, False-alarm Rate and Miss Rate. |
+
+The standard benchmark cohort contains **833 QA records and 407 Proactive
+records (1,270 windows) across 517 videos**. The checked-in release also
+contains the full population: 1,248 records, 522 videos and 1,338 Proactive
+windows. Eight sampling-stress records are excluded from the standard cohort,
+so <code>--subset full</code> covers a different population.
+
+Source videos are downloaded separately from the upstream datasets:
+[StreamingBench](https://huggingface.co/datasets/mjuicem/StreamingBench) and
+[OVO-Bench](https://huggingface.co/datasets/JoeLeelyf/OVO-Bench). TRACE ships
+the v1.1.0 annotations, release manifest and validation metadata, not the
+source videos or model weights. Read the [dataset card](docs/dataset-card.md)
+and [data terms](DATA_TERMS.md) before using them.
+StreamingBench authors permit redistribution of the modified annotation files;
+StreamingBench-derived TRACE additions are under CC BY-NC-SA 4.0 within the
+rights held by TRACE contributors. OVO-Bench annotation terms remain unresolved.
+
+## Benchmark results
+
+The figures show how quality, timing and response behavior vary across
+configurations. Use the scorecards and metric definitions below when comparing
+results across execution conditions.
+
+### Similar QA quality can have different execution profiles
+
+LiveCC and MOSS-Preview are near 65% QA accuracy, yet completion, response
+latency and recorded output-token totals differ. MiniCPM-O is shown as a
+diagnostic because its text-interface invalid-output rate is 93.52%.
+
+<p align="center">
+  <img src="docs/assets/results/fig_qa_accuracy_workload.png" alt="QA accuracy, response latency and generation workload" width="100%">
+</p>
+
+### Similar Proactive quality can hide different response selection
+
+MOSS-VL and AURA reach 8.05% and 7.92% In-window Accuracy. MOSS-VL has the
+lower False-alarm Rate (41.1% versus 59.1%) and a shorter observed median delay.
+
+<p align="center">
+  <img src="docs/assets/results/fig_proactive_quality_delay.png" alt="Proactive quality versus response delay" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/assets/results/fig_proactive_fa_miss.png" alt="Proactive False-alarm Rate versus Miss Rate" width="100%">
+</p>
+
+Explore and filter the complete results in the offline
+[results explorer](docs/results-explorer.md), or read the
+[full benchmark results and measurement limits](docs/benchmark-results.md).
+The machine-readable result snapshot is available at
+[docs/results/data/paper-results.json](docs/results/data/paper-results.json);
+missing evidence remains <code>null</code>.
+
+<details>
+<summary>Show the complete benchmark scorecards</summary>
+
+### QA · v1.1.0 benchmark cohort (833 records)
+
+| Configuration | Accuracy ↑ | Completion ↑ | Response latency, median (ms) ↓ | Submitted images | Recorded output tokens | Invalid output ↓ |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **(a) Native models with Adapters** |  |  |  |  |  |  |
+| LiveCC | 65.19% | 93.88% | 165.2 | 21,917 | 146,064 | 6.12% |
+| MOSS-Preview | 65.07% | 100.00% | 138.1 | 30,835 | 42,206 | 1.92% |
+| MOSS-VL | 75.03% | 99.88% | 374.6 | 30,835 | 39,768 | 0.84% |
+| ThinkStream | 61.46% | 100.00% | 411.0 | 30,835 | 349,476 | 0.00% |
+| VideoLLM-Online | 2.64% | 100.00% | 681.1 | 30,835 | 39,047 | 95.32% |
+| MiniCPM-O (native duplex) | 2.40% | 100.00% | 489.5 | 30,835 | 24,591 | 93.52% |
+| **(b) End-to-end system** |  |  |  |  |  |  |
+| JoyAI | 67.47% | 91.36% | 876.1 | 17,235 | 2,286 | 8.52% |
+| **(c) Non-native prefix-input** |  |  |  |  |  |  |
+| AURA | 73.83% | 99.88% | 819.7 | 31,170 | 2,469 | 0.60% |
+
+### Proactive · v1.1.0 benchmark cohort (407 records / 1,270 windows)
+
+| Configuration | In-window Accuracy ↑ | Median delay (s) ↓ | False-alarm Rate ↓ | Miss Rate ↓ | Submitted images | Output tokens |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **(a) Autonomous model + Adapter** |  |  |  |  |  |  |
+| LiveCC | 12.98% | 1.08 | 65.0% | 0.31% | 23,243 | 78,478 |
+| AURA · persistent incremental state | 7.92% | 1.15 | 59.1% | 47.64% | 439,400 | 50,957 |
+| MOSS-VL | 8.05% | 0.33 | 41.1% | 47.24% | 34,520 | 74,672 |
+| MOSS-Preview | 4.45% | 0.20 | 77.7% | 35.67% | 34,520 | 193,517 |
+| ThinkStream | 0.52% | 2.14 | 73.6% | 68.43% | 32,783 | 373,897 |
+| VideoLLM-Online | 0.18% | 0.20 | 82.4% | 60.39% | 32,783 | 42,162 |
+| MiniCPM-O (native duplex) | 0.51% | 1.24 | 80.3% | 65.43% | 32,617 | 23,636 |
+| **(b) End-to-end system** |  |  |  |  |  |  |
+| JoyAI | 17.08% | 1.12 | 50.5% | 32.13% | 313,658 | 797,954 |
+
+
+</details>
+
+## Reproduce the evaluation
+
+### Install
+
+Tested with Python 3.10–3.12. Clone or download
+[this repository](https://github.com/om-ai-lab/trace-bench), then enter its root
+directory:
+
+~~~bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-osb --help
-osb data validate --release data/releases/v1.1.0
-```
+trace --help
+~~~
 
-This release supports source-checkout installation. An installed wheel alone
-does not supply the annotation directory, videos, or model dependencies.
+The <code>osb</code> command remains installed as a compatibility alias of
+<code>trace</code>. <code>OSB_VLM_JUDGE_*</code> environment variables are
+still read as fallbacks for the <code>TRACE_VLM_JUDGE_*</code> names.
 
-## Run the software end to end
+~~~bash
+trace data validate --release data/releases/v1.1.0
+~~~
 
-This smoke flow creates a small video and synthetic annotations, decodes frames
-with OpenCV, runs both tasks, validates bundles and rescores. It requires no GPU,
-source download, model weights or judge endpoint. The test double deliberately
-reads GT: its scores are synthetic and never model results. Use a new output
-directory each time.
+Keep the source checkout: the wheel alone does not include annotations or
+videos. Model dependencies belong in the model's own environment.
 
-```bash
+### Verify the software pipeline
+
+This creates a synthetic video, runs QA and Proactive, validates bundles,
+rescores them and checks the expected answers. No GPU or judge service is
+required. The test double deliberately reads GT; this is a software check,
+not a model score.
+
+~~~bash
+set -euo pipefail
 python scripts/make_smoke_fixture.py --output output/smoke
-osb data validate --release output/smoke/release
+trace data validate --release output/smoke/release
 for task in qa proactive; do
-  osb run --task "$task" --release output/smoke/release --subset tiny \
-    --adapter open_stream_bench.adapters:TestDoubleAdapter \
+  trace run --task "$task" --release output/smoke/release --subset tiny \
+    --adapter trace_bench.adapters:TestDoubleAdapter \
     --video-root output/smoke --output "output/smoke/$task" \
     --synthetic --judge-mode exact --checkpoint-every 5
-  osb bundle validate "output/smoke/$task"
-  osb score "output/smoke/$task" --judge-mode exact
+  trace bundle validate "output/smoke/$task"
+  trace score "output/smoke/$task" --judge-mode exact
 done
-```
+python scripts/check_smoke_results.py --output output/smoke
+~~~
 
-Each output contains `records.jsonl`, `events.jsonl`, `metrics.json`, `summary.json`,
-`resolved_config.json`, `manifest.json` and `integrity.json`; scoring adds
-`rescored_records.jsonl` and `rescored_metrics.json`. Check the summary's
-`synthetic: true` and eligibility report's `official_eligible: false`.
-Bundle validation proves integrity, not model quality.
+Expect both answer checks to pass, QA accuracy and Proactive window accuracy to
+equal 1.0, zero failures, and <code>synthetic: true</code> /
+<code>official_eligible: false</code>. The 12-second fixture has an answer
+window aligned to default 5-second polling. Missing model telemetry is expected
+here. A valid bundle alone does not prove that an answer was produced.
 
-## Prepare real videos
+Results stay in ignored <code>output/</code>. The generator refuses an existing
+fixture directory; use a new path consistently for another smoke run. Do not
+delete prior experiment results to rerun a tutorial.
 
-Follow [data setup](docs/data-setup.md) using
-[StreamingBench](https://streamingbench.github.io/) and
-[OVO-Bench](https://github.com/joeleelyf/ovo-bench). Keep the shipped OSB annotations.
-The video root must expose `videos/` and `src_videos/` matching each record's
-relative `video_path`. OVO requires original source videos, not timestamp-reset
-chunks. StreamingBench and the similarly named StreamBench are different projects.
+### Connect a model
 
-```bash
-python scripts/check_videos.py --release data/releases/v1.1.0 \
-  --video-root /path/to/osb-media --subset tiny
-```
+1. [Prepare source videos](docs/data-setup.md) from StreamingBench and OVO-Bench.
+2. Follow the [LiveCC walkthrough](docs/livecc-adapter.md), or the experimental
+   [ThinkStream guide](docs/thinkstream-adapter.md).
+3. For another model, implement the [adapter interface](docs/adapter-guide.md);
+   the adapter can live in its own repository.
+4. Run <code>tiny</code>, inspect predictions, failures and telemetry, then
+   select <code>full</code>. See [scoring and resume](docs/scoring-and-results.md)
+   for semantic judging.
 
-Replace `/path/to/...` with your paths. This command checks presence; inference
-checks actual decoding. Fix missing media before loading weights.
-Use `--subset full` to check the complete release.
+Core delivers timestamped RGB uint8 arrays at 1 FPS through OpenCV. QA receives
+the legal prefix and identical user content across models. Proactive uses
+5s/10s event windows or annotated state intervals, and evidence ends at the
+final strict-window boundary, clamped to source duration. Native/non-native
+visual state and autonomous/polling triggering are separate comparison
+dimensions; see the [evaluation protocol](docs/evaluation-protocol.md).
 
-## Run a real model
+## Documentation and citation
 
-Start with [LiveCC](docs/livecc-adapter.md) for upstream dependencies, weights
-and environment variables. Run OSB in that model's environment; the software-only
-virtual environment above does not include PyTorch or the model runtime.
+- [Data and limitations](docs/dataset-card.md)
+- [Release files and fields](data/releases/README.md)
+- [Examples and support status](examples/README.md)
+- [Evaluation protocol](docs/evaluation-protocol.md) ·
+  [scoring and results](docs/scoring-and-results.md)
+- [Release/version policy](docs/releasing.md) ·
+  [validation](docs/release-validation.md)
+- [Third-party notices](THIRD_PARTY_NOTICES.md) ·
+  [contributing](CONTRIBUTING.md) · [security](SECURITY.md) ·
+  [code of conduct](CODE_OF_CONDUCT.md)
+- [Citation](CITATION.cff) · [changelog](CHANGELOG.md)
 
-After setup, from the OSB checkout, inspect QA without loading weights:
+TRACE code is released under [MIT](LICENSE). Dataset rights and upstream
+attribution are described in [DATA_TERMS.md](DATA_TERMS.md). The repository
+does not host an online evaluator, and real model results require the relevant
+runtime, model weights and source videos.
 
-```bash
-osb run --task qa --release data/releases/v1.1.0 --subset tiny \
-  --adapter open_stream_bench.livecc_adapter:LiveCCAdapter \
-  --adapter-config examples/livecc/logical.json --pacing logical \
-  --video-root /path/to/osb-media --output /path/to/results/livecc-qa \
-  --judge-mode exact --checkpoint-every 5 --preflight-only
-```
+## Development checks
 
-Then run real QA and Proactive inference:
+The two Git-based checks below require a Git checkout and must run from its
+root. ZIP users can still install TRACE, run evaluations, tests and distribution
+checks; clone the repository to run these maintainer checks. CI covers Python
+3.10–3.13.
 
-```bash
-for task in qa proactive; do
-  osb run --task "$task" --release data/releases/v1.1.0 --subset tiny \
-    --adapter open_stream_bench.livecc_adapter:LiveCCAdapter \
-    --adapter-config examples/livecc/logical.json --pacing logical \
-    --video-root /path/to/osb-media --output "/path/to/results/livecc-$task" \
-    --judge-mode exact --checkpoint-every 5 --proactive-window-s 5
-  osb bundle validate "/path/to/results/livecc-$task"
-  osb score "/path/to/results/livecc-$task" --judge-mode exact
-done
-```
-
-Inspect failures, predictions and raw events as well as completion counts:
-a finalized bundle may contain failures. Logical pacing and exact judging are
-setup diagnostics. For streaming timing use `examples/livecc/wall_clock.json`
-**and** `--pacing wall_clock`, a new output directory and a semantic judge.
-Change to `--subset full` only after tiny succeeds. Full Proactive includes the
-sampling-stress records; it does not automatically select the standard report cohort.
-
-External adapters use `--adapter module:Class --adapter-config file.json`.
-See the [adapter guide](docs/adapter-guide.md) and [example status](examples/README.md).
-Capability labels are adapter declarations, not proof of model-state reuse.
-Native/non-native and autonomous/polling describe independent execution properties.
-
-## Scoring and resume
-
-QA uses the shared user prompt and normalized single-label scoring. Ordinary
-sentences and option-plus-answer prose are not parsed as choices. Raw text stays
-unchanged. Proactive reports strict all-window, strict observable-window and
-post-trigger eventual scores, intrusion/redundancy and coverage.
-
-Configure your own OpenAI-compatible semantic judge:
-
-```bash
-export OSB_VLM_JUDGE_BASE_URL=http://127.0.0.1:30099/v1
-export OSB_VLM_JUDGE_MODEL=your-served-judge-model
-export OSB_VLM_JUDGE_API_KEY=your-key
-osb score /path/to/results/livecc-proactive --judge-mode auto \
-  --judge-base-url "$OSB_VLM_JUDGE_BASE_URL" --judge-model "$OSB_VLM_JUDGE_MODEL"
-```
-
-`auto` routes SSR/CRR to the semantic judge and other types to normalized exact
-matching; `vlm` routes every Proactive type to the judge. The current judge
-receives textual question/reference/prediction, not video frames. Missing judge
-configuration or failed calls produce diagnostic/incomplete semantic results.
-Judge calls send those fields to your configured endpoint; keys are not saved.
-
-Rescoring writes derived sidecars without changing raw records/events. Resume is
-enabled by default: repeat the **same run command** after interruption. Completed
-and failed committed records are skipped; unfinished records run again. The
-default checkpoint interval is 10 (`--checkpoint-every 5` is supported).
-Finalized bundles cannot resume or overwrite; use a new output directory after
-changing model, prompt, data or execution settings.
-
-## Protocol and reports
-
-Core delivers timestamped RGB uint8 arrays at 1 FPS using OpenCV. QA sees only
-the legal prefix. Exact QA user content is shared; native system prompts and
-mechanical role/control serialization are allowed. History processing costs
-are retained separately from query response metrics.
-
-Proactive point windows are half-open, use 5s or 10s tolerance and stop at the
-next trigger when earlier; SSR uses state intervals. Evidence stops at the last
-strict-window end, clamped to metadata video duration. Source end may leave
-remaining scoring time without new frames; bounded shutdown drain only completes
-already eligible responses. Core never scans an entire video to find its end.
-The eventual view ends at the next trigger or final strict-window end.
-Pre-instruction history stays 5s regardless of response tolerance.
-
-Reports include quality, latency, frame workload, tokens, calls, GPU memory,
-failures and telemetry coverage. Unobservable values remain missing. Automated
-`official_eligible` checks do not replace adapter conformance review.
-See [protocol](docs/evaluation-protocol.md),
-[scoring and troubleshooting](docs/scoring-and-results.md),
-[dataset card](docs/dataset-card.md), [release policy](docs/releasing.md),
-[third-party notices](THIRD_PARTY_NOTICES.md), [contributing](CONTRIBUTING.md)
-and [citation](CITATION.cff).
-
-## Development
-
-```bash
-python -m pytest -q
+~~~bash
+mkdir -p output
+python -m pytest -q --basetemp=output/pytest
 ruff check .
-python -m build
-```
+python scripts/check_docs.py
+python scripts/check_public_files.py
+python -m build --outdir output/dist
+python scripts/check_distribution.py --dist output/dist --output output/distribution-check
+~~~
 
-CI runs CPU software checks; GPU model runs are separate release checks.
-`master` follows the latest annotation snapshot; version branches preserve
-released snapshots. See [release validation](docs/release-validation.md) for
-the checked scope and remaining publication gates.
+Use fresh build/check directories when repeating distribution checks. CI
+verifies synthetic answers and unpacked-source tests. GPU inference and live
+semantic-judge validation are separate checks.

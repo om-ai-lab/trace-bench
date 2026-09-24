@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from open_stream_bench.adapters import TestDoubleAdapter as _TestDoubleAdapter, validate_adapter
-from open_stream_bench.config import resolve_config
-from open_stream_bench.models import TaskName
+from trace_bench.adapters import TestDoubleAdapter as _TestDoubleAdapter, validate_adapter
+from trace_bench.config import resolve_config
+from trace_bench.models import TaskName
 
 
 def test_v1_default_samples_one_frame_per_second(tmp_path: Path):
@@ -12,7 +12,7 @@ def test_v1_default_samples_one_frame_per_second(tmp_path: Path):
         release_dir=tmp_path,
         task=TaskName.QA,
         subset="tiny",
-        adapter="open_stream_bench.adapters:TestDoubleAdapter",
+        adapter="trace_bench.adapters:TestDoubleAdapter",
         output_dir=tmp_path / "run",
     )
 
@@ -24,7 +24,7 @@ def test_wall_clock_pacing_requires_matching_adapter_capability(tmp_path: Path):
         release_dir=tmp_path,
         task=TaskName.QA,
         subset="tiny",
-        adapter="open_stream_bench.adapters:TestDoubleAdapter",
+        adapter="trace_bench.adapters:TestDoubleAdapter",
         output_dir=tmp_path / "run",
         overrides={"pacing": "wall_clock"},
     )

@@ -7,9 +7,9 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from open_stream_bench.bundle import RunBundle
-from open_stream_bench.config import resolve_config
-from open_stream_bench.core import (
+from trace_bench.bundle import RunBundle
+from trace_bench.config import resolve_config
+from trace_bench.core import (
     _ObservationClock,
     _align_response_events_to_stream_clock,
     _annotate_proactive_response_latency,
@@ -20,7 +20,7 @@ from open_stream_bench.core import (
     _qa_record,
     run,
 )
-from open_stream_bench.models import (
+from trace_bench.models import (
     AdapterCapabilities,
     EventKind,
     FatalEvaluationError,
@@ -31,7 +31,7 @@ from open_stream_bench.models import (
     RunConfig,
     TaskName,
 )
-from open_stream_bench.sampling import SampledVideo
+from trace_bench.sampling import SampledVideo
 
 
 def test_qa_vertical_slice(synthetic_release):
@@ -41,7 +41,7 @@ def test_qa_vertical_slice(synthetic_release):
         release_dir=release,
         task=TaskName.QA,
         subset="tiny",
-        adapter="open_stream_bench.adapters:TestDoubleAdapter",
+        adapter="trace_bench.adapters:TestDoubleAdapter",
         output_dir=output,
         video_root=str(video_root),
         overrides={"stream_fps": 1.0, "qa_window_s": 1.0},
@@ -62,7 +62,7 @@ def test_proactive_vertical_slice(synthetic_release):
         release_dir=release,
         task=TaskName.PROACTIVE,
         subset="tiny",
-        adapter="open_stream_bench.adapters:TestDoubleAdapter",
+        adapter="trace_bench.adapters:TestDoubleAdapter",
         output_dir=output,
         video_root=str(video_root),
         overrides={"stream_fps": 1.0, "proactive_window_s": 5.0, "proactive_step_s": 1.0},
@@ -80,7 +80,7 @@ def test_autonomous_proactive_does_not_inject_polling_queries(monkeypatch, tmp_p
         Observation(timestamp_s=2.0, frame_index=2, rgb=np.zeros((2, 3, 3), dtype=np.uint8)),
     ]
     monkeypatch.setattr(
-        "open_stream_bench.core.sample_video",
+        "trace_bench.core.sample_video",
         lambda *_args, **_kwargs: SampledVideo(
             observations=observations,
             source_fps=1.0,
@@ -89,7 +89,7 @@ def test_autonomous_proactive_does_not_inject_polling_queries(monkeypatch, tmp_p
             decoder="test",
         ),
     )
-    monkeypatch.setattr("open_stream_bench.core.video_duration_s", lambda _path: 2.0)
+    monkeypatch.setattr("trace_bench.core.video_duration_s", lambda _path: 2.0)
 
     class Session:
         def query(self, _request):
@@ -172,8 +172,8 @@ def test_proactive_evidence_does_not_stream_source_tail(monkeypatch, tmp_path):
             decoder="test",
         )
 
-    monkeypatch.setattr("open_stream_bench.core.sample_video", sample_video_stub)
-    monkeypatch.setattr("open_stream_bench.core.video_duration_s", lambda _path: 100.0)
+    monkeypatch.setattr("trace_bench.core.sample_video", sample_video_stub)
+    monkeypatch.setattr("trace_bench.core.video_duration_s", lambda _path: 100.0)
 
     class Session:
         def observe(self, _observation):
@@ -239,8 +239,8 @@ def test_proactive_1469_stops_at_gt_window_when_source_duration_is_unknown(
             decoder="test",
         )
 
-    monkeypatch.setattr("open_stream_bench.core.sample_video", sample_video_stub)
-    monkeypatch.setattr("open_stream_bench.core.video_duration_s", lambda _path: None)
+    monkeypatch.setattr("trace_bench.core.sample_video", sample_video_stub)
+    monkeypatch.setattr("trace_bench.core.video_duration_s", lambda _path: None)
 
     class Session:
         def observe(self, _observation):
@@ -300,7 +300,7 @@ def test_autonomous_wall_clock_applies_only_remaining_final_window_grace(
         for index in range(3)
     ]
     monkeypatch.setattr(
-        "open_stream_bench.core.sample_video",
+        "trace_bench.core.sample_video",
         lambda *_args, **_kwargs: SampledVideo(
             observations=observations,
             source_fps=1.0,
@@ -309,7 +309,7 @@ def test_autonomous_wall_clock_applies_only_remaining_final_window_grace(
             decoder="test",
         ),
     )
-    monkeypatch.setattr("open_stream_bench.core.video_duration_s", lambda _path: 2.0)
+    monkeypatch.setattr("trace_bench.core.video_duration_s", lambda _path: 2.0)
 
     class FakeClock:
         latest = None
@@ -331,7 +331,7 @@ def test_autonomous_wall_clock_applies_only_remaining_final_window_grace(
             self.waited_video_times.append(video_time_s)
             return self.scheduled_perf_ns(video_time_s)
 
-    monkeypatch.setattr("open_stream_bench.core._ObservationClock", FakeClock)
+    monkeypatch.setattr("trace_bench.core._ObservationClock", FakeClock)
 
     class Session:
         def query(self, _request):
@@ -399,7 +399,7 @@ def test_autonomous_flushes_final_partial_chunk_before_grace(monkeypatch, tmp_pa
         for index in range(3)
     ]
     monkeypatch.setattr(
-        "open_stream_bench.core.sample_video",
+        "trace_bench.core.sample_video",
         lambda *_args, **_kwargs: SampledVideo(
             observations=observations,
             source_fps=1.0,
@@ -408,7 +408,7 @@ def test_autonomous_flushes_final_partial_chunk_before_grace(monkeypatch, tmp_pa
             decoder="test",
         ),
     )
-    monkeypatch.setattr("open_stream_bench.core.video_duration_s", lambda _path: 2.0)
+    monkeypatch.setattr("trace_bench.core.video_duration_s", lambda _path: 2.0)
 
     order = []
 
@@ -428,7 +428,7 @@ def test_autonomous_flushes_final_partial_chunk_before_grace(monkeypatch, tmp_pa
             order.append(("wait", video_time_s))
             return self.scheduled_perf_ns(video_time_s)
 
-    monkeypatch.setattr("open_stream_bench.core._ObservationClock", FakeClock)
+    monkeypatch.setattr("trace_bench.core._ObservationClock", FakeClock)
 
     class Session:
         def observe(self, _observation):
@@ -499,7 +499,7 @@ def test_committed_failed_record_is_terminal_and_finalized_bundle_is_immutable(s
         release_dir=release,
         task=TaskName.QA,
         subset="tiny",
-        adapter="open_stream_bench.adapters:TestDoubleAdapter",
+        adapter="trace_bench.adapters:TestDoubleAdapter",
         output_dir=output,
         video_root=str(missing_root),
         synthetic=True,
@@ -509,7 +509,7 @@ def test_committed_failed_record_is_terminal_and_finalized_bundle_is_immutable(s
         release_dir=release,
         task=TaskName.QA,
         subset="tiny",
-        adapter="open_stream_bench.adapters:TestDoubleAdapter",
+        adapter="trace_bench.adapters:TestDoubleAdapter",
         output_dir=output,
         video_root=str(video_root),
         synthetic=True,
@@ -534,7 +534,7 @@ def test_qa_query_sees_question_time_observation(monkeypatch, tmp_path):
         rgb=np.zeros((2, 3, 3), dtype=np.uint8),
     )
     monkeypatch.setattr(
-        "open_stream_bench.core.sample_video",
+        "trace_bench.core.sample_video",
         lambda *_args, **_kwargs: SampledVideo(
             observations=[observation],
             source_fps=30.0,
@@ -612,7 +612,7 @@ def test_qa_query_is_queued_before_question_time_frame_for_batched_adapters(monk
         Observation(timestamp_s=1.0, frame_index=1, rgb=np.zeros((2, 3, 3), dtype=np.uint8)),
     ]
     monkeypatch.setattr(
-        "open_stream_bench.core.sample_video",
+        "trace_bench.core.sample_video",
         lambda *_args, **_kwargs: SampledVideo(
             observations=observations,
             source_fps=30.0,
@@ -763,14 +763,14 @@ def test_keyboard_interrupt_checkpoint_resumes_without_duplicates(monkeypatch, t
         metadata={},
         capabilities=AdapterCapabilities(),
     )
-    monkeypatch.setattr("open_stream_bench.core.load_release", lambda _path: release)
-    monkeypatch.setattr("open_stream_bench.core.load_adapter", lambda *_args: adapter)
+    monkeypatch.setattr("trace_bench.core.load_release", lambda _path: release)
+    monkeypatch.setattr("trace_bench.core.load_adapter", lambda *_args: adapter)
     monkeypatch.setattr(
-        "open_stream_bench.core.validate_adapter",
+        "trace_bench.core.validate_adapter",
         lambda *_args: AdapterCapabilities(),
     )
     monkeypatch.setattr(
-        "open_stream_bench.core.build_preflight_snapshot",
+        "trace_bench.core.build_preflight_snapshot",
         lambda *_args, **_kwargs: {
             "protocol": {},
             "data": {},
@@ -793,7 +793,7 @@ def test_keyboard_interrupt_checkpoint_resumes_without_duplicates(monkeypatch, t
             [{"record_id": record.record_id, "kind": "answer", "text": "A"}],
         )
 
-    monkeypatch.setattr("open_stream_bench.core._qa_record", interrupted)
+    monkeypatch.setattr("trace_bench.core._qa_record", interrupted)
     output = tmp_path / "resume"
     config = RunConfig(
         release_dir=str(tmp_path),
@@ -809,7 +809,7 @@ def test_keyboard_interrupt_checkpoint_resumes_without_duplicates(monkeypatch, t
     assert [row["record_id"] for row in RunBundle(output).records()] == ["qa:1"]
 
     monkeypatch.setattr(
-        "open_stream_bench.core._qa_record",
+        "trace_bench.core._qa_record",
         lambda record, *_args: (
             {"record_id": record.record_id, "status": "completed", "answer": "A"},
             [{"record_id": record.record_id, "kind": "answer", "text": "A"}],
@@ -861,14 +861,14 @@ def test_fatal_adapter_error_checkpoints_and_does_not_finalize(monkeypatch, tmp_
         metadata={},
         capabilities=AdapterCapabilities(),
     )
-    monkeypatch.setattr("open_stream_bench.core.load_release", lambda _path: release)
-    monkeypatch.setattr("open_stream_bench.core.load_adapter", lambda *_args: adapter)
+    monkeypatch.setattr("trace_bench.core.load_release", lambda _path: release)
+    monkeypatch.setattr("trace_bench.core.load_adapter", lambda *_args: adapter)
     monkeypatch.setattr(
-        "open_stream_bench.core.validate_adapter",
+        "trace_bench.core.validate_adapter",
         lambda *_args: AdapterCapabilities(),
     )
     monkeypatch.setattr(
-        "open_stream_bench.core.build_preflight_snapshot",
+        "trace_bench.core.build_preflight_snapshot",
         lambda *_args, **_kwargs: {
             "protocol": {},
             "data": {},
@@ -888,7 +888,7 @@ def test_fatal_adapter_error_checkpoints_and_does_not_finalize(monkeypatch, tmp_
             [{"record_id": record.record_id, "kind": "answer", "text": "A"}],
         )
 
-    monkeypatch.setattr("open_stream_bench.core._qa_record", interrupted)
+    monkeypatch.setattr("trace_bench.core._qa_record", interrupted)
     output = tmp_path / "fatal-run"
     config = RunConfig(
         release_dir=str(tmp_path),
@@ -1006,7 +1006,7 @@ def test_polling_query_at_frame_timestamp_observes_that_frame_first(monkeypatch,
         for index in range(2)
     ]
     monkeypatch.setattr(
-        "open_stream_bench.core.sample_video",
+        "trace_bench.core.sample_video",
         lambda *_args, **_kwargs: SampledVideo(
             observations=observations,
             source_fps=1.0,
@@ -1015,7 +1015,7 @@ def test_polling_query_at_frame_timestamp_observes_that_frame_first(monkeypatch,
             decoder="test",
         ),
     )
-    monkeypatch.setattr("open_stream_bench.core.video_duration_s", lambda _path: 1.0)
+    monkeypatch.setattr("trace_bench.core.video_duration_s", lambda _path: 1.0)
     calls = []
 
     class Session:
@@ -1071,8 +1071,8 @@ def test_proactive_history_window_is_independent_from_response_tolerance(
             decoder="test",
         )
 
-    monkeypatch.setattr("open_stream_bench.core.sample_video", sample_stub)
-    monkeypatch.setattr("open_stream_bench.core.video_duration_s", lambda _path: 30.0)
+    monkeypatch.setattr("trace_bench.core.sample_video", sample_stub)
+    monkeypatch.setattr("trace_bench.core.video_duration_s", lambda _path: 30.0)
 
     class Session:
         def observe(self, _observation):

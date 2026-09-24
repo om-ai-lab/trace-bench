@@ -7,7 +7,7 @@ from pathlib import Path
 import cv2
 import pytest
 
-from open_stream_bench.models import ProactiveRecord, QARecord, ReleaseManifest, ResponseWindow
+from trace_bench.models import ProactiveRecord, QARecord, ReleaseManifest, ResponseWindow
 
 
 def _sha256(path: Path) -> str:

@@ -3,13 +3,13 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "open-stream-bench"
-version = "0.0.0"
-description = "Local, reproducible evaluation Core for Open Stream Bench."
+name = "trace-bench"
+version = "0.1.0"
+description = "Local, reproducible evaluation Core for TRACE."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{name = "Open Stream Bench maintainers"}]
+authors = [{name = "TRACE maintainers"}]
 dependencies = [
   "numpy>=1.24",
   "opencv-python-headless>=4.8",
@@ -23,14 +23,21 @@ dev = [
   "ruff>=0.9",
 ]
 
+[project.urls]
+Repository = "https://github.com/om-ai-lab/trace-bench"
+Documentation = "https://github.com/om-ai-lab/trace-bench#readme"
+Issues = "https://github.com/om-ai-lab/trace-bench/issues"
+
 [project.scripts]
-osb = "open_stream_bench.cli:main"
+trace = "trace_bench.cli:main"
+# Compatibility alias from the previous Open Stream Bench name.
+osb = "trace_bench.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-open_stream_bench = ["presets/*.json"]
+trace_bench = ["presets/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

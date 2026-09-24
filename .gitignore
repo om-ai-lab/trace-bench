@@ -13,6 +13,7 @@ runs/
 # Historical local annotations are retained for reproduction, not publication.
 /data/releases/v1.0.0/
 tmp/
+/output/
 data/videos/
 data/source_videos/
 presets/local*.json

@@ -5,11 +5,11 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from open_stream_bench.adapters import load_adapter, validate_adapter
-from open_stream_bench.config import resolve_config
-from open_stream_bench.data import load_release
-from open_stream_bench.models import TaskName
-from open_stream_bench.preflight import build_preflight_snapshot
+from trace_bench.adapters import load_adapter, validate_adapter
+from trace_bench.config import resolve_config
+from trace_bench.data import load_release
+from trace_bench.models import TaskName
+from trace_bench.preflight import build_preflight_snapshot
 
 
 def _snapshot(synthetic_release):
@@ -18,7 +18,7 @@ def _snapshot(synthetic_release):
         release_dir=release_dir,
         task=TaskName.QA,
         subset="tiny",
-        adapter="open_stream_bench.adapters:TestDoubleAdapter",
+        adapter="trace_bench.adapters:TestDoubleAdapter",
         output_dir=video_root / "run",
         video_root=str(video_root),
         overrides={"stream_fps": 1.0, "max_width": 32},
@@ -34,6 +34,7 @@ def _snapshot(synthetic_release):
 
 def test_preflight_freezes_protocol_data_visual_and_adapter_identity(synthetic_release):
     _, snapshot = _snapshot(synthetic_release)
+    assert snapshot["software_version"] == "0.1.0"
     assert snapshot["protocol"]["identity"] == "osb-incremental-decoded-rgb-v4"
     assert snapshot["protocol"]["contract"] == "osb-contract-v4"
     assert snapshot["protocol"]["core_delivery_chunk_frames"] == 1
@@ -74,7 +75,7 @@ def test_invalid_core_configuration_is_rejected(synthetic_release, field, value)
             release_dir=release_dir,
             task=TaskName.QA,
             subset="tiny",
-            adapter="open_stream_bench.adapters:TestDoubleAdapter",
+            adapter="trace_bench.adapters:TestDoubleAdapter",
             output_dir=video_root / "run",
             overrides={field: value},
         )

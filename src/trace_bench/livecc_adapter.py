@@ -1,10 +1,10 @@
-"""LiveCC adapter for the Open Stream Bench RGB observation contract.
+"""LiveCC adapter for the TRACE RGB observation contract.
 
 The adapter intentionally does not call LiveCC's file-replay helper.  Core
 decodes the legal evidence and this module converts those RGB observations into
 the in-memory video tensors expected by the LiveCC/Qwen2-VL processor.
 
-LiveCC dependencies are imported lazily so the public OSB package and its
+LiveCC dependencies are imported lazily so the public TRACE package and its
 deterministic tests do not require CUDA, model weights, or the LiveCC checkout.
 """
 

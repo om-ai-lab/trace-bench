@@ -13,6 +13,11 @@ from .models import RunConfig, TaskName
 CORE_STREAM_FPS = 1.0
 
 
+def judge_env(name: str) -> str | None:
+    """Read a judge setting from TRACE_VLM_JUDGE_* or the legacy OSB_* name."""
+    return os.getenv(f"TRACE_{name}") or os.getenv(f"OSB_{name}") or None
+
+
 DEFAULT_PRESET = {
     "stream_fps": 1.0,
     "qa_window_s": 10.0,
@@ -32,11 +37,12 @@ DEFAULT_PRESET = {
     "judge_mode": "auto",
     "judge_base_url": None,
     "judge_model": "Qwen3.5-35B-A3B",
-    "judge_api_key_env": "OSB_VLM_JUDGE_API_KEY",
+    "judge_api_key_env": "TRACE_VLM_JUDGE_API_KEY",
     "judge_timeout_s": 60.0,
     "judge_temperature": 0.0,
     "semantic_task_types": ["SSR", "CRR"],
     "scorer_version": "osb-scoring-v6",
+    "scoring_profile": "legacy",
 }
 
 
@@ -71,11 +77,11 @@ def resolve_config(
     # judge service can be selected through the environment without changing
     # the repository or embedding credentials in a Run Bundle.
     if not values.get("judge_base_url"):
-        values["judge_base_url"] = os.getenv("OSB_VLM_JUDGE_BASE_URL") or None
-    if os.getenv("OSB_VLM_JUDGE_MODEL"):
-        values["judge_model"] = os.environ["OSB_VLM_JUDGE_MODEL"]
-    if os.getenv("OSB_VLM_JUDGE_MODE"):
-        values["judge_mode"] = os.environ["OSB_VLM_JUDGE_MODE"]
+        values["judge_base_url"] = judge_env("VLM_JUDGE_BASE_URL")
+    if judge_env("VLM_JUDGE_MODEL"):
+        values["judge_model"] = judge_env("VLM_JUDGE_MODEL")
+    if judge_env("VLM_JUDGE_MODE"):
+        values["judge_mode"] = judge_env("VLM_JUDGE_MODE")
     values.update({k: v for k, v in (overrides or {}).items() if v is not None})
     return RunConfig(
         release_dir=str(release_dir),

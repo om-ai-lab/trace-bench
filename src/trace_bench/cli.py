@@ -1,12 +1,14 @@
-"""The single ``osb`` command-line interface."""
+"""The single ``trace`` command-line interface."""
 
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
+from . import __version__
 from .adapters import load_adapter, validate_adapter
 from .bundle import RunBundle
 from .config import resolve_config
@@ -29,7 +31,10 @@ def _json(value: Any) -> None:
 def _add_run_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--task", choices=[task.value for task in TaskName], required=True)
     parser.add_argument("--release", type=Path, required=True)
-    parser.add_argument("--subset", choices=["tiny", "full", "all"], default="tiny")
+    parser.add_argument(
+        "--subset", choices=["tiny", "full", "all", "standard"], default="tiny",
+        help="record population; standard uses the paper's 833 QA / 407 Proactive cohort",
+    )
     parser.add_argument("--adapter", required=True, help="Adapter reference: module:object")
     parser.add_argument("--adapter-config", type=Path)
     parser.add_argument("--video-root", type=str)
@@ -66,6 +71,11 @@ def _add_run_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument("--no-resume", action="store_true")
     parser.add_argument("--synthetic", action="store_true")
+    parser.add_argument(
+        "--scoring-profile",
+        choices=["legacy", "paper-v1"],
+        help="scoring contract to persist with the run (default: legacy)",
+    )
     _add_judge_arguments(parser)
     parser.add_argument(
         "--preflight-only",
@@ -82,7 +92,7 @@ def _add_judge_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--judge-base-url",
-        help="OpenAI-compatible judge base URL; prefer OSB_VLM_JUDGE_BASE_URL",
+        help="OpenAI-compatible judge base URL; prefer TRACE_VLM_JUDGE_BASE_URL",
     )
     parser.add_argument("--judge-model", help="judge model id")
     parser.add_argument(
@@ -101,8 +111,10 @@ def _add_judge_arguments(parser: argparse.ArgumentParser) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="osb", description="Open Stream Bench local evaluation Core"
+        prog="trace", description="TRACE local evaluation Core"
     )
+    parser.add_argument("--debug", action="store_true", help="show full error tracebacks")
+    parser.add_argument("--version", action="version", version=f"trace {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     data_parser = subparsers.add_parser("data", help="data release commands")
@@ -115,6 +127,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     score_parser = subparsers.add_parser("score", help="rescore an existing bundle")
     score_parser.add_argument("bundle", type=Path)
+    score_parser.add_argument(
+        "--scoring-profile", choices=["legacy", "paper-v1"],
+        help="override the scoring profile for a derived sidecar",
+    )
     _add_judge_arguments(score_parser)
 
     bundle_parser = subparsers.add_parser("bundle", help="bundle commands")
@@ -126,6 +142,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    try:
+        return _execute(args)
+    except (OSError, ValueError) as exc:
+        if args.debug:
+            raise
+        message = " ".join(str(exc).splitlines())
+        print(f"trace: error: {message}", file=sys.stderr)
+        return 1
+
+
+def _execute(args: argparse.Namespace) -> int:
     if args.command == "data":
         _json(validate_release(args.release))
         return 0
@@ -150,6 +177,8 @@ def main(argv: list[str] | None = None) -> int:
         resolved_for_scoring.update(
             {key: value for key, value in judge_overrides.items() if value is not None}
         )
+        if args.scoring_profile is not None:
+            resolved_for_scoring["scoring_profile"] = args.scoring_profile
         resolved_scoring = resolved.get("scoring", {})
         historical_boundary = (
             resolved_scoring.get("window_boundary")
@@ -164,6 +193,7 @@ def main(argv: list[str] | None = None) -> int:
             events=bundle.events(),
             proactive_window_s=resolved.get("proactive_window_s"),
             window_boundary=resolved.get("window_boundary") or historical_boundary or "half_open",
+            scoring_profile=resolved_for_scoring.get("scoring_profile", "legacy"),
         )
         scored_records = metrics.pop("scored_records", [])
         metrics["execution_track"] = resolved.get("execution_track") or resolved.get(
@@ -181,14 +211,20 @@ def main(argv: list[str] | None = None) -> int:
         bundle.write_rescored(
             records=scored_records,
             metrics=metrics,
-            scoring=judge.metadata,
+            scoring={
+                **judge.metadata,
+                "scoring_profile": resolved_for_scoring.get("scoring_profile", "legacy"),
+            },
             source_bundle=str(args.bundle),
         )
         output = {
             "metrics": metrics,
             "scored_record_count": len(scored_records),
             "source_bundle": str(args.bundle),
-            "scoring": judge.metadata,
+            "scoring": {
+                **judge.metadata,
+                "scoring_profile": resolved_for_scoring.get("scoring_profile", "legacy"),
+            },
             "rescored_records": str(args.bundle / "rescored_records.jsonl"),
             "rescored_metrics": str(args.bundle / "rescored_metrics.json"),
         }
@@ -196,6 +232,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     adapter_config = {}
+    if args.video_root is not None and not Path(args.video_root).is_dir():
+        raise ValueError(f"video root is not a directory: {args.video_root}")
     if args.adapter_config:
         with args.adapter_config.open("r", encoding="utf-8") as handle:
             adapter_config = json.load(handle)
@@ -217,6 +255,7 @@ def main(argv: list[str] | None = None) -> int:
         "judge_timeout_s": args.judge_timeout_s,
         "judge_temperature": args.judge_temperature,
         "semantic_task_types": args.semantic_task_types,
+        "scoring_profile": args.scoring_profile,
     }
     config = resolve_config(
         release_dir=args.release,

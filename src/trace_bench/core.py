@@ -951,7 +951,10 @@ def _resolved_config(
             "video_duration_probe": "metadata_only_never_full_decode",
             "post_stream_response_policy": "remaining_strict_window",
             "legacy_deadline_used": False,
-            "scoring": judge.metadata,
+            "scoring": {
+                **judge.metadata,
+                "scoring_profile": config.scoring_profile,
+            },
             "preflight": preflight,
         }
     )
@@ -1112,6 +1115,7 @@ def run(config: RunConfig) -> Path:
         events=raw_events,
         proactive_window_s=config.proactive_window_s,
         window_boundary="half_open",
+        scoring_profile=config.scoring_profile,
     )
     scored_records = metrics.pop("scored_records", [])
     metrics["execution_track"] = resolved.get("preflight", {}).get("execution_track", {})

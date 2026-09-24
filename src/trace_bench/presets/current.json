@@ -13,7 +13,7 @@
   "judge_mode": "auto",
   "judge_base_url": null,
   "judge_model": "Qwen3.5-35B-A3B",
-  "judge_api_key_env": "OSB_VLM_JUDGE_API_KEY",
+  "judge_api_key_env": "TRACE_VLM_JUDGE_API_KEY",
   "judge_timeout_s": 60.0,
   "judge_temperature": 0.0,
   "semantic_task_types": ["SSR", "CRR"],
