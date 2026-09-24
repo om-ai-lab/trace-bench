@@ -14,8 +14,8 @@
 </p>
 
 <p>
-  <a href="README.md">English</a> · <a href="docs/index.html">项目主页（英文）</a>
-  · <a href="docs/results/index.zh-CN.html">排行榜</a>
+  <a href="https://om-ai-lab.github.io/trace-bench/">项目主页（英文）</a>
+  · <a href="https://om-ai-lab.github.io/trace-bench/results/index.zh-CN.html">排行榜</a>
   · <a href="docs/evaluation-protocol.zh-CN.md">评估协议</a>
   · <a href="docs/dataset-card.zh-CN.md">数据卡</a>
 </p>
