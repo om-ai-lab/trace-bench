@@ -2,7 +2,7 @@
 
 <h1>TRACE</h1>
 
-<h3>Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding</h3>
+<h3>Temporal Audit and Condition-aware Evaluation</h3>
 
 <p>
   面向时间戳视频问答与主动响应的可复现实验基准，支持本地运行和完整审计。
@@ -10,19 +10,19 @@
 
 <p>
   <a href="https://arxiv.org/abs/2609.00000"><img src="https://img.shields.io/badge/Paper-Coming%20soon-6d28d9?style=flat-square" alt="论文即将发布"></a>
-  <a href="https://huggingface.co/datasets/om-ai-lab/trace-bench"><img src="https://img.shields.io/badge/Hugging%20Face-Coming%20soon-f59e0b?style=flat-square" alt="Hugging Face 数据即将发布"></a>
+  <a href="https://huggingface.co/datasets/omlab/trace-bench"><img src="https://img.shields.io/badge/Hugging%20Face-Dataset-f59e0b?style=flat-square" alt="Hugging Face 数据集"></a>
 </p>
 
 <p>
-  <a href="README.md">English</a> · <a href="docs/results/index.zh-CN.html">项目主页</a>
-  · <a href="docs/results-explorer.zh-CN.md">结果看板</a>
+  <a href="README.md">English</a> · <a href="docs/index.html">项目主页（英文）</a>
+  · <a href="docs/results/index.zh-CN.html">排行榜</a>
   · <a href="docs/evaluation-protocol.zh-CN.md">评估协议</a>
   · <a href="docs/dataset-card.zh-CN.md">数据卡</a>
 </p>
 
 </div>
 
-## TRACE 如何工作
+## 🧭 TRACE 如何工作
 
 TRACE 将因果视频历史、Adapter 执行、模型或系统响应、遥测和评分连接在同一套
 可审计流程中。
@@ -41,7 +41,7 @@ TRACE 将因果视频历史、Adapter 执行、模型或系统响应、遥测和
 | **受控执行** | Core 与 Adapter 将基准计时和模型接口分开，原生与非原生接入都能在清晰的边界上比较。 |
 | **条件感知报告** | 按执行条件同时报告质量、延迟、误报、漏报和工作量。 |
 
-## 执行条件
+## ⚙️ 执行条件
 
 执行条件分别描述视觉状态、响应触发和评估边界。它们是比较维度，不代表能力等级。
 
@@ -51,7 +51,7 @@ TRACE 将因果视频历史、Adapter 执行、模型或系统响应、遥测和
 
 <p align="center"><em>执行模式：原生与前缀输入视觉状态、自主与 polling 响应触发，以及模型/Adapter 与完整系统边界。</em></p>
 
-## 任务、数据与协议
+## 🧩 任务、数据与协议
 
 TRACE 评估两种互补行为：
 
@@ -72,7 +72,7 @@ v1.1.0 标注、release manifest 和校验元数据，不包含源视频或模�
 StreamingBench 作者许可重新分发修改后的标注文件；在 TRACE 贡献者拥有相应权利的范围内，
 StreamingBench 来源的 TRACE 新增内容采用 CC BY-NC-SA 4.0。OVO-Bench 标注条款仍未解决。
 
-## 基准结果
+## 📊 基准结果
 
 以下图像展示不同配置在质量、时延和响应行为上的差异。比较不同执行条件时，请结合
 下面的成绩表和指标定义阅读结果。
@@ -101,11 +101,9 @@ MOSS-VL 与 AURA 的窗口内准确率分别为 8.05% 和 7.92%。MOSS-VL 的误
 
 完整结果可在离线[结果看板](docs/results-explorer.zh-CN.md)中筛选，也可阅读
 [完整 benchmark 结果与测量限制](docs/benchmark-results.zh-CN.md)。机器可读的结果快照见
-[docs/results/data/paper-results.json](docs/results/data/paper-results.json)；
-缺失证据保留为 <code>null</code>。
-
+<h2>📊 查看完整基准结果表</h2>
 <details>
-<summary>查看完整基准成绩表</summary>
+<summary>结果表</summary>
 
 ### QA · v1.1.0 benchmark 总体（833 条）
 
@@ -141,7 +139,7 @@ MOSS-VL 与 AURA 的窗口内准确率分别为 8.05% 和 7.92%。MOSS-VL 的误
 
 </details>
 
-## 运行评估
+## ▶️ 运行评估
 
 ### 安装
 
@@ -206,7 +204,7 @@ user 内容一致。Proactive 使用 5s/10s 事件窗口或标注状态区间，
 窗口终点结束，源视频更短时由其长度限制。Native/non-native 视觉状态与
 autonomous/polling 触发方式是独立比较维度，详见[评估协议](docs/evaluation-protocol.zh-CN.md)。
 
-## 文档与引用
+## 📚 文档与引用
 
 - [数据及限制](docs/dataset-card.zh-CN.md)
 - [Release 文件与字段](data/releases/README.zh-CN.md)
@@ -221,7 +219,7 @@ TRACE 代码采用 [MIT](LICENSE) 许可。数据权利和上游署名要求见
 [DATA_TERMS.zh-CN.md](DATA_TERMS.zh-CN.md)。仓库不提供在线评估器；真实模型结果需要
 对应运行环境、模型权重和源视频。
 
-## 开发检查
+## 🛠️ 开发检查
 
 下面两个 Git 检查需要 Git checkout，并在仓库根目录运行。ZIP 用户仍可安装、评估、
 运行测试和发行包检查；需要运行维护检查时请克隆仓库。CI 覆盖 Python 3.10–3.13。

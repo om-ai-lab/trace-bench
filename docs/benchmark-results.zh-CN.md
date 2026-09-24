@@ -3,8 +3,6 @@
 [English](benchmark-results.md) | 简体中文
 
 也可以通过[交互成绩表与散点图](results-explorer.zh-CN.md)浏览这些结果。
-公开表格和交互页面使用版本化的[论文结果 snapshot](results/data/paper-results.json)
-作为数值来源。
 
 本文遵循当前 TRACE LaTeX 报告。结果来自保留的 v1.0.0 推理 bundle，按 v1.1.0
 标准总体分析，不是重新执行的推理。以下八行代表声明过的配置，不构成跨边界综合排行榜。

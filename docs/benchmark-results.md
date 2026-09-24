@@ -3,8 +3,6 @@
 English | [简体中文](benchmark-results.zh-CN.md)
 
 Explore these results with the [interactive scorecard and plots](results-explorer.md).
-The numerical source for the public tables and explorers is the versioned
-[paper result snapshot](results/data/paper-results.json).
 
 This page follows the active TRACE LaTeX report. It describes retained v1.0.0
 inference bundles analyzed on the v1.1.0 standard population; it is not a fresh

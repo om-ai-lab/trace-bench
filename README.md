@@ -2,7 +2,7 @@
 
 <h1>TRACE</h1>
 
-<h3>Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding</h3>
+<h3>Temporal Audit and Condition-aware Evaluation</h3>
 
 <p>
   A reproducible local benchmark for timestamped video question answering and
@@ -11,20 +11,20 @@
 
 <p>
   <a href="https://arxiv.org/abs/2609.00000"><img src="https://img.shields.io/badge/Paper-Coming%20soon-6d28d9?style=flat-square" alt="Paper coming soon"></a>
-  <a href="https://huggingface.co/datasets/om-ai-lab/trace-bench"><img src="https://img.shields.io/badge/Hugging%20Face-Coming%20soon-f59e0b?style=flat-square" alt="Hugging Face dataset coming soon"></a>
+  <a href="https://huggingface.co/datasets/omlab/trace-bench"><img src="https://img.shields.io/badge/Hugging%20Face-Open%20dataset-f59e0b?style=flat-square" alt="Hugging Face dataset"></a>
 </p>
 
 <p>
   <a href="README.zh-CN.md">简体中文</a>
-  · <a href="docs/results/index.html">Project page</a>
-  · <a href="docs/results-explorer.md">Results explorer</a>
+  · <a href="docs/index.html">Project page</a>
+  · <a href="docs/results/index.html">Leaderboard</a>
   · <a href="docs/evaluation-protocol.md">Evaluation protocol</a>
   · <a href="docs/dataset-card.md">Dataset card</a>
 </p>
 
 </div>
 
-## How TRACE works
+## 🧭 How TRACE works
 
 TRACE connects causal video history, adapter execution, model or system
 responses, telemetry and scoring in one auditable workflow.
@@ -43,7 +43,7 @@ responses, telemetry and scoring in one auditable workflow.
 | **Controlled execution** | The Core and Adapter separate benchmark timing from model-specific interfaces, so native and non-native integrations can be compared without hiding the boundary. |
 | **Condition-aware reporting** | Quality, delay, false alarms, misses and workload are reported together for each execution condition. |
 
-## Execution conditions
+## ⚙️ Execution conditions
 
 Execution conditions separate visual state, response triggering and the
 evaluation boundary. They are comparison dimensions rather than capability
@@ -55,7 +55,7 @@ labels.
 
 <p align="center"><em>Execution modes — native versus prefix-input visual state, autonomous versus polling response triggering, and model/Adapter versus complete-system boundaries.</em></p>
 
-## Tasks, data and protocol
+## 🧩 Tasks, data and protocol
 
 TRACE evaluates two complementary behaviors:
 
@@ -80,7 +80,7 @@ StreamingBench authors permit redistribution of the modified annotation files;
 StreamingBench-derived TRACE additions are under CC BY-NC-SA 4.0 within the
 rights held by TRACE contributors. OVO-Bench annotation terms remain unresolved.
 
-## Benchmark results
+## 📊 Benchmark results
 
 The figures show how quality, timing and response behavior vary across
 configurations. Use the scorecards and metric definitions below when comparing
@@ -113,11 +113,9 @@ Explore and filter the complete results in the offline
 [results explorer](docs/results-explorer.md), or read the
 [full benchmark results and measurement limits](docs/benchmark-results.md).
 The machine-readable result snapshot is available at
-[docs/results/data/paper-results.json](docs/results/data/paper-results.json);
-missing evidence remains <code>null</code>.
-
+<h2>📊 Show the complete benchmark scorecards</h2>
 <details>
-<summary>Show the complete benchmark scorecards</summary>
+<summary>scorecards</summary>
 
 ### QA · v1.1.0 benchmark cohort (833 records)
 
@@ -153,7 +151,7 @@ missing evidence remains <code>null</code>.
 
 </details>
 
-## Reproduce the evaluation
+## ▶️ Run evaluation
 
 ### Install
 
@@ -229,7 +227,7 @@ final strict-window boundary, clamped to source duration. Native/non-native
 visual state and autonomous/polling triggering are separate comparison
 dimensions; see the [evaluation protocol](docs/evaluation-protocol.md).
 
-## Documentation and citation
+## 📚 Documentation and citation
 
 - [Data and limitations](docs/dataset-card.md)
 - [Release files and fields](data/releases/README.md)
@@ -248,7 +246,7 @@ attribution are described in [DATA_TERMS.md](DATA_TERMS.md). The repository
 does not host an online evaluator, and real model results require the relevant
 runtime, model weights and source videos.
 
-## Development checks
+## 🛠️ Development checks
 
 The two Git-based checks below require a Git checkout and must run from its
 root. ZIP users can still install TRACE, run evaluations, tests and distribution

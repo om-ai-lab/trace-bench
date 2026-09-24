@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TRACE — Results explorer</title>
+<title>TRACE — Leaderboard</title>
 <style>html{color-scheme:light dark}body{margin:0;background:light-dark(#edf2f6,#0c1219)}#osb-explorer{max-width:1240px;margin:24px auto}#osb-explorer a{color:var(--osb-blue)}@media(max-width:600px){#osb-explorer{margin:0;border-radius:0}}</style>
 </head>
 <body>
@@ -19,14 +19,14 @@
 #osb-explorer .group td{background:var(--osb-bg);padding:18px 12px 8px;border-top:1px solid var(--osb-line);font-size:11px;letter-spacing:.025em}
 #osb-explorer .group:first-child td{border-top:0}#osb-explorer tbody tr:not(.group):hover td{background:var(--osb-soft)}
 #osb-explorer .metric-start{border-left:1px solid var(--osb-line)}#osb-explorer .measure{background:none;padding:0;font-weight:400}#osb-explorer .measure.best{font-weight:650;color:var(--osb-blue)}
-#osb-explorer .model-button{color:var(--osb-text)}#osb-explorer .table-note{font-size:11px;color:var(--osb-muted);padding:10px 0}
+#osb-explorer .model-button{color:var(--osb-text)}
 #osb-explorer .plot-caption{font-size:12px;color:var(--osb-muted);margin:8px 0 16px}
 #osb-explorer .point-label{paint-order:stroke;stroke:var(--osb-bg);stroke-width:4px;stroke-linejoin:round}
 #osb-explorer .point-label.selected{font-weight:650}#osb-explorer .legend{margin-bottom:14px}
 </style>
-<header><div class="brand">TRACE <small>Paper-aligned results explorer</small></div><nav aria-label="Language"><a href="index.zh-CN.html">简体中文</a></nav><span class="tag">Offline snapshot</span></header>
-<main><div class="meta" style="margin-bottom:18px"><a href="../benchmark-results.md">Tables, provenance and measurement limits</a> · <a href="data/paper-results.json">Public result snapshot</a></div>
-<div class="intro"><div><h1>Beyond scores: condition-aware behavior</h1><div class="meta">Current paper snapshot · eight configurations · retained v1.0.0 bundles on v1.1.0 standard</div></div><span class="tag">1 FPS · Proactive W = 5s</span></div>
+<header><div class="brand">TRACE <small>Leaderboard</small></div><nav aria-label="Language"><a href="index.zh-CN.html">简体中文</a></nav><span class="tag">Offline benchmark</span></header>
+<main>
+<div class="intro"><div><h1>TRACE Leaderboard</h1><div class="meta">Benchmark snapshot · eight configurations · v1.1.0 standard cohort</div></div><span class="tag">1 FPS · Proactive W = 5s</span></div>
 <div class="controls">
 <label>Task<select id="osb-task"><option value="all">Cross-task scorecard</option><option value="qa">QA</option><option value="pro">Proactive</option></select></label>
 <label>Comparison group<select id="osb-group"></select></label>
@@ -36,11 +36,8 @@
 <details><summary>Models and metric columns</summary><div class="models" id="osb-models"></div><div class="models" id="osb-columns"></div></details>
 <div class="status" id="osb-status" aria-live="polite"></div>
 <div id="osb-table-view" class="table-wrap"><table><thead id="osb-head"></thead><tbody id="osb-body"></tbody></table></div>
-<div class="table-note" id="osb-table-note">Bold: best observed value within the selected group, including ties; not statistical significance or a cross-group ranking.</div>
 <div id="osb-plot-view" hidden><div class="plot-controls"><label>X axis · operational/error metric<select id="osb-x"></select></label><label>Y axis · quality metric<select id="osb-y"></select></label></div><div class="legend"><span>● Model + Adapter</span><span>■ End-to-end system</span><span>▲ Native duplex diagnostic</span></div><div id="osb-chart"></div><div class="plot-caption" id="osb-chart-caption"></div><div class="meta" id="osb-plot-note"></div></div>
 <section class="detail" id="osb-detail" hidden aria-live="polite"></section>
-<footer><span>Failures retained · N/A is not zero · No cross-boundary ranking</span><button type="button" id="osb-method">Result methodology</button></footer>
-<section class="detail" id="osb-method-panel" hidden><h2>Methodology</h2><div class="detail-grid"><div><small>Inference and analysis versions</small>Retained v1.0.0 inference bundles<br>Analyzed on the v1.1.0 standard population</div><div><small>Population</small>QA：833 records / 340 videos<br>Proactive：407 records / 1,270 windows</div><div><small>Paper metrics</small>Recoverable Accuracy / Response Latency<br>In-window Accuracy / Delay / False-alarm / Miss</div></div><div class="detail-note">Response Latency starts at question arrival. Proactive delay is conditional on answered windows with observed onset. False-alarm is global episode-level; Miss is target-window-level. MOSS submitted-image values are unique-frame proxies. Polling remains a runtime option but is absent from this primary paper cohort.</div></section>
 </main>
 <script>
 (()=>{
@@ -78,7 +75,7 @@ function render(){
 const rs=rows(),ks=visibleKeys();options(el('sort'),ks,el('sort').value);el('sort').disabled=!ks.length;const sort=el('sort').value;
 el('status').textContent=rs.length+' configurations · '+(task==='qa'?'833 records QA':task==='pro'?'407 standard Proactive records / 1,270 windows':'QA 833 records / Proactive 1,270 standard windows')+(view==='table'&&sort?' · within-group sort: '+metrics[sort].label+' order':'')+(task==='all'?' · grouped by declared boundary':'');
 el('table-view').hidden=view!=='table';el('plot-view').hidden=view!=='plot';el('table-button').setAttribute('aria-pressed',view==='table');el('plot-button').setAttribute('aria-pressed',view==='plot');
-el('sort-wrap').hidden=view!=='table';el('table-note').hidden=view!=='table';el('columns').hidden=view!=='table';
+el('sort-wrap').hidden=view!=='table';el('columns').hidden=view!=='table';
 const qaKeys=ks.filter(k=>metrics[k].task==='qa'),proKeys=ks.filter(k=>metrics[k].task==='pro');
 el('head').innerHTML='<tr class="task-heading"><th rowspan="2">Model configuration</th>'+(qaKeys.length?'<th class="qa-heading" colspan="'+qaKeys.length+'">QA <span class="unit">/ 833 records</span></th>':'')+(proKeys.length?'<th class="pro-heading" colspan="'+proKeys.length+'">PROACTIVE <span class="unit">/ 1,270 windows</span></th>':'')+'</tr><tr>'+ks.map((k,i)=>'<th class="'+(i===0||k===proKeys[0]?'metric-start':'')+'"><button type="button" class="sort-head '+(sort===k?'active':'')+'" data-sort="'+k+'">'+metrics[k].label+' '+(metrics[k].up?'↑':'↓')+'</button><br><span class="unit">'+metrics[k].unit+'</span></th>').join('')+'</tr>';
 el('head').querySelectorAll('[data-sort]').forEach(btn=>btn.onclick=()=>{el('sort').value=btn.dataset.sort;render()});
@@ -124,7 +121,6 @@ const note=el('plot-note');note.replaceChildren();rs.forEach(d=>{const btn=docum
 el('task').onchange=()=>{task=el('task').value;if(task==='all')view='table';setup()};
 el('group').onchange=render;el('sort').onchange=render;el('x').onchange=draw;el('y').onchange=draw;
 el('table-button').onclick=()=>{view='table';render()};el('plot-button').onclick=()=>{view='plot';if(task==='all'){task='pro';el('task').value='pro';setup()}else render()};
-el('method').onclick=()=>{el('method-panel').hidden=!el('method-panel').hidden};
 new ResizeObserver(()=>{if(view==='plot')draw()}).observe(el('chart'));
 setup();
 })();
