@@ -9,7 +9,7 @@
 </p>
 
 <p>
-  <a href="https://arxiv.org/abs/2609.00000"><img src="https://img.shields.io/badge/Paper-Coming%20soon-6d28d9?style=flat-square" alt="论文即将发布"></a>
+  <a href="https://arxiv.org/abs/2609.30670"><img src="https://img.shields.io/badge/Paper-arXiv-6d28d9?style=flat-square" alt="arXiv 论文"></a>
   <a href="https://huggingface.co/datasets/omlab/trace-bench"><img src="https://img.shields.io/badge/Hugging%20Face-Dataset-f59e0b?style=flat-square" alt="Hugging Face 数据集"></a>
 </p>
 
