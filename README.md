@@ -246,6 +246,21 @@ attribution are described in [DATA_TERMS.md](DATA_TERMS.md). The repository
 does not host an online evaluator, and real model results require the relevant
 runtime, model weights and source videos.
 
+📍 Citing Trace: If you find Trace useful, please cite it using the following BibTeX:
+
+```bibtex
+@misc{ma2026tracetemporalauditconditionaware,
+      title={TRACE: Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding}, 
+      author={Yibo Ma and Qianqian Zhang and Peng Liu and Tiancheng Zhao},
+      year={2026},
+      eprint={2609.30670},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2609.30670}, 
+}
+```
+
+
 ## 🛠️ Development checks
 
 The two Git-based checks below require a Git checkout and must run from its
