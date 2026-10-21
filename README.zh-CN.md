@@ -219,6 +219,20 @@ TRACE 代码采用 [MIT](LICENSE) 许可。数据权利和上游署名要求见
 [DATA_TERMS.zh-CN.md](DATA_TERMS.zh-CN.md)。仓库不提供在线评估器；真实模型结果需要
 对应运行环境、模型权重和源视频。
 
+📍 引用 Trace: 如果您觉得 Trace 有用，请使用以下 BibTeX 进行引用:
+
+```bibtex
+@misc{ma2026tracetemporalauditconditionaware,
+      title={TRACE: Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding}, 
+      author={Yibo Ma and Qianqian Zhang and Peng Liu and Tiancheng Zhao},
+      year={2026},
+      eprint={2609.30670},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2609.30670}, 
+}
+```
+
 ## 🛠️ 开发检查
 
 下面两个 Git 检查需要 Git checkout，并在仓库根目录运行。ZIP 用户仍可安装、评估、
